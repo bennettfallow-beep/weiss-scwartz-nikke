@@ -4,6 +4,7 @@
 // hidden cards, since an id could reveal which decklist slot a card came from.
 
 import type { CardId, GameEvent, GameResult, GameState, Orientation, Pending, Phase, PlayerId, ZoneName, ZoneRef } from '../model/types';
+import { deepClone } from '../core/clone';
 import { isPublicZone } from '../core/zones';
 
 export const HIDDEN = '?';
@@ -76,25 +77,41 @@ function playerView(s: GameState, owner: PlayerId, viewer: PlayerId): PlayerView
   };
 }
 
+/**
+ * A move into a zone the viewer cannot see hides which card it was. That
+ * covers hidden-to-hidden moves (an opponent's draw) and also public-to-hidden
+ * moves, whose order must stay secret (CR 3.1.5.1); the number of moves stays
+ * visible.
+ */
 function redactEvent(e: GameEvent, viewer: PlayerId): GameEvent {
-  if (e.kind === 'move' && !canSee(viewer, e.from) && !canSee(viewer, e.to)) return { ...e, card: HIDDEN };
+  if (e.kind === 'move' && !canSee(viewer, e.to)) return { ...e, card: HIDDEN };
   if (e.kind === 'action' && e.action.type === 'REORDER' && e.action.zone === 'hand' && e.action.player !== viewer) {
     return { ...e, action: { ...e.action, order: [] } };
   }
   return e;
 }
 
+/**
+ * Redacts a list of events for one player. applyAction returns events as the
+ * engine saw them (everything visible); a UI must pass them through here
+ * before showing them.
+ */
+export function projectEvents(events: readonly GameEvent[], viewer: PlayerId): GameEvent[] {
+  return events.map((e) => redactEvent(e, viewer));
+}
+
+/** The game as one player may see it. Returns fresh objects; changing them cannot affect the state. */
 export function projectView(state: GameState, viewer: PlayerId): GameView {
-  const pending = state.pending;
+  const pending = state.pending === null ? null : deepClone(state.pending);
   return {
     viewer,
     turn: state.turn,
     phase: state.phase,
     active: state.active,
     starting: state.starting,
-    result: state.result,
+    result: state.result === null ? null : deepClone(state.result),
     pending: pending === null ? null : pending.player === viewer ? pending : { kind: pending.kind, player: pending.player, redacted: true },
     players: [playerView(state, 0, viewer), playerView(state, 1, viewer)],
-    log: state.log.map((e) => redactEvent(e, viewer)),
+    log: projectEvents(state.log, viewer),
   };
 }

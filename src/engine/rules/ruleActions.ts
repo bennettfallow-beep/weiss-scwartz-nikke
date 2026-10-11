@@ -80,7 +80,8 @@ export function refresh(s: GameState, player: PlayerId): void {
   if (p.deck.length !== 0 || p.waiting.length === 0) throw new EngineFault('refresh is not due');
   log(s, { kind: 'refresh', player });
   for (const card of [...p.waiting]) moveCard(s, card, { player, zone: 'deck' }, 'refresh');
-  const [shuffled, rng] = shuffle(s.rng, p.deck);
+  // Shuffle from a canonical order so reordering the waiting room cannot steer it (CR 3.2.4).
+  const [shuffled, rng] = shuffle(s.rng, [...p.deck].sort());
   p.deck = shuffled;
   s.rng = rng;
   log(s, { kind: 'shuffle', player });

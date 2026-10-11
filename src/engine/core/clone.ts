@@ -23,3 +23,12 @@ export function canonicalJson(value: unknown): string {
   }
   return JSON.stringify(value);
 }
+
+/** Freezes plain data recursively. Used on logged events, which never change once written. */
+export function deepFreeze<T>(value: T): T {
+  if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const v of Object.values(value as Record<string, unknown>)) deepFreeze(v);
+  }
+  return value;
+}

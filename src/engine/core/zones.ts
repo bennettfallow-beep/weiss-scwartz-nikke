@@ -15,6 +15,8 @@ import type {
   ZoneName,
   ZoneRef,
 } from '../model/types';
+import { lookupDef } from '../model/cards';
+import { deepClone, deepFreeze } from './clone';
 import { EngineFault } from './fault';
 
 type ListZone = Exclude<ZoneName, 'stage' | 'climax'>;
@@ -22,13 +24,14 @@ const LIST_ZONES: readonly ListZone[] = ['deck', 'hand', 'waiting', 'clock', 'le
 
 export function log(s: GameState, body: EventBody): void {
   s.seq += 1;
-  s.log.push({ seq: s.seq, turn: s.turn, phase: s.phase, ...body });
+  // Events are frozen: states share them after copying, so nobody may change one.
+  s.log.push(deepFreeze(deepClone({ seq: s.seq, turn: s.turn, phase: s.phase, ...body })));
 }
 
 export function defOf(s: GameState, catalog: CardCatalog, id: CardId): CardDef {
   const inst = s.cards[id];
   if (!inst) throw new EngineFault(`unknown card ${id}`);
-  const def = catalog[inst.def];
+  const def = lookupDef(catalog, inst.def);
   if (!def) throw new EngineFault(`card ${id} has unknown definition ${inst.def}`);
   return def;
 }

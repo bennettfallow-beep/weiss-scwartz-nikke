@@ -3,7 +3,7 @@
 
 Source: Weiss Schwarz (English Edition) Comprehensive Rules v2.10. Statements are paraphrases, not rule text.
 
-Rows: 269 · verified 103 · planned 129 · deferred 33 · out 4
+Rows: 271 · verified 103 · planned 131 · deferred 33 · out 4
 
 ## GEN: Player count and golden rules (CR 1.1, 1.3)
 
@@ -58,6 +58,7 @@ Rows: 269 · verified 103 · planned 129 · deferred 33 · out 4
 | CARD-20 | Title name and Weiss/Schwarz side affiliation (shown by a white, black, or white-to-black gradient side frame) have no rules meaning in themselves, although effects may refer to them. | §2.13.1, §2.13.2, §2.18.1, §2.18.1.1, §2.18.1.2, §2.18.1.3, §2.18.2 | out | none | 0 |
 | CARD-21 | When a rule or effect checks information a card does not have, missing numeric information counts as 0 and missing non-numeric information counts as nonexistent. | §2.19.1 | verified | M1 | 2 |
 | CARD-22 | When two non-numeric values are compared and at least one of them is missing, they are never treated as identical. | §2.19.2 | planned | M3 | 0 |
+| CARD-23 | Imported card data must store the rules name: reading-aid characters printed above the name and struck-through or painted-over parts are dropped before the name is used anywhere. | §2.1.1.1, §2.1.1.2 | planned | M3 | 0 |
 
 ## ZONE: Zones of the game (CR 3)
 
@@ -67,7 +68,7 @@ Rows: 269 · verified 103 · planned 129 · deferred 33 · out 4
 | ZONE-02 | Zones are classed as public or hidden according to whether card information in them is open, but the number of cards in every zone is open information that any player may check at any time. | §3.1.2, §3.1.3 | verified | M1 | 3 |
 | ZONE-03 | Unless stated otherwise, a card that moves to another zone is treated as a brand-new card there and no effects applied to it earlier carry over; a move from one stage position to another is the exception. | §3.1.4 | verified | M1 | 2 |
 | ZONE-04 | When several cards enter a zone together, their owner picks their order in that zone unless stated otherwise. | §3.1.5 | verified | M1 | 3 |
-| ZONE-05 | If cards go from a public zone into a hidden zone and their owner gets to choose the order, no other player may learn that order; however, when cards go to a specific position of a hidden zone, all players may know how many went there. | §3.1.5.1, §3.1.5.1.1 | verified | M1 | 1 |
+| ZONE-05 | If cards go from a public zone into a hidden zone and their owner gets to choose the order, no other player may learn that order; however, when cards go to a specific position of a hidden zone, all players may know how many went there. | §3.1.5.1, §3.1.5.1.1 | verified | M1 | 2 |
 | ZONE-06 | If a card is sent to a zone without saying whose zone it is, and no other instruction applies, it goes to its owner's zone. | §3.1.6 | verified | M1 | 1 |
 | ZONE-07 | The deck, where a player's deck starts the game, is a hidden zone: its cards are face down, and no player may see their information or order or rearrange them. | §3.2.1, §3.2.2 | verified | M1 | 2 |
 | ZONE-08 | When something acts on several cards taken from the deck top or bottom, the cards are handled singly, one after another, in deck order. | §3.2.3 | verified | M1 | 2 |
@@ -76,7 +77,7 @@ Rows: 269 · verified 103 · planned 129 · deferred 33 · out 4
 | ZONE-11 | If the deck holds fewer cards than the action specifies, and cards would still remain in the deck after handling as many cards as it holds (e.g., merely looking at them), the player handles only the cards present and the action ends. | §3.2.3.3 | planned | M3 | 0 |
 | ZONE-12 | Shuffling puts the deck into an unpatterned random order, and the deck's owner always performs the shuffle regardless of who is master of the ability that called for it. | §3.2.4 | verified | M1 | 2 |
 | ZONE-13 | Cards flipped over from the deck are revealed and placed in the resolution zone. | §3.2.5 | planned | M2 | 0 |
-| ZONE-14 | Drawn cards go to the hand, which is hidden from the opponent; its owner may look at and reorder their own hand whenever they like. | §3.3.1, §3.3.2 | verified | M1 | 4 |
+| ZONE-14 | Drawn cards go to the hand, which is hidden from the opponent; its owner may look at and reorder their own hand whenever they like. | §3.3.1, §3.3.2 | verified | M1 | 5 |
 | ZONE-15 | During the turn player's End Phase, if that player's hand holds more cards than the hand limit (seven unless an effect says otherwise), they must put cards from hand into their waiting room until they are at the limit. | §3.3.3, §3.3.3.1 | verified | M1 | 4 |
 | ZONE-16 | Unless stated otherwise, characters removed from the stage, used event and climax cards, and cards paid as costs go to the waiting room. | §3.4.1 | verified | M1 | 2 |
 | ZONE-17 | The waiting room is a public zone with all cards face up and viewable by everyone; each new card goes on top, and a player may reorder their own waiting room. | §3.4.2 | verified | M1 | 2 |
@@ -375,7 +376,8 @@ Rows: 269 · verified 103 · planned 129 · deferred 33 · out 4
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
 | REF-01 | As soon as a player's deck has no cards (an interrupt rule action, but never while a cost is being paid), that player moves their entire waiting room into the deck, shuffles it, and then puts the deck's top card into their clock. | §9.2.1, §9.2.2, §9.2.3, §9.2.4 | verified | M1 | 7 |
-| REF-02 | If the deck empties while the waiting room is also empty, the player loses immediately if they are mid damage process and have no climax in their resolution zone; otherwise the refresh simply ends, and no new refresh happens until the waiting room has cards while the deck is still empty. | §9.2.2.1 | verified | M1 | 2 |
+| REF-02 | If the deck empties while the waiting room is also empty (and no damage process is under way), the refresh simply ends, and no new refresh happens until the waiting room has cards while the deck is still empty. | §9.2.2.1 | verified | M1 | 2 |
+| REF-03 | If the deck becomes empty while the waiting room is also empty in the middle of a damage process, and the resolution zone holds no climax, that player loses on the spot instead of the refresh ending. | §9.2.2.1 | planned | M2 | 0 |
 
 ## LVL: Level up (CR 9.3)
 

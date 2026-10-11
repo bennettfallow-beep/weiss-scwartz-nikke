@@ -1,6 +1,7 @@
 // Structural invariants that must hold in every state the engine returns.
 // Fuzz tests call this after every action.
 
+import { lookupDef } from '../model/cards';
 import { LOSING_LEVEL } from '../rules/ruleActions';
 import type { CardCatalog, GameState } from '../model/types';
 import { allCardIds } from '../core/zones';
@@ -16,7 +17,7 @@ export function checkInvariants(s: GameState, catalog: CardCatalog): string[] {
     if (n !== 1) v.push(`card ${id} is in ${n} zones`);
   }
   for (const id of seen.keys()) if (!s.cards[id]) v.push(`unknown card ${id} in a zone`);
-  for (const inst of Object.values(s.cards)) if (!catalog[inst.def]) v.push(`card ${inst.id} has unknown definition ${inst.def}`);
+  for (const inst of Object.values(s.cards)) if (!lookupDef(catalog, inst.def)) v.push(`card ${inst.id} has unknown definition ${inst.def}`);
 
   // Game over iff a result exists; otherwise someone must have a decision (no soft-lock).
   if ((s.result !== null) !== (s.phase === 'gameOver')) v.push('result and phase disagree about game over');

@@ -1,5 +1,6 @@
 // Deck construction (CR 5.1).
 
+import { lookupDef } from '../model/cards';
 import type { CardCatalog, EngineError } from '../model/types';
 
 export const DECK_SIZE = 50;
@@ -9,7 +10,10 @@ export const MAX_CLIMAX = 8;
 /** Returns every way the deck breaks the construction rules (empty = legal). */
 export function validateDeck(deck: readonly string[], catalog: CardCatalog): EngineError[] {
   const errors: EngineError[] = [];
-  const unknown = [...new Set(deck.filter((id) => !catalog[id]))];
+  if (!Array.isArray(deck) || !deck.every((id) => typeof id === 'string')) {
+    return [{ code: 'DECK_FORMAT', message: 'a deck must be a list of card definition ids' }];
+  }
+  const unknown = [...new Set(deck.filter((id) => !lookupDef(catalog, id)))];
   for (const id of unknown) errors.push({ code: 'DECK_UNKNOWN_CARD', message: `unknown card "${id}"` });
 
   if (deck.length !== DECK_SIZE) {
@@ -20,7 +24,7 @@ export function validateDeck(deck: readonly string[], catalog: CardCatalog): Eng
   const byName = new Map<string, number>();
   let climaxes = 0;
   for (const id of deck) {
-    const def = catalog[id];
+    const def = lookupDef(catalog, id);
     if (!def) continue;
     byName.set(def.name, (byName.get(def.name) ?? 0) + 1);
     if (def.kind === 'climax') climaxes += 1;

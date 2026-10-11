@@ -42,13 +42,20 @@ up (CR 9.1.2.1). That is how a refresh can happen between the two cards of "draw
 | `createGame(setup, catalog)` | Validates decks, shuffles, picks the starting player at random, deals 5, stops at the first mulligan |
 | `legalActions(state, catalog)` | Every legal action for the player being waited on, sorted. Never includes `CONCEDE` or `REORDER` |
 | `validate(state, catalog, action)` | `{ ok }` or `{ ok: false, error: { code, message } }` |
-| `applyAction(state, catalog, action)` | Validates, applies, runs to the next decision. Returns `{ ok, state, events }`. Never mutates its input |
-| `projectView(state, viewer)` | What one player may see: hidden zones as counts only, redacted log |
+| `applyAction(state, catalog, action)` | Validates, applies, runs to the next decision. Returns `{ ok, state, events }`. Never mutates its input. Accepts untrusted input: anything malformed is an error value |
+| `normalizeAction(raw)` | Rebuilds an action from untrusted input, keeping only the fields its type defines |
+| `projectView(state, viewer)` | What one player may see: hidden zones as counts only, redacted log, fresh objects |
+| `projectEvents(events, viewer)` | Redacts events for one player. **The `events` from `applyAction` are unredacted (they include the opponent's draws); always pass them through this before showing them** |
 | `checkInvariants(state, catalog)` | List of broken invariants (empty is good) |
 | `replay(setup, catalog, actions)` / `stateHash(state)` | Determinism |
 
 `CONCEDE` is accepted for either player at any time. `REORDER` lets an owner reorder
 their own hand or waiting room at any time. No other zone can be reordered.
+
+Logged events are frozen. Shuffles start from a canonical order, so neither the decklist
+order nor a waiting-room reorder can steer them (CR 3.2.4). The seed and generator state
+still decide every shuffle, so they must never be shown to players. Save files (M5) must
+keep them out of anything a player can read.
 
 ## Writing rule tests
 

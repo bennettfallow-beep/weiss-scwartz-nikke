@@ -600,6 +600,19 @@
       "notes": "Matters for effects comparing names/traits; e.g., two cards with no traits do not 'share' a trait."
     },
     {
+      "id": "CARD-23",
+      "area": "CARD",
+      "statement": "Imported card data must store the rules name: reading-aid characters printed above the name and struck-through or painted-over parts are dropped before the name is used anywhere.",
+      "sections": [
+        "2.1.1.1",
+        "2.1.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "CARD-01 relies on CardDef.name already being the rules name; the importer is what guarantees it."
+    },
+    {
       "id": "ZONE-01",
       "area": "ZONE",
       "statement": "Unless stated otherwise, each player has their own separate copy of every zone.",
@@ -1095,7 +1108,7 @@
         "src/engine/api/game.ts#validate",
         "src/engine/core/zones.ts#isPublicZone"
       ],
-      "notes": "Cost payment takes cards from the top. Cards normally arrive after a trigger check (ZONE-37)."
+      "notes": "Cost payment takes cards from the top. Cards normally arrive after a trigger check (ZONE-37). M1 has no path that puts cards into stock; re-cite with a real path (trigger check) in M2."
     },
     {
       "id": "ZONE-32",
@@ -1238,7 +1251,7 @@
         "src/engine/api/game.ts#validate",
         "src/engine/core/zones.ts#moveCard"
       ],
-      "notes": ""
+      "notes": " Resolution-zone ordering gets a real multi-card path in M2 (damage); re-cite then."
     },
     {
       "id": "CONC-01",
@@ -2423,7 +2436,7 @@
         "src/engine/rules/flow.ts#execTask",
         "src/engine/rules/ruleActions.ts#checkTiming"
       ],
-      "notes": "Starting over means 6.8.1.1 runs again. Infinite end-phase loops are deferred."
+      "notes": "Starting over means 6.8.1.1 runs again. Infinite end-phase loops are deferred. Open for M3: restarting the End Phase re-meets the turn-end trigger condition; check against CR 6.8.1.5 whether abilities that already resolved this end phase may trigger again."
     },
     {
       "id": "TSTEP-01",
@@ -3376,7 +3389,7 @@
     {
       "id": "REF-02",
       "area": "REF",
-      "statement": "If the deck empties while the waiting room is also empty, the player loses immediately if they are mid damage process and have no climax in their resolution zone; otherwise the refresh simply ends, and no new refresh happens until the waiting room has cards while the deck is still empty.",
+      "statement": "If the deck empties while the waiting room is also empty (and no damage process is under way), the refresh simply ends, and no new refresh happens until the waiting room has cards while the deck is still empty.",
       "sections": [
         "9.2.2.1"
       ],
@@ -3385,7 +3398,19 @@
       "impl": [
         "src/engine/rules/ruleActions.ts#dueInterrupts"
       ],
-      "notes": "The damage-process branch only becomes reachable in M2. Separately, VERD-02 makes a player with empty deck and waiting room lose at the next check timing."
+      "notes": "The immediate-loss branch during a damage process is REF-03 (M2). Separately, VERD-02 makes a player with empty deck and waiting room lose at the next check timing."
+    },
+    {
+      "id": "REF-03",
+      "area": "REF",
+      "statement": "If the deck becomes empty while the waiting room is also empty in the middle of a damage process, and the resolution zone holds no climax, that player loses on the spot instead of the refresh ending.",
+      "sections": [
+        "9.2.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Unlike VERD-02 this loss does not wait for a check timing. Reachable only once damage exists (M2)."
     },
     {
       "id": "LVL-01",

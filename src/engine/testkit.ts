@@ -5,6 +5,7 @@ import { applyAction, blankState, instanceId } from './api/game';
 import { deepClone } from './core/clone';
 import { EngineFault } from './core/fault';
 import { locate, moveCard } from './core/zones';
+import { lookupDef } from './model/cards';
 import { drawOne, queueDraws, run } from './rules/flow';
 import { SLOTS } from './model/types';
 import type { Action, CardCatalog, CardId, GameState, Orientation, PlayerId, Slot, TurnPhase, ZoneName } from './model/types';
@@ -52,7 +53,7 @@ export function makeState(catalog: CardCatalog, spec: ScenarioSpec): GameState {
     const p = s.players[player];
     let n = 0;
     const make = (def: string): CardId => {
-      if (!catalog[def]) throw new EngineFault(`makeState: unknown card definition ${def}`);
+      if (!lookupDef(catalog, def)) throw new EngineFault(`makeState: unknown card definition ${def}`);
       const id = instanceId(player, n++);
       s.cards[id] = { id, def, owner: player, epoch: 0 };
       return id;

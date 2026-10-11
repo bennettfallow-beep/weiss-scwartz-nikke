@@ -3,6 +3,14 @@
 import { CARD_KINDS, COLORS } from './types';
 import type { CardCatalog, CardDef, EngineError } from './types';
 
+/**
+ * Looks up a definition by id. Uses an own-property check so names like
+ * "toString" or "__proto__" never count as cards.
+ */
+export function lookupDef(catalog: CardCatalog, id: string): CardDef | undefined {
+  return Object.hasOwn(catalog, id) ? catalog[id] : undefined;
+}
+
 /** CR 2.19.1: missing numeric information reads as 0 (e.g. a climax's level). */
 export function levelOf(def: CardDef): number {
   return def.level ?? 0;

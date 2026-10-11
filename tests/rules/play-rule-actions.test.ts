@@ -240,8 +240,8 @@ describe('PLAY: playing cards from hand', () => {
       expect(stageDefs(after, 1), `slot ${slot}`).toEqual(stageDefs(s, 1));
     }
     // There is no position outside 1-5, and no character play without a position.
-    for (const slot of [0, 6, 1.5]) expect(attempt(s, { type: 'PLAY_CHARACTER', player: 0, card, slot })).toBe('ILLEGAL_ACTION');
-    expect(attempt(s, { type: 'PLAY_CHARACTER', player: 0, card })).toBe('ILLEGAL_ACTION');
+    for (const slot of [0, 6, 1.5]) expect(attempt(s, { type: 'PLAY_CHARACTER', player: 0, card, slot })).toBe('BAD_SLOT');
+    expect(attempt(s, { type: 'PLAY_CHARACTER', player: 0, card })).toBe('BAD_SLOT');
   });
 
   it('[PLAY-03] an event needs no position: it is offered as a single play', () => {

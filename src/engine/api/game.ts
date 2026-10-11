@@ -1,11 +1,12 @@
 // Public engine API. Every function is pure: inputs are never modified, and
 // illegal input comes back as an error value instead of an exception.
 
-import { validateCatalog } from '../model/cards';
+import { lookupDef, validateCatalog } from '../model/cards';
 import { other, SLOTS } from '../model/types';
 import type {
   Action,
   CardCatalog,
+  Slot,
   CardId,
   EngineError,
   GameEvent,
@@ -76,7 +77,9 @@ export function blankState(seed: string): GameState {
  * the starting player's mulligan decision.
  */
 export function createGame(setup: GameSetup, catalog: CardCatalog): CreateResult {
-  const decks = (setup as { decks?: unknown }).decks;
+  const raw = (typeof setup === 'object' && setup !== null ? setup : {}) as { decks?: unknown; seed?: unknown };
+  if (typeof raw.seed !== 'string') return { ok: false, errors: [{ code: 'BAD_SEED', message: 'seed must be a string' }] };
+  const decks = raw.decks;
   if (!Array.isArray(decks) || decks.length !== 2) {
     return { ok: false, errors: [{ code: 'TWO_PLAYERS', message: 'a game has exactly two players, so exactly two decks' }] };
   }
@@ -92,7 +95,13 @@ export function createGame(setup: GameSetup, catalog: CardCatalog): CreateResult
       s.cards[id] = { id, def, owner: player, epoch: 0 };
       s.players[player].deck.push(id);
     });
-    const [shuffled, rng] = shuffle(s.rng, s.players[player].deck);
+    // Shuffle from a canonical order so the decklist order cannot steer the result (CR 3.2.4).
+    const canonical = [...s.players[player].deck].sort((a, b) => {
+      const da = s.cards[a]?.def ?? '';
+      const db = s.cards[b]?.def ?? '';
+      return da < db ? -1 : da > db ? 1 : a < b ? -1 : a > b ? 1 : 0;
+    });
+    const [shuffled, rng] = shuffle(s.rng, canonical);
     s.players[player].deck = shuffled;
     s.rng = rng;
     log(s, { kind: 'shuffle', player });
@@ -164,7 +173,7 @@ export function legalActions(state: GameState, catalog: CardCatalog, player?: Pl
       actions.push({ type: 'PASS', player: p });
       for (const card of ps.hand) {
         if (!canPlayFromHand(state, catalog, p, card, pending.window)) continue;
-        const kind = catalog[state.cards[card]?.def ?? '']?.kind;
+        const kind = lookupDef(catalog, state.cards[card]?.def ?? '')?.kind;
         if (kind === 'character') for (const slot of SLOTS) actions.push({ type: 'PLAY_CHARACTER', player: p, card, slot });
         else if (kind === 'event') actions.push({ type: 'PLAY_EVENT', player: p, card });
         else if (kind === 'climax') actions.push({ type: 'PLAY_CLIMAX', player: p, card });
@@ -194,30 +203,99 @@ export function legalActions(state: GameState, catalog: CardCatalog, player?: Pl
 function isPlayer(x: unknown): x is PlayerId {
   return x === 0 || x === 1;
 }
+const isString = (x: unknown): x is string => typeof x === 'string';
+const isStringArray = (x: unknown): x is string[] => Array.isArray(x) && x.every(isString);
+const isSlot = (x: unknown): x is Slot => x === 1 || x === 2 || x === 3 || x === 4 || x === 5;
 
-export function validate(state: GameState, catalog: CardCatalog, action: Action): ValidateResult {
-  const fail = (code: string, message: string): ValidateResult => ({ ok: false, error: { code, message } });
-  if (state.result) return fail('GAME_OVER', 'the game is over');
-  if (typeof action !== 'object' || action === null || typeof (action as { type?: unknown }).type !== 'string') {
-    return fail('BAD_ACTION', 'not an action');
+type Checked = { ok: true; action: Action } | { ok: false; error: EngineError };
+const bad = (code: string, message: string): { ok: false; error: EngineError } => ({ ok: false, error: { code, message } });
+
+/**
+ * Rebuilds an action from untrusted input, keeping only the fields its type
+ * defines and checking their types. Anything malformed is an error value.
+ */
+export function normalizeAction(raw: unknown): Checked {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return bad('BAD_ACTION', 'not an action');
+  const r = raw as Record<string, unknown>;
+  const player = r.player;
+  if (!isPlayer(player)) return bad('BAD_PLAYER', 'player must be 0 or 1');
+  const card = (): Checked | string => (isString(r.card) ? r.card : bad('BAD_ACTION', `${String(r.type)} needs a card id`));
+  switch (r.type) {
+    case 'PASS':
+    case 'CONCEDE':
+      return { ok: true, action: { type: r.type, player } };
+    case 'MULLIGAN':
+      return isStringArray(r.discard) ? { ok: true, action: { type: 'MULLIGAN', player, discard: [...r.discard] } } : bad('BAD_ACTION', 'discard must be a list of card ids');
+    case 'DISCARD':
+      return isStringArray(r.cards) ? { ok: true, action: { type: 'DISCARD', player, cards: [...r.cards] } } : bad('BAD_ACTION', 'cards must be a list of card ids');
+    case 'CLOCK':
+      return r.card === null || isString(r.card) ? { ok: true, action: { type: 'CLOCK', player, card: r.card } } : bad('BAD_ACTION', 'card must be a card id or null');
+    case 'PLAY_CHARACTER': {
+      const c = card();
+      if (!isString(c)) return c;
+      return isSlot(r.slot) ? { ok: true, action: { type: 'PLAY_CHARACTER', player, card: c, slot: r.slot } } : bad('BAD_SLOT', 'slot must be 1-5');
+    }
+    case 'PLAY_EVENT':
+    case 'PLAY_CLIMAX':
+    case 'LEVEL_UP': {
+      const c = card();
+      return isString(c) ? { ok: true, action: { type: r.type, player, card: c } } : c;
+    }
+    case 'SWAP':
+      return isSlot(r.a) && isSlot(r.b) ? { ok: true, action: { type: 'SWAP', player, a: r.a, b: r.b } } : bad('BAD_SLOT', 'a and b must be slots 1-5');
+    case 'CHOOSE_INTERRUPT':
+      return r.interrupt === 'refresh' || r.interrupt === 'levelUp'
+        ? { ok: true, action: { type: 'CHOOSE_INTERRUPT', player, interrupt: r.interrupt } }
+        : bad('BAD_ACTION', 'interrupt must be refresh or levelUp');
+    case 'REORDER':
+      if (r.zone !== 'hand' && r.zone !== 'waiting') return bad('NOT_REORDERABLE', `players may not reorder the ${String(r.zone)}`);
+      return isStringArray(r.order) ? { ok: true, action: { type: 'REORDER', player, zone: r.zone, order: [...r.order] } } : bad('BAD_REORDER', 'order must be a list of card ids');
+    default:
+      return bad('BAD_ACTION', `unknown action type ${String(r.type)}`);
   }
-  if (!isPlayer(action.player)) return fail('BAD_PLAYER', 'player must be 0 or 1');
-  if (action.type === 'CONCEDE') return { ok: true };
+}
+
+/** True if `ids` are distinct and every one is in `pool`. */
+function distinctFrom(ids: readonly string[], pool: readonly string[]): boolean {
+  const set = new Set(ids);
+  return set.size === ids.length && ids.every((id) => pool.includes(id));
+}
+
+function check(state: GameState, catalog: CardCatalog, raw: unknown): Checked {
+  if (state.result) return bad('GAME_OVER', 'the game is over');
+  const n = normalizeAction(raw);
+  if (!n.ok) return n;
+  const action = n.action;
+  if (action.type === 'CONCEDE') return n;
   if (action.type === 'REORDER') {
-    const zone = action.zone as string;
-    if (zone !== 'hand' && zone !== 'waiting') return fail('NOT_REORDERABLE', `players may not reorder the ${zone}`);
+    // CR 3.3.2 / 3.4.2: the same cards, only in a new order.
     const current = state.players[action.player][action.zone];
-    const same = Array.isArray(action.order) && action.order.length === current.length && [...action.order].sort().join() === [...current].sort().join();
-    if (!same) return fail('BAD_REORDER', 'the new order must contain exactly the cards already there');
-    return { ok: true };
+    const ok = action.order.length === current.length && distinctFrom(action.order, current);
+    return ok ? n : bad('BAD_REORDER', 'the new order must contain exactly the cards already there');
   }
   const pending = state.pending;
-  if (!pending || pending.player !== action.player) return fail('NOT_YOUR_DECISION', `player ${action.player} has no decision to make`);
+  if (!pending || pending.player !== action.player) return bad('NOT_YOUR_DECISION', `player ${action.player} has no decision to make`);
+  const hand = state.players[action.player].hand;
+  // Set-valued choices are checked by structure, not by listing every subset.
+  if (action.type === 'MULLIGAN') {
+    return pending.kind === 'mulligan' && distinctFrom(action.discard, hand) ? n : bad('ILLEGAL_ACTION', 'a mulligan discards distinct cards from your hand');
+  }
+  if (action.type === 'DISCARD') {
+    return pending.kind === 'discard' && action.cards.length === pending.count && distinctFrom(action.cards, hand)
+      ? n
+      : bad('ILLEGAL_ACTION', `discard exactly ${pending.kind === 'discard' ? pending.count : 0} distinct cards from your hand`);
+  }
   const key = actionKey(action);
   if (!legalActions(state, catalog).some((a) => actionKey(a) === key)) {
-    return fail('ILLEGAL_ACTION', `${action.type} is not legal now (waiting on ${pending.kind})`);
+    return bad('ILLEGAL_ACTION', `${action.type} is not legal now (waiting on ${pending.kind})`);
   }
-  return { ok: true };
+  return n;
+}
+
+/** Checks an action without applying it. Accepts untrusted input; never throws on bad input. */
+export function validate(state: GameState, catalog: CardCatalog, action: Action): ValidateResult {
+  const c = check(state, catalog, action);
+  return c.ok ? { ok: true } : c;
 }
 
 /**
@@ -231,11 +309,11 @@ export function cloneState(state: GameState): GameState {
 
 /** Validates and applies one action, then runs the game to its next decision. */
 export function applyAction(state: GameState, catalog: CardCatalog, action: Action): ApplyResult {
-  const v = validate(state, catalog, action);
-  if (!v.ok) return v;
+  const c = check(state, catalog, action);
+  if (!c.ok) return c;
   const s = cloneState(state);
   const before = s.log.length;
-  perform(s, catalog, deepClone(action));
+  perform(s, catalog, c.action);
   run(s, catalog);
   return { ok: true, state: s, events: s.log.slice(before) };
 }
