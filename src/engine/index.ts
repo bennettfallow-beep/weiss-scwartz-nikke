@@ -4,6 +4,30 @@
 export { hashSeed, nextInt, nextUint32, seedRng, shuffle } from './core/rng';
 export type { RngState } from './core/rng';
 
+export * from './model/types';
+export { costOf, levelOf, powerOf, soulOf, validateCatalog } from './model/cards';
+export { BACK_STAGE, behind, CENTER_STAGE, facing, inFrontOf, isCenter } from './model/stage';
+export { DECK_SIZE, MAX_CLIMAX, MAX_COPIES_PER_NAME, validateDeck } from './rules/deck';
+export { HAND_LIMIT, LEVEL_UP_AT, LOSING_LEVEL } from './rules/ruleActions';
+export { canAfford, canPlayFromHand, meetsColor, meetsLevel } from './rules/play';
+export { masterOf, locate, isPublicZone } from './core/zones';
+export { EngineFault } from './core/fault';
+export {
+  actionKey,
+  actor,
+  applyAction,
+  createGame,
+  legalActions,
+  OPENING_HAND,
+  replay,
+  stateHash,
+  validate,
+} from './api/game';
+export type { ApplyResult, CreateResult, ReplayResult, ValidateResult } from './api/game';
+export { canSee, HIDDEN, projectView } from './api/view';
+export type { GameView, PendingView, PlayerView, VisibleCard, VisibleStageCard } from './api/view';
+export { checkInvariants } from './api/invariants';
+
 /** The rules document this engine implements. See docs/RULES_SOURCE.md. */
 export const RULES_SOURCE = {
   document: 'Weiss Schwarz (English Edition) Comprehensive Rules',

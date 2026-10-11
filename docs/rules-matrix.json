@@ -144,9 +144,9 @@
         "1.3.5"
       ],
       "status": "planned",
-      "milestone": "M1",
+      "milestone": "M3",
       "impl": [],
-      "notes": "Validate all numeric choices as non-negative integers by default."
+      "notes": "No M1 rule asks a player to choose a number; numeric choices arrive with card effects in M3. Validate all numeric choices as non-negative integers by default."
     },
     {
       "id": "WIN-01",

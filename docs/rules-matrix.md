@@ -17,7 +17,7 @@ Rows: 269 · verified 0 · planned 232 · deferred 33 · out 4
 | GEN-06 | An action required to be done zero or a negative number of times is not done at all, and a negative count never causes the opposite action to happen. | §1.3.2.2 | planned | M1 | 0 |
 | GEN-07 | When one card effect tries to perform an action while another card effect at the same time prevents that action, the preventing effect wins. | §1.3.3 | planned | M3 | 0 |
 | GEN-08 | When both players must make decisions at the same moment, the turn player decides first, and the non-turn player then decides with knowledge of the turn player's choice. | §1.3.4 | planned | M1 | 0 |
-| GEN-09 | When a player must pick a number, it must be zero or a positive whole number unless stated otherwise; fractions and negative values are not allowed. | §1.3.5 | planned | M1 | 0 |
+| GEN-09 | When a player must pick a number, it must be zero or a positive whole number unless stated otherwise; fractions and negative values are not allowed. | §1.3.5 | planned | M3 | 0 |
 
 ## WIN: Winning, losing, draws, conceding (CR 1.2)
 
