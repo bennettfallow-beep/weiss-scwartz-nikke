@@ -1,0 +1,3516 @@
+{
+  "source": {
+    "document": "Weiss Schwarz (English Edition) Comprehensive Rules",
+    "version": "2.10",
+    "pdfSha256": "22ba30c0eae920dd36dcdd3e0fef13a84f1992235edf59351f0c6a66492d026a"
+  },
+  "areas": {
+    "GEN": "Player count and golden rules (CR 1.1, 1.3)",
+    "WIN": "Winning, losing, draws, conceding (CR 1.2)",
+    "CARD": "Card information (CR 2)",
+    "ZONE": "Zones of the game (CR 3)",
+    "CONC": "Basic concepts (CR 4.1-4.9)",
+    "DMG": "Damage process and source of damage (CR 4.10-4.11)",
+    "TRG": "Trigger icons (CR 4.12)",
+    "DECK": "Deck construction (CR 5.1)",
+    "SETUP": "Game preparation (CR 5.2)",
+    "TURN": "Turn procedure (CR 6.1)",
+    "STAND": "Stand phase (CR 6.2)",
+    "DRAW": "Draw phase (CR 6.3)",
+    "CLOCK": "Clock phase (CR 6.4)",
+    "MAIN": "Main phase (CR 6.5)",
+    "CLIMAX": "Climax phase (CR 6.6)",
+    "END": "End phase (CR 6.8)",
+    "ATK": "Attack phase and attack declaration (CR 6.7, 7.1-7.2)",
+    "TSTEP": "Trigger step (CR 7.3)",
+    "CTR": "Counter step (CR 7.4)",
+    "DSTEP": "Damage step (CR 7.5)",
+    "BTL": "Battle step (CR 7.6)",
+    "ENC": "Encore step (CR 7.7)",
+    "ABL": "Abilities, effects and timing (CR 8.1-8.3, 8.5, 8.7-8.12)",
+    "COST": "Costs (CR 8.4)",
+    "PLAY": "Playing and resolving cards (CR 8.6)",
+    "RULE": "Rule action types (CR 9.1)",
+    "REF": "Refresh (CR 9.2)",
+    "LVL": "Level up (CR 9.3)",
+    "VERD": "Losing verdict (CR 9.4)",
+    "PWR": "Insufficient power (CR 9.5)",
+    "ILL": "Illegal cards and unaffiliated markers (CR 9.6-9.7)",
+    "KW": "Keywords and keyword abilities (CR 10)",
+    "MISC": "Miscellaneous (CR 11)"
+  },
+  "rows": [
+    {
+      "id": "GEN-01",
+      "area": "GEN",
+      "statement": "A game has exactly two players; the comprehensive rules make no provision for any other player count.",
+      "sections": [
+        "1.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Engine state models exactly two seats. Any more-than-2-player variant is out of scope."
+    },
+    {
+      "id": "GEN-02",
+      "area": "GEN",
+      "statement": "Where a card's text and the comprehensive rules disagree, the card's text governs.",
+      "sections": [
+        "1.3.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Only testable once card abilities exist (M3), but M1 rule checks (hand limit, play restrictions, costs, etc.) should be built so effects can override them."
+    },
+    {
+      "id": "GEN-03",
+      "area": "GEN",
+      "statement": "If the English Edition and Japanese Edition text of a card conflict, each player is governed by the card text in their own language edition.",
+      "sections": [
+        "1.3.1.1"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "English-vs-Japanese text conflicts are deferred; v1 uses a single canonical text per card."
+    },
+    {
+      "id": "GEN-04",
+      "area": "GEN",
+      "statement": "A player told to do something impossible simply does nothing; a player told to do several things of which only some are possible does as many of them as they can.",
+      "sections": [
+        "1.3.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Applies to rule-driven and effect-driven actions alike (e.g., drawing, moving, or discarding more cards than exist)."
+    },
+    {
+      "id": "GEN-05",
+      "area": "GEN",
+      "statement": "An instruction to put something into a state it is already in (e.g., resting an already-rested character) has no effect: the thing does not newly enter that state and the action counts as not performed.",
+      "sections": [
+        "1.3.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Matters for costs, 'if you did' clauses (M3), and triggers that fire on a state change: none should fire or count as satisfied."
+    },
+    {
+      "id": "GEN-06",
+      "area": "GEN",
+      "statement": "An action required to be done zero or a negative number of times is not done at all, and a negative count never causes the opposite action to happen.",
+      "sections": [
+        "1.3.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "E.g., 'draw -1' does nothing; it does not put a card back. Clamp computed counts at 0."
+    },
+    {
+      "id": "GEN-07",
+      "area": "GEN",
+      "statement": "When one card effect tries to perform an action while another card effect at the same time prevents that action, the preventing effect wins.",
+      "sections": [
+        "1.3.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Prohibition effects must be checked before any action an effect attempts."
+    },
+    {
+      "id": "GEN-08",
+      "area": "GEN",
+      "statement": "When both players must make decisions at the same moment, the turn player decides first, and the non-turn player then decides with knowledge of the turn player's choice.",
+      "sections": [
+        "1.3.4"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Engine needs a decision-ordering primitive: queue the turn player's prompt first and expose its result to the non-turn player's prompt."
+    },
+    {
+      "id": "GEN-09",
+      "area": "GEN",
+      "statement": "When a player must pick a number, it must be zero or a positive whole number unless stated otherwise; fractions and negative values are not allowed.",
+      "sections": [
+        "1.3.5"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Validate all numeric choices as non-negative integers by default."
+    },
+    {
+      "id": "WIN-01",
+      "area": "WIN",
+      "statement": "The moment any player loses, the game ends at once; a player wins when their opponent has lost and they themselves have not.",
+      "sections": [
+        "1.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "If both lose together the result is a draw (WIN-05), not a win for either."
+    },
+    {
+      "id": "WIN-02",
+      "area": "WIN",
+      "statement": "Meeting a losing condition does not end the game on the spot; the player loses through a rule action the next time rule actions are processed.",
+      "sections": [
+        "1.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Ties into Section 9 (losing verdict is a check-type rule action, 9.4). Contrast with conceding (WIN-06) and effect-driven wins/losses (WIN-08), which skip the check timing."
+    },
+    {
+      "id": "WIN-03",
+      "area": "WIN",
+      "statement": "A player who has four or more cards in their level zone meets a losing condition.",
+      "sections": [
+        "1.2.2.1",
+        "3.9.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Enforced via the rule-action losing verdict (9.4.1.1)."
+    },
+    {
+      "id": "WIN-04",
+      "area": "WIN",
+      "statement": "A player who has no cards in their deck and also no cards in their waiting room meets a losing condition.",
+      "sections": [
+        "1.2.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Both zones must be empty; an empty deck alone leads to refresh (9.2) instead. See 9.2.2.1 for the special immediate-loss case during a damage process."
+    },
+    {
+      "id": "WIN-05",
+      "area": "WIN",
+      "statement": "If both players lose at the same time, the game ends as a draw.",
+      "sections": [
+        "1.2.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "E.g., both players meet losing conditions and are judged in the same rule-action pass."
+    },
+    {
+      "id": "WIN-06",
+      "area": "WIN",
+      "statement": "A player may concede at any moment; conceding removes them from the game, makes them lose immediately without going through a check timing, and ends the game.",
+      "sections": [
+        "1.2.4"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Concede must be accepted as an input at any decision point or while waiting."
+    },
+    {
+      "id": "WIN-07",
+      "area": "WIN",
+      "statement": "Card effects cannot prevent or interfere with a concession, cannot compel a player to concede, and cannot turn a game loss into a concession.",
+      "sections": [
+        "1.2.4.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Concede handling must bypass all effect hooks. The 'replace a loss with a concession' clause concerns replacement effects, which are deferred in v1."
+    },
+    {
+      "id": "WIN-08",
+      "area": "WIN",
+      "statement": "When a card effect makes a player win or lose, that result happens during the effect's resolution and the game ends right then, without waiting for a check timing.",
+      "sections": [
+        "1.2.5"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Unlike losing conditions (WIN-02), no rule-action pass is needed."
+    },
+    {
+      "id": "CARD-01",
+      "area": "CARD",
+      "statement": "A card's name identifies it; small reading-aid characters printed above the name, and any portions that are struck through or painted over, are not part of the name and are ignored whenever names are referenced.",
+      "sections": [
+        "2.1.1",
+        "2.1.1.1",
+        "2.1.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Card database should store the rules-relevant name with those portions removed; used for deck construction limits and for name references by effects."
+    },
+    {
+      "id": "CARD-02",
+      "area": "CARD",
+      "statement": "Some cards have no Japanese card name because they did not yet exist in the Japanese Edition when the English product was first printed.",
+      "sections": [
+        "2.1.1.3"
+      ],
+      "status": "out",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Japanese card name is out of scope for v1. If ever referenced, a missing Japanese name is treated as nonexistent (2.19.1). The Japanese name is only rules-relevant for bilingual partial-name matching (CARD-04, deferred)."
+    },
+    {
+      "id": "CARD-03",
+      "area": "CARD",
+      "statement": "A name written in quotation marks inside card text refers, unless stated otherwise, to a card bearing exactly that name.",
+      "sections": [
+        "2.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Exact-match comparison against the canonical name. Partial-name matching is CARD-04 (deferred)."
+    },
+    {
+      "id": "CARD-04",
+      "area": "CARD",
+      "statement": "Text of the form 'with \"X\" in its card name' matches cards whose name contains X as a portion: the bilingual form matches a part of the English name together with a part of the Japanese name, and the English-only form requires X to be bounded on each side by a punctuation mark or by nothing (start/end of the name).",
+      "sections": [
+        "2.1.2.1",
+        "2.1.2.2"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Card-name partial matching is deferred. CR example: \"MOB\" matches 'Ritsu: Together With MOB', 'MOB: Gratitude Towards His Master' and 'Shigeo \"MOB\" Kageyama' but not 'Moblit' (so a space also counts as a valid boundary)."
+    },
+    {
+      "id": "CARD-05",
+      "area": "CARD",
+      "statement": "The illustration (including any flavor text printed above the card text), reminder text, collection ID, rarity, illustrator, and copyright information have no effect on gameplay.",
+      "sections": [
+        "2.2.1",
+        "2.2.2",
+        "2.2.3",
+        "2.12.3",
+        "2.14.1",
+        "2.14.2",
+        "2.15.1",
+        "2.15.2",
+        "2.16.1",
+        "2.16.2",
+        "2.17.1",
+        "2.17.2"
+      ],
+      "status": "out",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Flavor text counts as part of the illustration. Reminder text is technically part of the card text but only explains keywords; the engine must not parse it."
+    },
+    {
+      "id": "CARD-06",
+      "area": "CARD",
+      "statement": "Every card is exactly one of three types: character, event, or climax.",
+      "sections": [
+        "2.3.1",
+        "2.3.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Type drives which zones a card may legally occupy (ZONE-23, ZONE-33) and how it is played."
+    },
+    {
+      "id": "CARD-07",
+      "area": "CARD",
+      "statement": "When card text says 'character' without naming a zone, it means a character on the stage.",
+      "sections": [
+        "2.3.2.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Default zone scope for effect targeting and counting."
+    },
+    {
+      "id": "CARD-08",
+      "area": "CARD",
+      "statement": "When card text says 'climax' (which may be abbreviated 'CX') without naming a zone, it means a climax card placed in the climax area.",
+      "sections": [
+        "2.3.2.3.2",
+        "2.3.2.3.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Default zone scope for effect targeting and counting."
+    },
+    {
+      "id": "CARD-09",
+      "area": "CARD",
+      "statement": "Each card has a color, and its color restricts whether the card may be played, as set out in Section 8.",
+      "sections": [
+        "2.4.1",
+        "2.4.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "The color requirement itself is enforced per Section 8 rows."
+    },
+    {
+      "id": "CARD-10",
+      "area": "CARD",
+      "statement": "Traits exist only on characters; they have no rules effect of their own but abilities and effects may refer to them, marked with double angle brackets.",
+      "sections": [
+        "2.5.1",
+        "2.5.2",
+        "2.5.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Store traits as a list on character cards; used for effect filters."
+    },
+    {
+      "id": "CARD-11",
+      "area": "CARD",
+      "statement": "Level exists only on characters and events and is the minimum player level required to play that card, as governed by Section 8.",
+      "sections": [
+        "2.6.1",
+        "2.6.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Climaxes have no level; when referenced it counts as 0 (CARD-21)."
+    },
+    {
+      "id": "CARD-12",
+      "area": "CARD",
+      "statement": "Cost exists only on characters and events; to play the card, that many cards must be moved from the player's stock to their waiting room.",
+      "sections": [
+        "2.7.1",
+        "2.7.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Payment details are in Section 8. Stock cards are removed from the top (ZONE-31)."
+    },
+    {
+      "id": "CARD-13",
+      "area": "CARD",
+      "statement": "A card with the Counter icon may be played during the Counter Step of the opponent's turn.",
+      "sections": [
+        "2.8.1",
+        "2.8.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Counter-step play belongs to the attack/battle milestone."
+    },
+    {
+      "id": "CARD-14",
+      "area": "CARD",
+      "statement": "Unless stated otherwise, a card with the Counter icon may also be played during its owner's own main phase.",
+      "sections": [
+        "2.8.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Main-phase play of counter cards uses ordinary play rules (level, color, cost)."
+    },
+    {
+      "id": "CARD-15",
+      "area": "CARD",
+      "statement": "A card with the Clock icon has an ability that is relevant while the card is in the clock.",
+      "sections": [
+        "2.8.3"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Clock icon is deferred in v1."
+    },
+    {
+      "id": "CARD-16",
+      "area": "CARD",
+      "statement": "Power exists only on characters and is the character's strength in battle.",
+      "sections": [
+        "2.9.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Battle comparison is M2. Power must still be stored in M1 for the power-at-or-below-0 rule action (9.5). Non-characters count as 0 power when referenced (CARD-21)."
+    },
+    {
+      "id": "CARD-17",
+      "area": "CARD",
+      "statement": "Soul exists only on characters and is the base amount of damage the character deals in its battle; it is shown by the number of soul icons rather than as a printed number.",
+      "sections": [
+        "2.10.1",
+        "2.10.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Card data must convert soul-icon count to an integer. Non-characters count as 0 soul when referenced (CARD-21)."
+    },
+    {
+      "id": "CARD-18",
+      "area": "CARD",
+      "statement": "A card's trigger icon(s) determine what happens when that card is revealed in the Trigger Step of an attack.",
+      "sections": [
+        "2.11.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "A card may carry zero, one, or several trigger icons; icon behaviors are defined in Section 7 rows."
+    },
+    {
+      "id": "CARD-19",
+      "area": "CARD",
+      "statement": "Unless stated otherwise, a character's card text works only while it is on the stage and a climax's card text works only while it is in the climax area; however, an ability that by its nature is meant to be used in some other zone works in that zone.",
+      "sections": [
+        "2.12.1",
+        "2.12.2",
+        "2.12.2.1",
+        "2.12.2.2",
+        "2.12.2.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Ability registration must be zone-aware. Example of the exception: Backup is used from hand during the counter step."
+    },
+    {
+      "id": "CARD-20",
+      "area": "CARD",
+      "statement": "Title name and Weiss/Schwarz side affiliation (shown by a white, black, or white-to-black gradient side frame) have no rules meaning in themselves, although effects may refer to them.",
+      "sections": [
+        "2.13.1",
+        "2.13.2",
+        "2.18.1",
+        "2.18.1.1",
+        "2.18.1.2",
+        "2.18.1.3",
+        "2.18.2"
+      ],
+      "status": "out",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Out for v1. If a supported card's effect ever references title or side, revisit (a gradient frame counts as both sides)."
+    },
+    {
+      "id": "CARD-21",
+      "area": "CARD",
+      "statement": "When a rule or effect checks information a card does not have, missing numeric information counts as 0 and missing non-numeric information counts as nonexistent.",
+      "sections": [
+        "2.19.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "E.g., a climax's level, cost, power, and soul read as 0."
+    },
+    {
+      "id": "CARD-22",
+      "area": "CARD",
+      "statement": "When two non-numeric values are compared and at least one of them is missing, they are never treated as identical.",
+      "sections": [
+        "2.19.2"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Matters for effects comparing names/traits; e.g., two cards with no traits do not 'share' a trait."
+    },
+    {
+      "id": "ZONE-01",
+      "area": "ZONE",
+      "statement": "Unless stated otherwise, each player has their own separate copy of every zone.",
+      "sections": [
+        "3.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "ZONE-02",
+      "area": "ZONE",
+      "statement": "Zones are classed as public or hidden according to whether card information in them is open, but the number of cards in every zone is open information that any player may check at any time.",
+      "sections": [
+        "3.1.2",
+        "3.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Player views must expose counts for every zone, including hidden ones."
+    },
+    {
+      "id": "ZONE-03",
+      "area": "ZONE",
+      "statement": "Unless stated otherwise, a card that moves to another zone is treated as a brand-new card there and no effects applied to it earlier carry over; a move from one stage position to another is the exception.",
+      "sections": [
+        "3.1.4"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Give a card a new object identity on each zone change; keep identity (and applied effects) on stage-position moves."
+    },
+    {
+      "id": "ZONE-04",
+      "area": "ZONE",
+      "statement": "When several cards enter a zone together, their owner picks their order in that zone unless stated otherwise.",
+      "sections": [
+        "3.1.5"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "E.g., multiple damage or effect-moved cards; contrast ZONE-39 where the order is fixed."
+    },
+    {
+      "id": "ZONE-05",
+      "area": "ZONE",
+      "statement": "If cards go from a public zone into a hidden zone and their owner gets to choose the order, no other player may learn that order; however, when cards go to a specific position of a hidden zone, all players may know how many went there.",
+      "sections": [
+        "3.1.5.1",
+        "3.1.5.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "E.g., cards put on top or bottom of a deck: opponent sees the count but not the order."
+    },
+    {
+      "id": "ZONE-06",
+      "area": "ZONE",
+      "statement": "If a card is sent to a zone without saying whose zone it is, and no other instruction applies, it goes to its owner's zone.",
+      "sections": [
+        "3.1.6"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Owner, not current master, determines the default destination."
+    },
+    {
+      "id": "ZONE-07",
+      "area": "ZONE",
+      "statement": "The deck, where a player's deck starts the game, is a hidden zone: its cards are face down, and no player may see their information or order or rearrange them.",
+      "sections": [
+        "3.2.1",
+        "3.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Only shuffles (ZONE-12) or explicit effects change deck order."
+    },
+    {
+      "id": "ZONE-08",
+      "area": "ZONE",
+      "statement": "When something acts on several cards taken from the deck top or bottom, the cards are handled singly, one after another, in deck order.",
+      "sections": [
+        "3.2.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Applies to draws, damage, and effect-driven actions; the one-at-a-time model is what lets a mid-action refresh (ZONE-10) occur."
+    },
+    {
+      "id": "ZONE-09",
+      "area": "ZONE",
+      "statement": "For an 'up to N' deck action, before handling each next card the player may declare that they stop, which ends the action; they may even stop before handling the first card.",
+      "sections": [
+        "3.2.3.1",
+        "3.2.3.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Requires a stop/continue decision before each card, including before the first."
+    },
+    {
+      "id": "ZONE-10",
+      "area": "ZONE",
+      "statement": "If the deck becomes empty partway through such a deck action, the action is paused, a refresh (9.2) is carried out, and the action then resumes.",
+      "sections": [
+        "3.2.3.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "See 9.2.3: refresh is not resolved while a cost is being paid."
+    },
+    {
+      "id": "ZONE-11",
+      "area": "ZONE",
+      "statement": "If the deck holds fewer cards than the action specifies, and cards would still remain in the deck after handling as many cards as it holds (e.g., merely looking at them), the player handles only the cards present and the action ends.",
+      "sections": [
+        "3.2.3.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "CR example: 'look at the top 5' with 3 cards in deck looks at those 3 and stops; the deck never empties, so no refresh occurs."
+    },
+    {
+      "id": "ZONE-12",
+      "area": "ZONE",
+      "statement": "Shuffling puts the deck into an unpatterned random order, and the deck's owner always performs the shuffle regardless of who is master of the ability that called for it.",
+      "sections": [
+        "3.2.4"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Engine RNG performs the shuffle; event/log attribution goes to the deck owner."
+    },
+    {
+      "id": "ZONE-13",
+      "area": "ZONE",
+      "statement": "Cards flipped over from the deck are revealed and placed in the resolution zone.",
+      "sections": [
+        "3.2.5"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Used by the trigger check (ZONE-37) and by effects that flip cards (M3)."
+    },
+    {
+      "id": "ZONE-14",
+      "area": "ZONE",
+      "statement": "Drawn cards go to the hand, which is hidden from the opponent; its owner may look at and reorder their own hand whenever they like.",
+      "sections": [
+        "3.3.1",
+        "3.3.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Opponent's view of the hand shows count only."
+    },
+    {
+      "id": "ZONE-15",
+      "area": "ZONE",
+      "statement": "During the turn player's End Phase, if that player's hand holds more cards than the hand limit (seven unless an effect says otherwise), they must put cards from hand into their waiting room until they are at the limit.",
+      "sections": [
+        "3.3.3",
+        "3.3.3.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Only the turn player is checked; the non-turn player may exceed the limit. Sequencing is in 6.8.1.2."
+    },
+    {
+      "id": "ZONE-16",
+      "area": "ZONE",
+      "statement": "Unless stated otherwise, characters removed from the stage, used event and climax cards, and cards paid as costs go to the waiting room.",
+      "sections": [
+        "3.4.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Default destination; combine with ZONE-06 (owner's zone)."
+    },
+    {
+      "id": "ZONE-17",
+      "area": "ZONE",
+      "statement": "The waiting room is a public zone with all cards face up and viewable by everyone; each new card goes on top, and a player may reorder their own waiting room.",
+      "sections": [
+        "3.4.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Only the owner may reorder their own waiting room."
+    },
+    {
+      "id": "ZONE-18",
+      "area": "ZONE",
+      "statement": "Each player's stage, where characters are placed, consists of five stage positions: three center-stage positions (left 1, middle 2, right 3) and two back-stage positions (left 4, right 5); a card on any stage position counts as being on the stage.",
+      "sections": [
+        "3.5.1",
+        "3.5.2",
+        "3.6.1",
+        "3.6.4"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "ZONE-19",
+      "area": "ZONE",
+      "statement": "The stage and its stage positions are public zones whose cards are face up and viewable by all, and in principle each stage position holds at most one card.",
+      "sections": [
+        "3.5.3",
+        "3.6.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "'In principle' one card per position: 9.6.2 resolves extras by rule action, keeping only the most recently placed card (all tied last-placed cards go if several)."
+    },
+    {
+      "id": "ZONE-20",
+      "area": "ZONE",
+      "statement": "A card put onto a stage position from any zone other than a stage position arrives in the stand state, while a card moved from one stage position to another keeps its current orientation.",
+      "sections": [
+        "3.6.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Swapping positions in the main phase must preserve rested/reversed state."
+    },
+    {
+      "id": "ZONE-21",
+      "area": "ZONE",
+      "statement": "Stage positions pair up front-to-back as 1-4, 2-4, 2-5 and 3-5: from a back-stage position, its paired center positions are 'in front', and from a center position, its paired back positions are 'behind'.",
+      "sections": [
+        "3.6.5"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Position 2 has two positions behind it (4 and 5); position 4 has 1 and 2 in front of it, and 5 has 2 and 3."
+    },
+    {
+      "id": "ZONE-22",
+      "area": "ZONE",
+      "statement": "Center-stage positions face the opponent's in mirror order: your 1 faces their 3, your 2 faces their 2, and your 3 faces their 1.",
+      "sections": [
+        "3.6.6"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Facing is defined only between center-stage positions; back-stage positions have no facing card. Used for frontal/side attacks (M2)."
+    },
+    {
+      "id": "ZONE-23",
+      "area": "ZONE",
+      "statement": "A non-character card on a stage position is put into its owner's waiting room by rule action.",
+      "sections": [
+        "3.6.7"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Check-type rule action per 9.6.1."
+    },
+    {
+      "id": "ZONE-24",
+      "area": "ZONE",
+      "statement": "Each stage position has its own marker area, which has the same positional relations as that position (center/back, left/middle/right, in front, behind, facing) but is a separate zone that is not on the stage; a character whose marker area holds cards is a 'character with marker(s)'.",
+      "sections": [
+        "3.7.1.1",
+        "3.7.1.2",
+        "3.7.4"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Marker area is deferred in v1."
+    },
+    {
+      "id": "ZONE-25",
+      "area": "ZONE",
+      "statement": "The marker area is hidden: by default its cards are face down and no one may see their information or order or reorder them; cards are added on top (in any order if several at once) and removed from the top in order. Some effects place markers face up, which all players may then see, and when a face-up marker is exchanged with a face-up card on the stage, both stay face up after the swap.",
+      "sections": [
+        "3.7.2",
+        "3.7.2.1",
+        "3.7.2.1.1",
+        "3.7.2.2"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Marker area is deferred in v1."
+    },
+    {
+      "id": "ZONE-26",
+      "area": "ZONE",
+      "statement": "Markers travel with their character: if it moves to another stage position of the same master, its markers move with it and any markers already in the destination marker area go to their owner's waiting room; if it moves to any non-stage-position zone, its markers go to their owner's waiting room at the same time.",
+      "sections": [
+        "3.7.3",
+        "3.7.3.1",
+        "3.7.3.2"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Marker area is deferred in v1. Orphaned markers are cleaned up by rule action 9.7."
+    },
+    {
+      "id": "ZONE-27",
+      "area": "ZONE",
+      "statement": "The clock is a public zone whose cards are face up with their information and order visible to all; no player may reorder it, and each new card goes on top.",
+      "sections": [
+        "3.8.1",
+        "3.8.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Cards normally arrive in the Clock Phase or as damage. Clock order matters for level up (ZONE-28)."
+    },
+    {
+      "id": "ZONE-28",
+      "area": "ZONE",
+      "statement": "When a player has seven or more cards in clock, a rule action has them choose one of the bottom seven clock cards to put into their level, and the other cards among those seven go to their waiting room in any order.",
+      "sections": [
+        "3.8.3",
+        "3.9.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Only the bottom seven are involved; any clock cards above them stay in the clock. Interrupt-type rule action (9.3); not resolved during cost payment (9.3.3)."
+    },
+    {
+      "id": "ZONE-29",
+      "area": "ZONE",
+      "statement": "The level zone is public: unless stated otherwise its cards are face up and viewable by all, players may not reorder the face-up cards in their own level, and new cards go on top.",
+      "sections": [
+        "3.9.2",
+        "3.9.2.1",
+        "3.9.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "A player's level equals the number of cards here; 4 or more is a losing condition (WIN-03)."
+    },
+    {
+      "id": "ZONE-30",
+      "area": "ZONE",
+      "statement": "Unless stated otherwise, face-down cards in the level are visible only to their owner and count as blank cards with no information; when one moves to another zone it is placed face up or face down according to the destination, and its information is not revealed if it moves to a hidden zone.",
+      "sections": [
+        "3.9.2.2",
+        "3.9.2.2.1",
+        "3.9.2.2.2"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Face-down level cards are deferred in v1."
+    },
+    {
+      "id": "ZONE-31",
+      "area": "ZONE",
+      "statement": "The stock is a hidden zone: cards are face down, no one may see or reorder them, new cards go on top, and cards leaving the stock must be taken from the top in order.",
+      "sections": [
+        "3.10.1",
+        "3.10.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Cost payment takes cards from the top. Cards normally arrive after a trigger check (ZONE-37)."
+    },
+    {
+      "id": "ZONE-32",
+      "area": "ZONE",
+      "statement": "Climax cards are placed in the climax area (also called 'CX area') when played; it is a public zone, its cards are face up, and in principle it holds only one card.",
+      "sections": [
+        "3.11.1",
+        "3.11.2",
+        "3.11.4"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "If multiple climaxes end up there, 9.6.2 keeps only the most recently placed one (all go if several tie for last)."
+    },
+    {
+      "id": "ZONE-33",
+      "area": "ZONE",
+      "statement": "A non-climax card in the climax area is put into its owner's waiting room by rule action.",
+      "sections": [
+        "3.11.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Check-type rule action per 9.6.1."
+    },
+    {
+      "id": "ZONE-34",
+      "area": "ZONE",
+      "statement": "The memory is a zone cards enter only when explicitly instructed; it is public, its cards are face up unless stated otherwise and viewable by all, and a player may reorder the face-up cards in their own memory. Cards there may be called simply 'memory'.",
+      "sections": [
+        "3.12.1",
+        "3.12.2",
+        "3.12.2.1",
+        "3.12.2.3"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Memory zone mechanics are deferred in v1."
+    },
+    {
+      "id": "ZONE-35",
+      "area": "ZONE",
+      "statement": "Unless stated otherwise, face-down cards in memory are visible only to their owner, must be kept so the order they were placed face down is clear, and count as blank unless their ability explicitly works face down there; when moved they are placed face up or down according to the destination without revealing information if it is hidden, and when shuffled by an effect no player may see them unless the effect says they may be seen or revealed.",
+      "sections": [
+        "3.12.2.2",
+        "3.12.2.2.1",
+        "3.12.2.2.2",
+        "3.12.2.2.3"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Memory zone mechanics are deferred in v1."
+    },
+    {
+      "id": "ZONE-36",
+      "area": "ZONE",
+      "statement": "A played event card goes to the resolution zone, and after its effect resolves it goes to its owner's waiting room.",
+      "sections": [
+        "3.13.1",
+        "3.13.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "The resolution zone is temporary holding while effects or damage resolve."
+    },
+    {
+      "id": "ZONE-37",
+      "area": "ZONE",
+      "statement": "A card revealed by a Trigger Check goes to the resolution zone, and once the revealed card's effect has resolved it goes face down into its owner's stock.",
+      "sections": [
+        "3.13.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "The card stays in the resolution zone while its trigger icon effect resolves."
+    },
+    {
+      "id": "ZONE-38",
+      "area": "ZONE",
+      "statement": "Cards revealed during the Damage Process go to the resolution zone; if Damage Cancel occurs they go to their owner's waiting room, otherwise to their owner's clock.",
+      "sections": [
+        "3.13.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "ZONE-39",
+      "area": "ZONE",
+      "statement": "When several damage cards go to the clock together, they are placed on top of the clock in the same order in which they entered the resolution zone.",
+      "sections": [
+        "3.13.1.3.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Clock order affects later level-up choices (bottom seven), so preserve the resolution-zone order exactly; this overrides owner-chosen order (ZONE-04)."
+    },
+    {
+      "id": "ZONE-40",
+      "area": "ZONE",
+      "statement": "Cards placed in the resolution zone by a Brainstorm ability sit there temporarily and then go to their owner's waiting room.",
+      "sections": [
+        "3.13.1.4"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Brainstorm keyword (10.7) is deferred in v1."
+    },
+    {
+      "id": "ZONE-41",
+      "area": "ZONE",
+      "statement": "The resolution zone is public, with cards face up and their information and order visible to all; no player may reorder it, and each new card goes on top.",
+      "sections": [
+        "3.13.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "CONC-01",
+      "area": "CONC",
+      "statement": "Every ability is an instruction that originates either from printed card text or from an effect, and each one belongs to exactly one category: activated, automatic, or continuous.",
+      "sections": [
+        "4.1.1",
+        "4.1.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Ability kind drives timing and resolution rules detailed in Section 8. Abilities can be created by effects, not only printed."
+    },
+    {
+      "id": "CONC-02",
+      "area": "CONC",
+      "statement": "An effect is the content of what an ability instructs; the engine must distinguish one-shot effects from continuous effects as two of the three effect categories.",
+      "sections": [
+        "4.1.2",
+        "4.1.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "The third category (replacement effects) is tracked separately as deferred (CONC-03)."
+    },
+    {
+      "id": "CONC-03",
+      "area": "CONC",
+      "statement": "Replacement effects form a third, separate category of effects.",
+      "sections": [
+        "4.1.2.1"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Replacement effects are on the v1 deferral list; cards that depend on them are not supported in v1."
+    },
+    {
+      "id": "CONC-04",
+      "area": "CONC",
+      "statement": "A card's owner is the player whose deck contained that card when the game began.",
+      "sections": [
+        "4.2.1",
+        "4.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Ownership does not follow the card's current zone. Used for every 'owner's' destination, e.g. events going to the owner's waiting room and Return/Treasure sending cards to the owner's hand."
+    },
+    {
+      "id": "CONC-05",
+      "area": "CONC",
+      "statement": "When the game is over, each player takes back the cards they own.",
+      "sections": [
+        "4.2.3"
+      ],
+      "status": "out",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Physical cleanup step with no gameplay meaning for a digital engine."
+    },
+    {
+      "id": "CONC-06",
+      "area": "CONC",
+      "statement": "The master of a card is the player currently using it, which for a card in a zone is the player that zone belongs to.",
+      "sections": [
+        "4.3.1",
+        "4.3.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Master is different from owner: a card sitting in an opponent's zone has that opponent as master but keeps its original owner. 4.3.1 also applies the master concept to abilities and effects (CONC-07 to CONC-09)."
+    },
+    {
+      "id": "CONC-07",
+      "area": "CONC",
+      "statement": "The master of an effect is whoever is master of the ability that generated that effect.",
+      "sections": [
+        "4.3.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Store a master on every effect instance, copied from its generating ability."
+    },
+    {
+      "id": "CONC-08",
+      "area": "CONC",
+      "statement": "Whoever plays an activated ability is its master.",
+      "sections": [
+        "4.3.4"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "CONC-09",
+      "area": "CONC",
+      "statement": "An automatic or continuous ability belongs (as master) to whoever is master of the card carrying it; if an effect created the ability, it belongs to that effect's master instead.",
+      "sections": [
+        "4.3.5",
+        "4.3.6"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "For abilities granted by an effect, track the granting effect's master as well as the card's master."
+    },
+    {
+      "id": "CONC-10",
+      "area": "CONC",
+      "statement": "During a check timing, all pending rule actions are resolved first, and automatic abilities in a standby condition whose trigger conditions are met are resolved only once no rule actions remain.",
+      "sections": [
+        "4.4.1",
+        "4.4.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "M1 needs only the rule-action half; resolving automatic abilities inside the check timing arrives with M3. The full loop and turn-player-first ordering are in 8.5 (outside this range)."
+    },
+    {
+      "id": "CONC-11",
+      "area": "CONC",
+      "statement": "A check timing always happens immediately before a player receives a play timing, and the player gets the play timing only after every rule action and automatic ability from that check timing has been resolved.",
+      "sections": [
+        "4.5.1",
+        "4.5.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Applies every time a play timing is granted, including the re-grant after an action resolves."
+    },
+    {
+      "id": "CONC-12",
+      "area": "CONC",
+      "statement": "At a play timing the player either performs one action that is legal at that moment or chooses to do nothing; after a chosen action resolves, that same player gets another play timing unless something specifies otherwise.",
+      "sections": [
+        "4.5.3",
+        "4.5.3.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Main-phase loop: action, check timing, play timing again."
+    },
+    {
+      "id": "CONC-13",
+      "area": "CONC",
+      "statement": "When the player with a play timing chooses to do nothing, the game moves forward instead of granting another play timing.",
+      "sections": [
+        "4.5.3.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Passing is what advances the current phase or step (e.g. Main Phase to Climax Phase)."
+    },
+    {
+      "id": "CONC-14",
+      "area": "CONC",
+      "statement": "Each character on the stage is in exactly one of three orientations: stand (upright from its controller's view), rest (sideways) or reverse (upside down), and standing, resting or reversing a card switches it into that orientation.",
+      "sections": [
+        "4.6.1",
+        "4.6.1.1",
+        "4.6.1.2",
+        "4.6.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Orientation is defined only for characters on the stage."
+    },
+    {
+      "id": "CONC-15",
+      "area": "CONC",
+      "statement": "In card text, the stand, rest and reverse icons carry the same meaning as the corresponding words.",
+      "sections": [
+        "4.6.1.1.1",
+        "4.6.1.2.1",
+        "4.6.1.3.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Needed when parsing card text and costs in M3."
+    },
+    {
+      "id": "CONC-16",
+      "area": "CONC",
+      "statement": "An instruction to draw N cards moves cards into the drawing player's hand from the top of that player's own deck, taking the top card each time.",
+      "sections": [
+        "4.7.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Empty-deck and refresh handling are covered by rules outside this section."
+    },
+    {
+      "id": "CONC-17",
+      "area": "CONC",
+      "statement": "An instruction to look at the top N cards of the deck, or at up to N cards from the top, lets the player check those cards' information while the cards stay in the deck.",
+      "sections": [
+        "4.8.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "No zone change. The CR contrasts looking ('confirms') with revealing ('displays', CONC-18) but does not spell out who else may see looked-at cards. This section does not say how the 'up to' count is chosen."
+    },
+    {
+      "id": "CONC-18",
+      "area": "CONC",
+      "statement": "An instruction to reveal the top N cards of the deck, or up to N cards from the top, shows those cards' information openly while the cards stay in the deck.",
+      "sections": [
+        "4.9.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "No zone change; the revealed cards' information is displayed, unlike looking (CONC-17)."
+    },
+    {
+      "id": "DMG-01",
+      "area": "DMG",
+      "statement": "Dealing N damage to a player runs a Damage Process: the damaged player moves the top card of their own deck face up into their own resolution zone, one card at a time.",
+      "sections": [
+        "4.10.1",
+        "4.10.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Applies to every 'deal damage' instruction, whether from battle or from effects. Each moved card is checked for a climax before the next one moves."
+    },
+    {
+      "id": "DMG-02",
+      "area": "DMG",
+      "statement": "If a card moved to the resolution zone by a Damage Process is a climax, every card that process moved there goes to the waiting room and the process ends at once (Damage Cancel). Card text that refers to damage being canceled means this event.",
+      "sections": [
+        "4.10.1.2",
+        "4.10.1.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "No cards from a canceled process reach the clock; per 3.13.1.3 they go to the owner's waiting room. Emit a damage-canceled event, which Shot uses in M2 and card text uses in M3."
+    },
+    {
+      "id": "DMG-03",
+      "area": "DMG",
+      "statement": "Once the process has moved N cards to the resolution zone with no climax among them, all N cards go on top of the clock in the same order they entered the resolution zone and the process ends; otherwise the next card is moved.",
+      "sections": [
+        "4.10.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Keep the order in which cards entered the resolution zone when placing them in the clock."
+    },
+    {
+      "id": "DMG-04",
+      "area": "DMG",
+      "statement": "Moving cards into the clock by any means other than dealing damage is not a Damage Process, so it can never be canceled.",
+      "sections": [
+        "4.10.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Covers the Clock Phase placement and effects that move cards to the clock directly; these must not go through the Damage Process steps or check for a climax."
+    },
+    {
+      "id": "DMG-05",
+      "area": "DMG",
+      "statement": "A general reference in an effect to cards moved into a zone or revealed by an effect excludes cards handled during a Damage Process; only an effect that names damage specifically counts those cards.",
+      "sections": [
+        "4.10.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Tag zone moves and reveals with whether they came from a Damage Process so that effect queries can include or exclude them."
+    },
+    {
+      "id": "DMG-06",
+      "area": "DMG",
+      "statement": "When a character deals damage to another player in the Damage Step of an attack, the attacking character is the source of that damage.",
+      "sections": [
+        "4.11.1",
+        "4.11.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Record a source on every damage event; Shot (4.12.2.7) needs to know whether the damage was dealt by the attacking character."
+    },
+    {
+      "id": "DMG-07",
+      "area": "DMG",
+      "statement": "Damage dealt by an event card, or by an effect of an ability that a card has, has that event card or that card as its source unless stated otherwise; if the source would be the player, the card is the source instead.",
+      "sections": [
+        "4.11.1.2",
+        "4.11.1.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "So damage from the attacking character's own ability counts as dealt by that character, which matters for the Shot edge case in 4.12.2.7.1."
+    },
+    {
+      "id": "TRG-01",
+      "area": "TRG",
+      "statement": "A trigger icon's action is normally carried out by the turn player during the Trigger Step, but when an effect says to perform a trigger icon's effect, the master of that effect carries out the action.",
+      "sections": [
+        "4.12.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "In M2 the performer is always the turn player; the 'perform the effect of (icon)' route only comes from card effects (M3)."
+    },
+    {
+      "id": "TRG-02",
+      "area": "TRG",
+      "statement": "A card with no trigger icon causes no trigger action.",
+      "sections": [
+        "4.12.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "TRG-03",
+      "area": "TRG",
+      "statement": "Soul icon: the attacker gains +1 soul for the rest of the turn; this is mandatory and cannot be declined.",
+      "sections": [
+        "4.12.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Mandatory, unlike the optional actions of most other icons (Treasure's return to hand is also mandatory)."
+    },
+    {
+      "id": "TRG-04",
+      "area": "TRG",
+      "statement": "Return icon: the performing player may choose one character on the opponent's stage and send it to its owner's hand; doing so is optional.",
+      "sections": [
+        "4.12.2.3"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Targets only the opponent's stage characters; the destination is the owner's hand."
+    },
+    {
+      "id": "TRG-05",
+      "area": "TRG",
+      "statement": "Pool icon: the performing player may move the top card of their own deck into their stock; doing so is optional.",
+      "sections": [
+        "4.12.2.4"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "TRG-06",
+      "area": "TRG",
+      "statement": "Comeback icon: the performing player may choose a character in their own waiting room and add it to their hand; doing so is optional.",
+      "sections": [
+        "4.12.2.5"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Only character cards are valid choices."
+    },
+    {
+      "id": "TRG-07",
+      "area": "TRG",
+      "statement": "Draw icon: the performing player may draw one card; doing so is optional.",
+      "sections": [
+        "4.12.2.6"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "TRG-08",
+      "area": "TRG",
+      "statement": "Shot icon: for the rest of the turn, an automatic ability waits for the attacking character's next damage to be canceled; when that happens, the opponent takes 1 damage.",
+      "sections": [
+        "4.12.2.7"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Model as a turn-scoped automatic ability bound to the specific attacking character. The extra 1 damage is an ordinary 'deal damage', so it runs a normal Damage Process."
+    },
+    {
+      "id": "TRG-09",
+      "area": "TRG",
+      "statement": "Shot's trigger condition is not limited to damage aimed at the opponent: if the attacking character's next damage is dealt to its own player and is canceled, Shot still fires.",
+      "sections": [
+        "4.12.2.7.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Self-damage only comes from effects, so this case can only be tested once M3 lands."
+    },
+    {
+      "id": "TRG-10",
+      "area": "TRG",
+      "statement": "Shot watches only the attacking character's first damage after the trigger. If the character deals damage before the Damage Step and that damage is canceled, Shot fires; if that earlier damage is not canceled, Shot is used up and a cancel in the Damage Step does not fire it.",
+      "sections": [
+        "4.12.2.7.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Bind Shot to the next damage event, not to Damage Step damage. Damage before the Damage Step only comes from abilities, so this can only be tested once M3 lands."
+    },
+    {
+      "id": "TRG-11",
+      "area": "TRG",
+      "statement": "If the attacking character's next damage is dealt to several players at once, a cancel against any of them fires Shot, and Shot fires only once even if damage to more than one player is canceled.",
+      "sections": [
+        "4.12.2.7.3"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Damage to several players at once only comes from effects, so this can only be tested once M3 lands."
+    },
+    {
+      "id": "TRG-12",
+      "area": "TRG",
+      "statement": "Treasure icon: the trigger card itself must go to its owner's hand (not optional), after which the performing player may put the top card of their deck into stock. Because the trigger card has changed zones, it is not moved to stock afterward.",
+      "sections": [
+        "4.12.2.8",
+        "4.12.2.8.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Normally a trigger-checked card goes to stock after its trigger resolves (3.13.1.2, 7.3.1.2.3); Treasure overrides this because the card has already left the resolution zone."
+    },
+    {
+      "id": "TRG-13",
+      "area": "TRG",
+      "statement": "Gate icon: the performing player may choose a climax card in their own waiting room and add it to their hand; doing so is optional.",
+      "sections": [
+        "4.12.2.9"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Only climax cards are valid choices."
+    },
+    {
+      "id": "TRG-14",
+      "area": "TRG",
+      "statement": "Standby icon: the performing player may choose a character in their own waiting room whose level is no higher than the player's level plus 1, and put it in rest state on any position of their stage; doing so is optional.",
+      "sections": [
+        "4.12.2.10"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Compare against the player's level; this section names no color or cost requirement. The character enters rested."
+    },
+    {
+      "id": "TRG-15",
+      "area": "TRG",
+      "statement": "The Standby placement may target a stage position that already holds a character; the character already there is then put into its owner's waiting room under the multiple-characters rule.",
+      "sections": [
+        "4.12.2.10.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Relies on the 9.6.2 check-type rule action for multiple characters on one stage position (M1): the card placed last stays."
+    },
+    {
+      "id": "TRG-16",
+      "area": "TRG",
+      "statement": "Choice icon: the performing player may choose a character in their own waiting room whose trigger icon includes a soul icon, then either add it to their hand or put it into their stock; doing so is optional.",
+      "sections": [
+        "4.12.2.11"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Two choices: first the target (which must have a soul trigger icon), then its destination (hand or stock)."
+    },
+    {
+      "id": "DECK-01",
+      "area": "DECK",
+      "statement": "Each player brings their own deck, and it must contain exactly 50 cards.",
+      "sections": [
+        "5.1.1",
+        "5.1.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "DECK-02",
+      "area": "DECK",
+      "statement": "A deck may hold at most 4 cards with the same card name, and cards that share a name count toward the same limit even if any of their other information differs.",
+      "sections": [
+        "5.1.2.2",
+        "5.1.2.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Group cards by exact card name, ignoring collection ID, rarity and art variants. Partial name matching for effects is a separate, deferred topic."
+    },
+    {
+      "id": "DECK-03",
+      "area": "DECK",
+      "statement": "A deck may contain no more than 8 climax cards, and those climaxes are also bound by the 4-per-card-name limit.",
+      "sections": [
+        "5.1.2.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "DECK-04",
+      "area": "DECK",
+      "statement": "If a card has a continuous ability about deck construction, that card's text replaces the standard deck construction rules to the extent it specifies.",
+      "sections": [
+        "5.1.2.4"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "The M1 validator should leave room for per-card overrides; until continuous abilities exist, apply the defaults."
+    },
+    {
+      "id": "SETUP-01",
+      "area": "SETUP",
+      "statement": "Before game setup continues, each player's deck must satisfy the deck construction rules.",
+      "sections": [
+        "5.2.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Validate both decks before the game starts. Physically showing the deck to the opponent has no digital equivalent."
+    },
+    {
+      "id": "SETUP-02",
+      "area": "SETUP",
+      "statement": "Each deck is randomly shuffled and then placed face down in its player's deck zone.",
+      "sections": [
+        "5.2.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "The optional shuffle by the opponent is a physical anti-cheating step; one fair engine shuffle covers it."
+    },
+    {
+      "id": "SETUP-03",
+      "area": "SETUP",
+      "statement": "The starting player is chosen at random, and no player can influence or choose the result, including the player selected by the random method.",
+      "sections": [
+        "5.2.1.3",
+        "5.2.1.3.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "There is no option for the selected player to choose to go first or second."
+    },
+    {
+      "id": "SETUP-04",
+      "area": "SETUP",
+      "statement": "Each player draws 5 cards from their deck as their opening hand.",
+      "sections": [
+        "5.2.1.4"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "SETUP-05",
+      "area": "SETUP",
+      "statement": "After opening hands are drawn, first the starting player and then the other player may put any number of cards from their hand into their own waiting room and draw the same number of cards; each player may do this only once.",
+      "sections": [
+        "5.2.1.4"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Read 'any number' as 0 up to hand size (0 keeps the hand). Discarded cards go to the waiting room, not back into the deck."
+    },
+    {
+      "id": "SETUP-06",
+      "area": "SETUP",
+      "statement": "The starting player is the turn player for the first turn of the game.",
+      "sections": [
+        "5.2.1.5"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "TURN-01",
+      "area": "TURN",
+      "statement": "Players alternate as turn player; during a turn the turn player goes through the phases in a fixed sequence: Stand, Draw, Clock, Main, Climax, Attack, End.",
+      "sections": [
+        "6.1.1",
+        "6.8.1.5"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "The order comes from the subsection order 6.2-6.8 and the 'advance to' clause that closes each phase. The hand-over to the opponent is stated in 6.8.1.5. In M1 the Attack Phase can be a pass-through stub until M2. Effects that skip phases and extra turns are deferred."
+    },
+    {
+      "id": "STAND-01",
+      "area": "STAND",
+      "statement": "At the start of the Stand Phase, both the turn-start and Stand-Phase-start trigger conditions are met and a check timing follows. Once characters are stood, a further check timing is fully resolved before moving to the Draw Phase.",
+      "sections": [
+        "6.2.1.1",
+        "6.2.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Both trigger conditions fire before any character is stood. The automatic abilities keyed to them are M3; the phase skeleton and check timings are M1."
+    },
+    {
+      "id": "STAND-02",
+      "area": "STAND",
+      "statement": "In the Stand Phase the turn player puts every character on their own stage into the Stand State. Characters on the non-turn player's stage are not stood.",
+      "sections": [
+        "6.2.1",
+        "6.2.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Only characters the turn player is master of. This is a state change, not a zone move."
+    },
+    {
+      "id": "DRAW-01",
+      "area": "DRAW",
+      "statement": "The Draw Phase opens with the 'at the beginning of draw phase' trigger condition and a check timing. After the draw, another check timing is fully resolved and play moves to the Clock Phase.",
+      "sections": [
+        "6.3.1.1",
+        "6.3.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "DRAW-02",
+      "area": "DRAW",
+      "statement": "In the Draw Phase the turn player draws exactly one card from their deck.",
+      "sections": [
+        "6.3.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "The draw is mandatory. Refresh on an empty deck and its penalty are governed outside this range."
+    },
+    {
+      "id": "CLOCK-01",
+      "area": "CLOCK",
+      "statement": "The Clock Phase opens with the 'at the beginning of clock phase' trigger condition and a check timing. After the clock decision, another check timing is fully resolved and play moves to the Main Phase.",
+      "sections": [
+        "6.4.1.1",
+        "6.4.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Level-up and other rule actions caused by the clocked card are defined outside this range."
+    },
+    {
+      "id": "CLOCK-02",
+      "area": "CLOCK",
+      "statement": "In the Clock Phase the turn player may choose one card from hand and put it into their clock. Only if they do so do they then draw two cards.",
+      "sections": [
+        "6.4.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Optional, at most one card. Declining skips both the clock placement and the two-card draw; the draw of two is not optional once a card was clocked."
+    },
+    {
+      "id": "MAIN-01",
+      "area": "MAIN",
+      "statement": "The Main Phase starts by meeting the 'at the beginning of main phase' trigger condition. The turn player then gets a play timing, preceded by its check timing, in which they may take main-phase actions in any order and as often as they like, as long as each cost can be paid.",
+      "sections": [
+        "6.5.1.1",
+        "6.5.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Unlike other phases, 6.5.1.1 lists no separate check timing; the check timing tied to the play timing covers it. Because actions can be repeated, the player returns to the play timing after each action until they pass."
+    },
+    {
+      "id": "MAIN-02",
+      "area": "MAIN",
+      "statement": "In the main-phase play timing the turn player may play a character card from hand onto a stage position of their own that they choose, and the character is placed in that position.",
+      "sections": [
+        "6.5.1.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Rules outside this range cover level, color and cost requirements, and what happens to a character already in the chosen position."
+    },
+    {
+      "id": "MAIN-03",
+      "area": "MAIN",
+      "statement": "In the main-phase play timing the turn player may play an event card from hand. It goes to the player's resolution zone and, once its effect has resolved, moves to its owner's waiting room.",
+      "sections": [
+        "6.5.1.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "The zone flow (hand, resolution zone, waiting room) is M1. Resolving event effects is M3."
+    },
+    {
+      "id": "MAIN-04",
+      "area": "MAIN",
+      "statement": "In the main-phase play timing the turn player may use any of their activated abilities that are currently valid to play.",
+      "sections": [
+        "6.5.1.2.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "MAIN-05",
+      "area": "MAIN",
+      "statement": "The turn player may choose two of their stage positions and exchange what is in them. If both hold a card, the two cards are relocated at the same time. If only one holds a card, it moves into the empty position. If both are empty, nothing happens.",
+      "sections": [
+        "6.5.1.2.4"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "No cost, so it can be repeated within the play timing. The simultaneous relocation matters for anything that reacts to position changes (M3)."
+    },
+    {
+      "id": "MAIN-06",
+      "area": "MAIN",
+      "statement": "When the turn player chooses to take no action in the main-phase play timing, the Main Phase ends and play moves to the Climax Phase.",
+      "sections": [
+        "6.5.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "CLIMAX-01",
+      "area": "CLIMAX",
+      "statement": "The Climax Phase opens with the 'at the beginning of climax phase' trigger condition and a check timing. After its play timing, another check timing is fully resolved and play moves to the Attack Phase.",
+      "sections": [
+        "6.6.1.1",
+        "6.6.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "CLIMAX-02",
+      "area": "CLIMAX",
+      "statement": "In the Climax Phase the turn player gets a play timing, preceded by its check timing, in which the only cards they may play are climax cards from their own hand; a played climax goes into their climax area.",
+      "sections": [
+        "6.6.1",
+        "6.6.1.2",
+        "6.6.1.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Character and event cards cannot be played in this window."
+    },
+    {
+      "id": "CLIMAX-03",
+      "area": "CLIMAX",
+      "statement": "The Climax Phase play timing can be used only once: after the turn player takes any action in it they get no further play timing, so at most one climax can be played in this phase.",
+      "sections": [
+        "6.6.1.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Placing the climax is M1. Climax ability effects are M3; the Climax Combo icon is deferred."
+    },
+    {
+      "id": "CLIMAX-04",
+      "area": "CLIMAX",
+      "statement": "Card text that refers to the 'CX phase' means the Climax Phase.",
+      "sections": [
+        "6.6.2"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "An alias to normalize when parsing card ability text."
+    },
+    {
+      "id": "ATK-01",
+      "area": "ATK",
+      "statement": "In the Attack Phase the turn player may attack the opponent with characters they are master of that are in the Stand State on their center stage. The phase runs as a sequence of steps that starts with the Attack Declaration Step.",
+      "sections": [
+        "6.7.1",
+        "7.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "By default back stage, rested and reversed characters cannot attack; card effects that change attack eligibility (7.2.1.3.1.1) are M3."
+    },
+    {
+      "id": "ATK-02",
+      "area": "ATK",
+      "statement": "One Attack Sub-Phase spans everything from Attack Declaration through the Battle Step, or through the Damage Step when there is no battle.",
+      "sections": [
+        "7.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "The Attack Sub-Phase is the scope for per-attack states (attacking, defending, being attacked, in battle) and for 'end of the attack' timing."
+    },
+    {
+      "id": "ATK-03",
+      "area": "ATK",
+      "statement": "Every Attack Declaration Step meets the 'at the beginning of attack declaration step' trigger condition, followed by a check timing. Only on the turn's first Attack Declaration Step is the 'at the beginning of attack phase' trigger condition met beforehand, with its own check timing.",
+      "sections": [
+        "7.2.1.1",
+        "7.2.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "The 'beginning of attack phase' trigger must not fire again when play loops back after each attack."
+    },
+    {
+      "id": "ATK-04",
+      "area": "ATK",
+      "statement": "To declare an attack, the turn player picks one character that is able to attack, and it becomes the attacker. Unless a card effect changes whether a character can attack, any Stand State character on their center stage qualifies. If no eligible character can be picked, this option is not available.",
+      "sections": [
+        "7.2.1.3",
+        "7.2.1.3.1",
+        "7.2.1.3.1.1",
+        "7.2.1.3.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Rested, reversed and back-stage characters are ineligible by default. Card effects that grant or deny the ability to attack are M3."
+    },
+    {
+      "id": "ATK-05",
+      "area": "ATK",
+      "statement": "In the Attack Phase of the starting player's first turn, once an Attack Sub-Phase has already taken place, the turn player cannot choose another attacker, so that turn allows only a single attack.",
+      "sections": [
+        "7.2.1.3.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "The limit applies only to the starting player's first turn; the second player's first turn is unrestricted."
+    },
+    {
+      "id": "ATK-06",
+      "area": "ATK",
+      "statement": "Instead of declaring an attack, the turn player may choose to end the Attack Phase, and play goes straight to the Encore Step.",
+      "sections": [
+        "7.2.1.3.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "This is the only remaining option when no eligible attacker exists (ATK-04). The Trigger, Counter, Damage and Battle Steps are skipped."
+    },
+    {
+      "id": "ATK-07",
+      "area": "ATK",
+      "statement": "If no opposing character is facing the chosen attacker, the attack automatically becomes a Direct Attack and the attacker gets +1 soul until end of turn.",
+      "sections": [
+        "7.2.1.4",
+        "7.2.1.4.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "There is no player choice. The soul bonus lasts until end of turn, not only for this attack."
+    },
+    {
+      "id": "ATK-08",
+      "area": "ATK",
+      "statement": "If an opposing character is facing the chosen attacker, the turn player chooses whether the attack is a Frontal Attack or a Side Attack.",
+      "sections": [
+        "7.2.1.4.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "A Direct Attack is not possible while a character faces the attacker."
+    },
+    {
+      "id": "ATK-09",
+      "area": "ATK",
+      "statement": "A Side Attack gives the attacker -X soul until end of turn, where X is the level of the facing character. If that level is not greater than 0, the attacker loses no soul.",
+      "sections": [
+        "7.2.1.4.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Use the facing character's level at the time the attack type is chosen; later changes do not affect it (see ATK-10)."
+    },
+    {
+      "id": "ATK-10",
+      "area": "ATK",
+      "statement": "Once the attack type is chosen, the type and its soul change stay fixed for that attack, even if the facing character changes or leaves. For example, a Side Attack whose facing character is returned to hand remains a Side Attack and keeps any soul penalty.",
+      "sections": [
+        "7.2.1.4.3"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "ATK-11",
+      "area": "ATK",
+      "statement": "From the point the attack type is set until the Attack Sub-Phase ends, the chosen character is the attacking character (direct, frontal or side attacking character) and is in the 'attacked' state, but only while it does not move to another zone.",
+      "sections": [
+        "7.2.1.5"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "If the attacker changes zone, it stops being the attacking character, so later steps find no attacker (DSTEP-03, BTL-02). Each stage position is itself a zone (3.6.1), so do not exempt moves between stage positions."
+    },
+    {
+      "id": "ATK-12",
+      "area": "ATK",
+      "statement": "In a Frontal Attack, while it stays in its zone, the facing character becomes the defending character (the one 'being frontal attacked'). For the Attack Sub-Phase, the attacker and defender are both 'in battle' and each is the other's battle opponent.",
+      "sections": [
+        "7.2.1.5.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "ATK-13",
+      "area": "ATK",
+      "statement": "In a Frontal or Side Attack, the character facing the attacker is in the 'being attacked' state for the Attack Sub-Phase as long as it stays in its zone.",
+      "sections": [
+        "7.2.1.5.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "A side-attacked character is 'being attacked' but is not a defending character and is not in battle."
+    },
+    {
+      "id": "ATK-14",
+      "area": "ATK",
+      "statement": "After its attack states are set, the attacker is put into the Rest State. A check timing is then fully resolved and play moves to the Trigger Step.",
+      "sections": [
+        "7.2.1.5.3",
+        "7.2.1.6"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "END-01",
+      "area": "END",
+      "statement": "The End Phase begins by meeting the 'at the end of turn' trigger condition, which puts automatic abilities with that wording into a standby condition, followed by a check timing.",
+      "sections": [
+        "6.8.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "The phase skeleton and check timing are M1. Standby and resolution of automatic abilities are M3."
+    },
+    {
+      "id": "END-02",
+      "area": "END",
+      "statement": "In the End Phase, if the turn player has more cards in hand than the hand limit (7 unless an effect changes it), they choose exactly the excess number of cards and put them into their waiting room.",
+      "sections": [
+        "6.8.1.2",
+        "3.3.3.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Only the turn player's hand is checked; the player chooses which cards to discard."
+    },
+    {
+      "id": "END-03",
+      "area": "END",
+      "statement": "In the End Phase, any card in the turn player's climax area is put into the waiting room.",
+      "sections": [
+        "6.8.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Only the turn player's climax area. This happens after the hand-limit discard."
+    },
+    {
+      "id": "END-04",
+      "area": "END",
+      "statement": "After the End Phase check timing that follows the climax cleanup is fully resolved, effects lasting 'until end of turn' or 'during turn' stop applying.",
+      "sections": [
+        "6.8.1.4"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "These effects still apply during the hand-limit discard, the climax cleanup and that check timing. The first effects of this kind are the attack-type and trigger soul changes in M2."
+    },
+    {
+      "id": "END-05",
+      "area": "END",
+      "statement": "The turn ends, and the opponent becomes turn player starting from the Stand Phase, only when three conditions hold: the turn player's hand is within the limit, no automatic abilities or rule actions needed resolving in the 6.8.1.4 check timing, and no 'at the end of turn' or other automatic-ability trigger condition is still unfulfilled. Otherwise the End Phase starts over from the beginning.",
+      "sections": [
+        "6.8.1.5"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Starting over means 6.8.1.1 runs again. Infinite end-phase loops are deferred."
+    },
+    {
+      "id": "TSTEP-01",
+      "area": "TSTEP",
+      "statement": "After the Trigger-Step-start trigger condition and its check timing, the turn player reveals their deck's top card into the resolution zone face up and performs the action of each trigger icon it shows at that moment.",
+      "sections": [
+        "7.3.1.1",
+        "7.3.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "What each icon does is defined in 4.12, outside this range. Refresh when the deck runs out is also handled outside this range."
+    },
+    {
+      "id": "TSTEP-02",
+      "area": "TSTEP",
+      "statement": "If the checked card has more than one trigger icon, the turn player carries out their actions in whatever order they choose.",
+      "sections": [
+        "7.3.1.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "This is a player decision the engine must prompt for."
+    },
+    {
+      "id": "TSTEP-03",
+      "area": "TSTEP",
+      "statement": "The trigger icons carried out are the ones the card had when it entered the resolution zone. Icons it gains afterwards have no effect, and icons it loses afterwards are still carried out.",
+      "sections": [
+        "7.3.1.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Snapshot the card's icons when it enters the resolution zone."
+    },
+    {
+      "id": "TSTEP-04",
+      "area": "TSTEP",
+      "statement": "After the icon actions, the checked card moves face down from the resolution zone into stock. The whole sequence, from putting the card in the resolution zone to placing it in stock, is called a 'Trigger Check'.",
+      "sections": [
+        "7.3.1.2.3"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Goes to stock face down whatever the card type, but only if it is still in the resolution zone: an icon action such as Treasure (4.12.2.8) moves it to hand first."
+    },
+    {
+      "id": "TSTEP-05",
+      "area": "TSTEP",
+      "statement": "Card text about 'this card's trigger check' means the trigger checks made for this card's attack. 'Your character's trigger check' means the trigger checks made for attacks by your characters.",
+      "sections": [
+        "7.3.1.2.3.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Each trigger check must be linked to the attacker it was made for."
+    },
+    {
+      "id": "TSTEP-06",
+      "area": "TSTEP",
+      "statement": "After the trigger check a check timing is fully resolved. A Frontal Attack then goes to the Counter Step, while Direct and Side Attacks go straight to the Damage Step.",
+      "sections": [
+        "7.3.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "CTR-01",
+      "area": "CTR",
+      "statement": "In the Counter Step, which only Frontal Attacks reach, the 'at the beginning of counter step' trigger condition is met and the non-turn player gets a play timing preceded by its check timing. Afterwards a check timing is fully resolved and play moves to the Damage Step.",
+      "sections": [
+        "7.4.1",
+        "7.4.1.1",
+        "7.4.1.2",
+        "7.4.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "The turn player gets no play timing in this step."
+    },
+    {
+      "id": "CTR-02",
+      "area": "CTR",
+      "statement": "In the Counter Step play timing, the non-turn player may play only event cards or character abilities that carry the Counter Icon.",
+      "sections": [
+        "7.4.1.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Other events and abilities are not playable here. Counter-icon character abilities depend on M3 activated-ability support (Backup)."
+    },
+    {
+      "id": "CTR-03",
+      "area": "CTR",
+      "statement": "The non-turn player gets only one action in the Counter Step: after taking any action, such as playing one card or one activated ability, they get no further play timing.",
+      "sections": [
+        "7.4.1.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "DSTEP-01",
+      "area": "DSTEP",
+      "statement": "After the 'at the beginning of damage step' trigger condition and its check timing, if an attacking character exists, it deals damage to the non-turn player equal to its soul.",
+      "sections": [
+        "7.5.1.1",
+        "7.5.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "How damage resolves (cards moved one at a time, cancelled by a climax) is defined outside this range."
+    },
+    {
+      "id": "DSTEP-02",
+      "area": "DSTEP",
+      "statement": "If the attacker's soul is 0 or less, it deals no damage at all. The game never treats this as dealing zero or negative damage.",
+      "sections": [
+        "7.5.1.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "The engine must not emit a damage event in this case."
+    },
+    {
+      "id": "DSTEP-03",
+      "area": "DSTEP",
+      "statement": "If the attacking character has ceased to exist for any reason or its master has changed, it deals no damage.",
+      "sections": [
+        "7.5.1.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Ceasing to exist includes leaving its zone (see ATK-11)."
+    },
+    {
+      "id": "DSTEP-04",
+      "area": "DSTEP",
+      "statement": "After damage, a check timing is fully resolved; if the attack is a Frontal Attack, play then moves to the Battle Step.",
+      "sections": [
+        "7.5.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "DSTEP-05",
+      "area": "DSTEP",
+      "statement": "For a Direct or Side Attack, after the post-damage check timing the 'at the end of the attack' trigger condition is met and a check timing is resolved; then the Attack Sub-Phase ends and play returns to the Attack Declaration Step.",
+      "sections": [
+        "7.5.1.3",
+        "7.5.1.4"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Split from DSTEP-04. The Frontal Attack path meets 'at the end of the attack' in the Battle Step instead (BTL-03)."
+    },
+    {
+      "id": "BTL-01",
+      "area": "BTL",
+      "statement": "After the 'at the beginning of battle step' trigger condition and its check timing, if both the attacking and defending characters exist, their powers are compared and the one with lower power is put into the Reverse State. If their powers are equal, both are reversed.",
+      "sections": [
+        "7.6.1.1",
+        "7.6.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Compare current power at that moment, including any modifiers."
+    },
+    {
+      "id": "BTL-02",
+      "area": "BTL",
+      "statement": "If either the attacking or the defending character has ceased to exist for any reason or changed master, no power comparison takes place and neither is reversed.",
+      "sections": [
+        "7.6.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "A defender that left its zone is no longer the defending character (ATK-12)."
+    },
+    {
+      "id": "BTL-03",
+      "area": "BTL",
+      "statement": "After the battle a check timing is fully resolved. Then the 'at the end of the attack' trigger condition is met with another check timing, the Attack Sub-Phase ends and play returns to the Attack Declaration Step.",
+      "sections": [
+        "7.6.1.4",
+        "7.6.1.5"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "ENC-01",
+      "area": "ENC",
+      "statement": "After the 'at the beginning of encore step' trigger condition and its check timing, while the turn player has Reverse State characters on their stage, they choose one, put it into its owner's waiting room and fully resolve a check timing, then repeat.",
+      "sections": [
+        "7.7.1.1",
+        "7.7.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "Characters go one at a time, with a check timing between each. The default Encore keyword (M3) acts in those check timings."
+    },
+    {
+      "id": "ENC-02",
+      "area": "ENC",
+      "statement": "Once the turn player has no reversed characters left, the non-turn player likewise picks one of their Reverse State stage characters, puts it into its owner's waiting room and resolves a check timing. After each such check timing, the procedure goes back to the turn player's step (7.7.1.2).",
+      "sections": [
+        "7.7.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": "The CR text loops back to 7.7.1.2 after each removal by the non-turn player, so any turn-player character reversed in the meantime is handled first."
+    },
+    {
+      "id": "ENC-03",
+      "area": "ENC",
+      "statement": "When neither removal loop applies, a check timing is fully resolved. If either player then has a Reverse State character on stage, the Encore Step returns to 7.7.1.2; otherwise play moves to the End Phase.",
+      "sections": [
+        "7.7.1.4"
+      ],
+      "status": "planned",
+      "milestone": "M2",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "ABL-01",
+      "area": "ABL",
+      "statement": "Every ability belongs to exactly one of three categories: activated, automatic, or continuous. An activated ability can only be used by a player who currently holds a play timing, and using it requires paying the cost shown in brackets before its effect text.",
+      "sections": [
+        "8.1.1",
+        "8.1.1.1",
+        "8.1.1.1.1",
+        "8.1.1.4"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Model category as an enum on each ability. Play timing is defined in 8.5.2. The Ability Category Icons are only the printed markers for these categories."
+    },
+    {
+      "id": "ABL-02",
+      "area": "ABL",
+      "statement": "A trigger worded 'when (player) uses an activated ability' is met at the instant that player completes payment of that ability's cost.",
+      "sections": [
+        "8.1.1.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "The triggered ability then waits in standby until the next check timing (ABL-10)."
+    },
+    {
+      "id": "ABL-03",
+      "area": "ABL",
+      "statement": "An automatic ability is played on its own when its trigger condition happens; the trigger is either a stated event ('when ...') or the beginning or end of a named phase or step. If the ability carries a bracketed cost, that cost can be paid during resolution as its text directs.",
+      "sections": [
+        "8.1.1.2",
+        "8.1.1.2.1",
+        "8.1.1.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Paying an automatic ability's cost is optional; declining it is handled by ABL-12."
+    },
+    {
+      "id": "ABL-04",
+      "area": "ABL",
+      "statement": "Activated abilities, automatic abilities, and cards in hand produce their effects only by being played and resolved. A continuous ability is never played; its effect simply holds for as long as its stated duration lasts.",
+      "sections": [
+        "8.1.1.3",
+        "8.1.1.3.1",
+        "8.6.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Continuous abilities are evaluated as standing modifiers, not queued."
+    },
+    {
+      "id": "ABL-05",
+      "area": "ABL",
+      "statement": "Effects are one-shot (the instructed action is carried out a single time and the effect is over), continuous (applies for its stated duration; with no stated duration it lasts for the rest of the game), or replacement (see ABL-23).",
+      "sections": [
+        "8.2.1",
+        "8.2.1.1",
+        "8.2.1.2",
+        "8.2.1.3",
+        "8.8.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Drawing a card or sending a character to the waiting room is one-shot; '+X power' or '+1 soul until end of turn' is continuous. Replacement effects themselves are deferred."
+    },
+    {
+      "id": "ABL-06",
+      "area": "ABL",
+      "statement": "When an effect (or part of it) is made inactive under a condition, the ability still exists while that condition holds but generates nothing and requires no choices; an effect said to be active under a condition is treated as inactive whenever that condition is unmet.",
+      "sections": [
+        "8.3.1",
+        "8.3.2",
+        "8.3.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "This is the mechanism behind 'insofar as' wording such as Assist (10.3.2). The inactive part still counts as an ability for effects that look for its presence."
+    },
+    {
+      "id": "ABL-07",
+      "area": "ABL",
+      "statement": "At each check timing, first resolve every rule action currently due, all at the same time, and repeat this step as long as new rule actions arise; the check timing ends only when neither rule actions nor standby automatic abilities remain.",
+      "sections": [
+        "8.5.1",
+        "8.5.1.1",
+        "8.5.1.4"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "In M1 there are no card automatic abilities, so the loop is rule actions only; M3 adds ABL-08. After any ability resolves, the loop returns to the rule-action step."
+    },
+    {
+      "id": "ABL-08",
+      "area": "ABL",
+      "statement": "Once rule actions are cleared at a check timing, if the turn player has automatic abilities in standby they pick one, play and resolve it, and rule actions are rechecked; only when the turn player has none waiting does the non-turn player pick and resolve one of theirs, again followed by a rule-action recheck.",
+      "sections": [
+        "8.5.1.2",
+        "8.5.1.3",
+        "8.7.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "One ability per pass, restarting from rule actions each time; a new turn-player trigger created by a non-turn-player ability resolves before the non-turn player's next one."
+    },
+    {
+      "id": "ABL-09",
+      "area": "ABL",
+      "statement": "When a player receives a play timing, a check timing is resolved first; then the player may take one permitted action or do nothing. Taking an action grants them another play timing afterward unless stated otherwise, while doing nothing ends the play timing and the phase or step advances.",
+      "sections": [
+        "8.5.2",
+        "8.5.2.1",
+        "8.5.2.2",
+        "8.5.2.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Drives the main phase action loop. The counter step overrides the 'another play timing' default (7.4.1.2.2)."
+    },
+    {
+      "id": "ABL-10",
+      "area": "ABL",
+      "statement": "Whenever an automatic ability's trigger condition is met it enters standby, once per time the condition is met, and standby abilities are only played during a check timing.",
+      "sections": [
+        "8.7.1",
+        "8.7.2",
+        "8.7.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Track standby as a multiset of instances, each carrying its trigger context (source card, moved-card snapshot, battle opponent, etc.)."
+    },
+    {
+      "id": "ABL-11",
+      "area": "ABL",
+      "statement": "A player may not skip any automatic ability of theirs that is in standby; every one must be played. When the same ability is in standby several times, its master decides the order in which those instances resolve.",
+      "sections": [
+        "8.7.3",
+        "8.7.3.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "The only exception is Turn Usage Restriction (10.17.4, KW-21), which is deferred."
+    },
+    {
+      "id": "ABL-12",
+      "area": "ABL",
+      "statement": "One standby instance of an automatic ability is removed when that ability finishes resolving, when it cannot be played for any reason, or when its master declines to pay its optional cost and so does not play it.",
+      "sections": [
+        "8.7.3",
+        "8.7.3.2",
+        "8.7.3.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Declining Encore's cost consumes the instance."
+    },
+    {
+      "id": "ABL-13",
+      "area": "ABL",
+      "statement": "When a zone-change triggered ability needs the moved card's information: a move between a public and a hidden zone uses the card's public-zone information; a move off the stage, or any move that changes its master, uses its on-stage information; any other public-to-public move uses its information in the destination zone.",
+      "sections": [
+        "8.7.4",
+        "8.7.4.1",
+        "8.7.4.1.1",
+        "8.7.4.1.2",
+        "8.7.4.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Snapshot card information at move time and attach it to the standby instance (e.g. a character going stage to waiting room reports its on-stage power and traits)."
+    },
+    {
+      "id": "ABL-14",
+      "area": "ABL",
+      "statement": "An automatic ability created by an effect to trigger at some later moment (a timed trigger) has its trigger met only once, unless the effect says otherwise.",
+      "sections": [
+        "8.7.5",
+        "8.7.5.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Remove the delayed trigger after its first firing by default."
+    },
+    {
+      "id": "ABL-15",
+      "area": "ABL",
+      "statement": "A state trigger (met by a condition being true rather than by an event) enters standby only one time when its condition is fulfilled; after that ability resolves, it enters standby again if the condition is still fulfilled.",
+      "sections": [
+        "8.7.6",
+        "8.7.6.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Do not re-queue while the instance is pending. State triggers can repeat indefinitely; infinite-loop handling (11.1) is deferred."
+    },
+    {
+      "id": "ABL-16",
+      "area": "ABL",
+      "statement": "An automatic ability in standby must still be played even if its source card has since moved to another zone; if that move makes its effect impossible, the effect just fails.",
+      "sections": [
+        "8.7.7"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Do not drop the standby instance when the source moves; resolve and let impossible parts fail."
+    },
+    {
+      "id": "ABL-17",
+      "area": "ABL",
+      "statement": "To compute a card's information under continuous effects, begin with what is printed on the card, next apply every continuous effect that leaves the value itself unchanged, and only then apply every continuous effect that alters the value.",
+      "sections": [
+        "8.9.1",
+        "8.9.1.1",
+        "8.9.1.2",
+        "8.9.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "CR example: a conditional '+500 if power is 3000 or less' on a 3000 character yields 3500 and is not then switched off by the boosted value. The CR does not list which effect types fall in each layer; classify per effect type."
+    },
+    {
+      "id": "ABL-18",
+      "area": "ABL",
+      "statement": "When two continuous effects are not ordered by the layer rule and applying effect A changes what effect B applies to or how it applies, B depends on A and is always applied after A, regardless of which was created first.",
+      "sections": [
+        "8.9.1.4"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "CR example: one Assist grants a trait and another grants Encore to characters with that trait; the front character gets the Encore whatever the placement order."
+    },
+    {
+      "id": "ABL-19",
+      "area": "ABL",
+      "statement": "Continuous effects still unordered after layers and dependency apply in creation order: an effect from a continuous ability is timestamped when its card arrived in its current zone (for a character on stage, when it was put onto its current stage position from another zone), and an effect from any other ability is timestamped when that ability was played.",
+      "sections": [
+        "8.9.1.5",
+        "8.9.1.5.1",
+        "8.9.1.5.2"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "CR example: Assist +500 followed by an event setting power to 0 until end of turn gives 0. Whether swapping stage positions resets a character's timestamp is not explicit; the text keys it to arrival from another zone."
+    },
+    {
+      "id": "ABL-20",
+      "area": "ABL",
+      "statement": "A continuous effect that comes from something other than a continuous ability (an event, or an activated or automatic ability) does not apply to any card that changes zones after the ability was played; moving between stage positions does not count as changing zones here.",
+      "sections": [
+        "8.9.2"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Lock the affected set at play time. CR example: after an event gives your characters +1000 until end of turn, a character played afterward keeps its printed power. A character that leaves and returns also loses the effect."
+    },
+    {
+      "id": "ABL-21",
+      "area": "ABL",
+      "statement": "A continuous effect that modifies cards in a particular zone applies to a card at the very moment that card enters that zone.",
+      "sections": [
+        "8.9.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "ABL-22",
+      "area": "ABL",
+      "statement": "When an automatic ability triggers on a card with given information entering a given zone, that card's information is read only after the continuous effects of that zone have been applied to it.",
+      "sections": [
+        "8.9.3.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Apply zone modifiers before evaluating entry triggers."
+    },
+    {
+      "id": "ABL-23",
+      "area": "ABL",
+      "statement": "A replacement effect ('if X would do A, do B instead', optionally with 'may') stops the original event from happening at all and substitutes the new one; when several apply to the same event, the affected player (card or ability master, or the acting player / applying card's master for game actions) chooses the order, each applies at most once, attack-type replacements apply turn player's first, and an optional replacement whose choice cannot be made is not applied.",
+      "sections": [
+        "8.2.1.3.1",
+        "8.2.1.3.2",
+        "8.10.1",
+        "8.10.1.1",
+        "8.10.2",
+        "8.10.2.1",
+        "8.10.2.2",
+        "8.10.2.3",
+        "8.10.2.4",
+        "8.10.3"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Replacement effects are out of v1 scope. The attack-type ordering mainly interacts with Great Performance (10.6), also deferred."
+    },
+    {
+      "id": "ABL-24",
+      "area": "ABL",
+      "statement": "If an effect refers to a specific card's information or state and that card moves to another zone while the effect is being carried out (moves between stage positions excepted), the effect uses the card's last known information and state from the zone it left.",
+      "sections": [
+        "8.11.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Keep a last-known-information snapshot for cards leaving a zone mid-effect."
+    },
+    {
+      "id": "ABL-25",
+      "area": "ABL",
+      "statement": "If a battling character moves zones or stage positions after an automatic ability triggered but before that ability resolves, the effect still treats the two characters as having been battle opponents, using that as final information.",
+      "sections": [
+        "8.11.2"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Store the battle-opponent pairing in the trigger context instead of re-deriving it from current positions."
+    },
+    {
+      "id": "ABL-26",
+      "area": "ABL",
+      "statement": "A Climax Combo icon following an Ability Category Icon only marks an ability linked to a climax with a given name; the icon itself has no rules meaning.",
+      "sections": [
+        "8.12.1"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Climax Combo icon handling is deferred; the linked ability's own text still governs."
+    },
+    {
+      "id": "COST-01",
+      "area": "COST",
+      "statement": "The bracketed action(s) at the start of an activated or automatic ability form its cost; paying it means performing those actions, and multiple cost actions are carried out in the order written, starting from the first.",
+      "sections": [
+        "8.4.1",
+        "8.4.2",
+        "8.4.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "COST-02",
+      "area": "COST",
+      "statement": "Between the start and the end of paying a cost, neither refresh nor level up is carried out.",
+      "sections": [
+        "8.4.2.1",
+        "9.2.3",
+        "9.3.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Card play costs (stock) cannot empty the deck or fill the clock, so this only bites with ability costs. The CR states only the prohibition; presumably the interrupt runs once payment ends if its condition still holds."
+    },
+    {
+      "id": "COST-03",
+      "area": "COST",
+      "statement": "If an ability's cost cannot be paid in full, no part of it is paid.",
+      "sections": [
+        "8.4.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Validate the whole cost before executing any part. Card play costs are covered by PLAY-04."
+    },
+    {
+      "id": "COST-04",
+      "area": "COST",
+      "statement": "A circled number X in an ability's cost or text means the card's or ability's master moves exactly X cards from their stock to their waiting room; when text tells a specific player to pay a circled number, that player moves exactly X cards from their own stock.",
+      "sections": [
+        "8.4.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Used by default Encore [3] (KW-03). Fewer than X stock means the payment is impossible (COST-03). 8.4.3 does not say which stock cards are taken."
+    },
+    {
+      "id": "PLAY-01",
+      "area": "PLAY",
+      "statement": "A card can be played from hand only if it meets the color requirement: its color must match the color of at least one card in the player's level zone or clock. Level 0 characters and level 0 events are exempt.",
+      "sections": [
+        "8.6.2.1",
+        "8.6.2.1.1",
+        "8.6.2.1.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Climax cards are NOT exempt from color (only from level). A card failing either requirement cannot be played or revealed."
+    },
+    {
+      "id": "PLAY-02",
+      "area": "PLAY",
+      "statement": "A card can be played from hand only if its level does not exceed the number of cards in the player's level zone; climax cards are exempt from this level requirement.",
+      "sections": [
+        "8.6.2.1",
+        "8.6.2.1.2",
+        "8.6.2.1.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Both PLAY-01 and PLAY-02 must hold for a card to be played."
+    },
+    {
+      "id": "PLAY-03",
+      "area": "PLAY",
+      "statement": "While playing a card or ability the player makes any choices it requires; playing a character from hand includes choosing one of the player's own stage positions for it.",
+      "sections": [
+        "8.6.2.2",
+        "8.6.2.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Any of the five positions can be chosen, occupied or not; an occupant is handled by PLAY-06."
+    },
+    {
+      "id": "PLAY-04",
+      "area": "PLAY",
+      "statement": "If playing a card or activated ability has a cost, the player determines it and must pay all of it; a player who cannot pay in full cannot play that card or ability, and partial payment is never allowed.",
+      "sections": [
+        "8.6.2.3",
+        "8.6.2.3.1",
+        "8.6.2.3.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Check affordability (stock count) before committing to the play."
+    },
+    {
+      "id": "PLAY-05",
+      "area": "PLAY",
+      "statement": "A card or ability counts as 'played' at the point right after its cost is paid, and then it resolves; resolving an activated or automatic ability means carrying out its effect.",
+      "sections": [
+        "8.6.2.4",
+        "8.6.2.5",
+        "8.6.2.5.4"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Emit a 'played' event at this point for 'when played' triggers (M3). Ability resolution itself is M3."
+    },
+    {
+      "id": "PLAY-06",
+      "area": "PLAY",
+      "statement": "A played character resolves by being put on its chosen stage position; if another character already stood there, that earlier character is sent to the waiting room by rule action.",
+      "sections": [
+        "8.6.2.5.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "The rule action is ILL-02 (9.6.2). The displaced character moves stage to waiting room, so check its Encore interaction (KW-02) in M3."
+    },
+    {
+      "id": "PLAY-07",
+      "area": "PLAY",
+      "statement": "A played event is put in its player's resolution zone, its effect is carried out, and then it goes to its owner's waiting room.",
+      "sections": [
+        "8.6.2.5.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "PLAY-08",
+      "area": "PLAY",
+      "statement": "A played climax resolves by being placed in its player's climax area.",
+      "sections": [
+        "8.6.2.5.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "If a climax is already there, ILL-02 sends all but the newest to the waiting room."
+    },
+    {
+      "id": "PLAY-09",
+      "area": "PLAY",
+      "statement": "When a card or ability says to choose, the targets (cards, players, etc.) are picked during resolution, from the options that exist at the moment that instruction is reached.",
+      "sections": [
+        "8.6.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Do not lock targets at play time; evaluate legality when the 'choose' step executes."
+    },
+    {
+      "id": "PLAY-10",
+      "area": "PLAY",
+      "statement": "When a choice names a fixed number, the player must pick as many targets as they can up to that number and may not decline while able; if fewer are available they pick all of them and the effect applies to those, and if none are available nothing is chosen and every part of the effect tied to that target is ignored.",
+      "sections": [
+        "8.6.3.1",
+        "8.6.3.1.2",
+        "8.6.3.1.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Exception for unrevealed cards in hidden zones: PLAY-12."
+    },
+    {
+      "id": "PLAY-11",
+      "area": "PLAY",
+      "statement": "When a choice is worded 'choose up to N', the player may pick any number of targets from zero through N.",
+      "sections": [
+        "8.6.3.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "PLAY-12",
+      "area": "PLAY",
+      "statement": "When the choice is among unrevealed cards in a hidden zone and eligibility depends on their information, the zone is not treated as guaranteed to hold an eligible card, so the player is not required to choose such cards and may end with no target even when eligible cards are there.",
+      "sections": [
+        "8.6.3.1.4"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Fail-to-find for searches. The printed v2.10 sentence literally says the player is 'not allowed to choose' such cards, which contradicts the sentence before it if read literally; confirm the interpretation before implementing."
+    },
+    {
+      "id": "PLAY-13",
+      "area": "PLAY",
+      "statement": "For 'you may do A; if you did, do B; if you did not, do C', C happens only when, at the moment of deciding about A, the player could not do A or chose not to; 'if you did' and 'if you did not' are shorthand for these clauses.",
+      "sections": [
+        "8.6.4",
+        "8.6.4.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "PLAY-14",
+      "area": "PLAY",
+      "statement": "If text does not name who carries out an action, the master of the source card, ability or effect does it.",
+      "sections": [
+        "8.6.5"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "PLAY-15",
+      "area": "PLAY",
+      "statement": "Cards revealed or looked at because of an effect return to their earlier state when that effect finishes resolving; for an individual card this ends sooner if it changes zone, is chosen to stay where it was, or has its position changed (such as by a shuffle) before the effect ends.",
+      "sections": [
+        "8.6.6",
+        "8.6.6.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Track reveal/look visibility per card and clear it at the end of the effect's resolution."
+    },
+    {
+      "id": "RULE-01",
+      "area": "RULE",
+      "statement": "Rule actions are game-driven resolutions of two types; an interrupt-type rule action runs the moment its condition is met, suspending whatever is in progress without exception.",
+      "sections": [
+        "9.1.1",
+        "9.1.2",
+        "9.1.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Interrupt types here: refresh (9.2) and level up (9.3)."
+    },
+    {
+      "id": "RULE-02",
+      "area": "RULE",
+      "statement": "When several interrupt rule actions are due at once, the turn player first performs all of those tied to their own cards or zones, then the non-turn player performs theirs; a player with more than one to perform chooses their order.",
+      "sections": [
+        "9.1.2.1.1",
+        "9.1.2.1.1.1",
+        "9.1.2.1.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "RULE-03",
+      "area": "RULE",
+      "statement": "A check-type rule action happens only if its condition holds during a check timing; a condition that was true only partway through another action and no longer holds at the check timing triggers nothing, and all check-type rule actions due at the same time are carried out simultaneously.",
+      "sections": [
+        "9.1.2.2",
+        "9.1.2.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Check types here: losing verdict (9.4), power 0 or less (9.5), illegal cards (9.6), unaffiliated markers (9.7)."
+    },
+    {
+      "id": "REF-01",
+      "area": "REF",
+      "statement": "As soon as a player's deck has no cards (an interrupt rule action, but never while a cost is being paid), that player moves their entire waiting room into the deck, shuffles it, and then puts the deck's top card into their clock.",
+      "sections": [
+        "9.2.1",
+        "9.2.2",
+        "9.2.3",
+        "9.2.4"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "'Refresh' in card text means this. The added clock card can itself cause a level up (LVL-01)."
+    },
+    {
+      "id": "REF-02",
+      "area": "REF",
+      "statement": "If the deck empties while the waiting room is also empty, the player loses immediately if they are mid damage process and have no climax in their resolution zone; otherwise the refresh simply ends, and no new refresh happens until the waiting room has cards while the deck is still empty.",
+      "sections": [
+        "9.2.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "The damage-process branch only becomes reachable in M2. Separately, VERD-02 makes a player with empty deck and waiting room lose at the next check timing."
+    },
+    {
+      "id": "LVL-01",
+      "area": "LVL",
+      "statement": "When a player has 7 or more cards in clock (an interrupt rule action, not performed during cost payment), they pick one of the bottom seven clock cards to put into their level zone and send the other six of those seven to their waiting room in any order.",
+      "sections": [
+        "9.3.1",
+        "9.3.2",
+        "9.3.3"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "With more than 7 cards only the bottom seven are processed; cards left in clock can cause another level up. Reaching 4 level cards is a loss (VERD-01)."
+    },
+    {
+      "id": "VERD-01",
+      "area": "VERD",
+      "statement": "As a check-type rule action, a player with four or more cards in their level zone loses the game; every player meeting a losing condition at that moment loses.",
+      "sections": [
+        "9.4.1",
+        "9.4.1.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "If both players lose simultaneously the game is a draw (1.2.3)."
+    },
+    {
+      "id": "VERD-02",
+      "area": "VERD",
+      "statement": "As a check-type rule action, a player who has no cards in either their deck or their waiting room loses the game.",
+      "sections": [
+        "9.4.1",
+        "9.4.1.2"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Both zones must be empty at the check timing. Interacts with REF-02."
+    },
+    {
+      "id": "PWR-01",
+      "area": "PWR",
+      "statement": "Check-type rule action: any character with power at or below 0 goes to its owner's waiting room.",
+      "sections": [
+        "9.5.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Checked only at check timing (RULE-03), using power after continuous effects. The move is stage to waiting room, so Encore can trigger in M3."
+    },
+    {
+      "id": "ILL-01",
+      "area": "ILL",
+      "statement": "Check-type rule action: a non-character on a stage position, or a non-climax in the climax area, goes to its owner's waiting room.",
+      "sections": [
+        "9.6.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "ILL-02",
+      "area": "ILL",
+      "statement": "If a stage position holds more than one character, or the climax area holds more than one climax, every card there except the one placed most recently goes to its owner's waiting room as a check-type rule action; if several cards tie as most recently placed, all of them go.",
+      "sections": [
+        "9.6.2",
+        "9.6.2.1"
+      ],
+      "status": "planned",
+      "milestone": "M1",
+      "impl": [],
+      "notes": "Needs a placement timestamp per card in these zones. Used by PLAY-06 and PLAY-08."
+    },
+    {
+      "id": "ILL-03",
+      "area": "ILL",
+      "statement": "If a marker area contains cards while its matching stage position has no character, all of those cards go to their respective owners' waiting rooms as a check-type rule action.",
+      "sections": [
+        "9.7.1"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Marker area is deferred."
+    },
+    {
+      "id": "KW-01",
+      "area": "KW",
+      "statement": "Alarm is a keyword label for abilities that grant an ability, or let a trigger condition be met, while the card is the top card of its owner's clock; the keyword itself has no effect.",
+      "sections": [
+        "10.1.1",
+        "10.1.2"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "KW-02",
+      "area": "KW",
+      "statement": "Encore [cost] is an automatic ability: when this card goes from the stage to the waiting room, its master may pay the cost, and if they do, the card is put back on the stage position it occupied just before, in the Rest State.",
+      "sections": [
+        "10.2.1",
+        "10.2.2"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Triggers on any stage-to-waiting-room move, not only from Reverse. Optional; declining consumes the standby instance (ABL-12). If the card has left the waiting room before resolution the return fails (ABL-16)."
+    },
+    {
+      "id": "KW-03",
+      "area": "KW",
+      "statement": "Unless something states otherwise, every character has the ability Encore [3] (pay 3 stock).",
+      "sections": [
+        "10.2.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Circled 3 = put exactly 3 stock cards into the waiting room (COST-04). The general Encore form is KW-02."
+    },
+    {
+      "id": "KW-04",
+      "area": "KW",
+      "statement": "A 'when (player) uses this card's Encore' trigger is met when that character is put onto the stage from the waiting room by an Encore effect.",
+      "sections": [
+        "10.2.4"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "KW-05",
+      "area": "KW",
+      "statement": "Assist is a continuous keyword ability: the text after it is an active effect only while the character is on the back stage.",
+      "sections": [
+        "10.3.1",
+        "10.3.2"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Uses the active/inactive mechanism of ABL-06."
+    },
+    {
+      "id": "KW-06",
+      "area": "KW",
+      "statement": "Bond/'Name' [cost] is an automatic ability: when this character is played and placed on stage, or placed on stage from hand, its master may pay the cost to return a card with that name from their waiting room to hand; if several names are listed, a card matching any one of them may be chosen.",
+      "sections": [
+        "10.4.1",
+        "10.4.2",
+        "10.4.2.1"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "KW-07",
+      "area": "KW",
+      "statement": "Backup is an activated keyword ability that the non-turn player uses from their hand during the Counter Step of an attack sub-phase in which one of their characters is frontal attacked.",
+      "sections": [
+        "10.5.1"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Counter Step only occurs for frontal attacks (7.3.1.3), so Backup is unavailable on side and direct attacks. It is used from hand, not from stage; counter-step limits of 7.4.1.2 apply. Where the card goes is set by its printed cost, not by 10.5."
+    },
+    {
+      "id": "KW-08",
+      "area": "KW",
+      "statement": "Backup (X), Level (Y) [cost]: after paying the cost, the player picks one of their own characters that is currently defending and raises its power by X for the rest of the turn. The ability is usable only during the opponent's Counter Step, and only when the player's level is at least Y.",
+      "sections": [
+        "10.5.2"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": "Level = number of cards in the player's level zone."
+    },
+    {
+      "id": "KW-09",
+      "area": "KW",
+      "statement": "A 'when (player) uses Backup' trigger is met once that player finishes paying the cost of a Backup ability.",
+      "sections": [
+        "10.5.3"
+      ],
+      "status": "planned",
+      "milestone": "M3",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "KW-10",
+      "area": "KW",
+      "statement": "Great Performance: while this character is in the middle position of its master's center stage and is not Reversed, any attack by an opposing character becomes a frontal attack against this character as though it were the defending character.",
+      "sections": [
+        "10.6.1",
+        "10.6.2"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Acts as an attack-type replacement; see ABL-23 for ordering."
+    },
+    {
+      "id": "KW-11",
+      "area": "KW",
+      "statement": "Brainstorm labels effects that flip a set number of cards off the top of the deck into the waiting room and check their information; the flipped cards all go to the resolution zone first and then move to the waiting room together, and 'uses Brainstorm' means the moment they land in the waiting room.",
+      "sections": [
+        "10.7.1",
+        "10.7.2",
+        "10.7.3",
+        "10.7.4"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "KW-12",
+      "area": "KW",
+      "statement": "Change labels abilities that either, when the Change character goes to a specified zone, bring a specified character from that zone into the Change character's former zone, or exchange the Change character with a specified character in a specified zone; the exchange is not done if, during resolution, the Change character changed zones (stage-position moves aside) or the specified card is not in that zone. 'Uses Change' and 'placed on the stage by a Change effect' refer to a character being put onto the stage by such an effect.",
+      "sections": [
+        "10.8.1",
+        "10.8.2",
+        "10.8.3",
+        "10.8.4",
+        "10.8.5"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "KW-13",
+      "area": "KW",
+      "statement": "Memory labels abilities that count cards (etc.) in the memory zone or that work while the card is in memory; the keyword itself has no effect.",
+      "sections": [
+        "10.9.1",
+        "10.9.2"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Memory zone mechanics are deferred."
+    },
+    {
+      "id": "KW-14",
+      "area": "KW",
+      "statement": "Experience labels abilities that count cards (etc.) in the level zone or that work while the card is in the level zone; the keyword itself has no effect.",
+      "sections": [
+        "10.10.1",
+        "10.10.2"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "KW-15",
+      "area": "KW",
+      "statement": "Shift, Level N: at the start of its master's main phase, if this card is in clock and their level is N or higher, they may swap it with a same-colored card from hand; exactly those two cards must be chosen, and no swap is allowed if this card cannot be chosen or there is no same-colored card in hand.",
+      "sections": [
+        "10.11.1",
+        "10.11.2",
+        "10.11.3",
+        "10.11.3.1",
+        "10.11.3.2",
+        "10.11.4"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "KW-16",
+      "area": "KW",
+      "statement": "Accelerate labels abilities whose cost includes putting a card into the clock; 'uses Accelerate' means finishing payment of that cost.",
+      "sections": [
+        "10.12.1",
+        "10.12.2",
+        "10.12.3"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "KW-17",
+      "area": "KW",
+      "statement": "Resonate labels cards or abilities that reveal a specified card from hand in their cost or effect; it counts as used when that reveal cost is paid, or, when the reveal is not a cost, when the 'you may reveal' cards are revealed as specified.",
+      "sections": [
+        "10.13.1",
+        "10.13.2",
+        "10.13.3",
+        "10.13.3.1",
+        "10.13.3.2"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "KW-18",
+      "area": "KW",
+      "statement": "Fusion labels activated abilities that put this character and another specified character as markers under a character searched from the deck and placed on this card's position; if that character is not placed, the effect stops with the cost character left as a marker of the Fusion character and the deck still shuffled.",
+      "sections": [
+        "10.14.1",
+        "10.14.1.1",
+        "10.14.1.1.1",
+        "10.14.1.1.2",
+        "10.14.1.1.2.1",
+        "10.14.2",
+        "10.14.3"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Existing markers of the Fusion character carry over to the new one; markers of the cost character go to the waiting room when the cost is paid."
+    },
+    {
+      "id": "KW-19",
+      "area": "KW",
+      "statement": "Sunder: at the end of this character's attack, its master may pay the cost to put a named marker from under it onto a chosen stage position as a new character (in Stand State unless stated), with this card and the other markers under it; if no such named marker exists when the cost is paid, nothing further happens.",
+      "sections": [
+        "10.15.1",
+        "10.15.2",
+        "10.15.3",
+        "10.15.3.1",
+        "10.15.4"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "The new character carries over none of the effects or statuses of the Sunder character."
+    },
+    {
+      "id": "KW-20",
+      "area": "KW",
+      "statement": "Link (Name) is a continuous ability that only names something; it has no effect of its own, but other effects can refer to cards 'with' that Link name.",
+      "sections": [
+        "10.16.1",
+        "10.16.2",
+        "10.16.3",
+        "10.16.4",
+        "10.16.4.1"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "KW-21",
+      "area": "KW",
+      "statement": "An activated or automatic ability marked N/Turn cannot be played once it has been played N times this turn; while under that limit, a standby automatic ability with this restriction may be either played or have one standby instance discarded unplayed.",
+      "sections": [
+        "10.17.1",
+        "10.17.2",
+        "10.17.2.1",
+        "10.17.3",
+        "10.17.4"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": "Exception to mandatory play of standby abilities (ABL-11)."
+    },
+    {
+      "id": "MISC-01",
+      "area": "MISC",
+      "statement": "In an infinite loop that neither player can stop the game is a draw; if one player can stop it they declare a repeat count, run it that many times, and stop it, and if both can, turn player then opponent declare counts and the lower declarer runs and stops it. Afterward, if the game state is exactly unchanged, the loop may not be chosen again (only by the higher declarer when both could stop it), except when forced by automatic abilities and the like.",
+      "sections": [
+        "11.1.1",
+        "11.1.1.1",
+        "11.1.1.2",
+        "11.1.1.3"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "MISC-02",
+      "area": "MISC",
+      "statement": "An effect granting an additional turn makes the named player the next turn player when play passes from the End Phase to a new turn; if several such effects exist, the turn player applies one of the most recently generated and the rest wait until the following turn.",
+      "sections": [
+        "11.2.1",
+        "11.2.2"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "MISC-03",
+      "area": "MISC",
+      "statement": "A Replay Command (green-bordered text with a Replay Icon) has its Replay Effect carried out only when the card's own effect resolves the red text naming its Replay Action; nothing else can make the Replay Command happen.",
+      "sections": [
+        "11.3.1",
+        "11.3.1.1",
+        "11.3.1.2",
+        "11.3.1.3",
+        "11.3.2"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": ""
+    },
+    {
+      "id": "MISC-04",
+      "area": "MISC",
+      "statement": "When an effect jumps play to a named phase or step, continuous effects due to expire in between end, the intervening phases/steps and their check timings are skipped along with anything that would have happened in them, and pending check-type rule actions and standby automatic abilities are handled at the check timing of the destination phase or step.",
+      "sections": [
+        "11.4.1",
+        "11.4.1.1",
+        "11.4.1.2",
+        "11.4.1.3"
+      ],
+      "status": "deferred",
+      "milestone": "none",
+      "impl": [],
+      "notes": ""
+    }
+  ]
+}

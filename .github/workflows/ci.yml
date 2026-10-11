@@ -1,0 +1,58 @@
+name: ci
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  EXPO_NO_TELEMETRY: '1'
+
+jobs:
+  static:
+    name: typecheck, lint, unit tests, matrix, assets
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run check:matrix
+      - run: npm run check:assets
+
+  web-e2e:
+    name: web build + Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Installs the Chromium build that matches the pinned @playwright/test.
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build:web
+      - run: npm run e2e
+        env:
+          CI: '1'
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: e2e-artifacts
+          path: e2e/artifacts/
+          retention-days: 14

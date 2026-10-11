@@ -1,0 +1,38 @@
+# dependencies and build output
+node_modules/
+dist/
+web-build/
+.expo/
+coverage/
+*.tsbuildinfo
+
+# test artifacts
+e2e/artifacts/
+test-results/
+playwright-report/
+
+# Bushiroad's rules PDF and extracted text: copyrighted, never committed
+docs/_private/
+
+# user card data stays on the device / local machine
+local-cards/
+
+# env and OS noise
+.env*
+!.env.example
+.DS_Store
+npm-debug.log*
+
+# Expo / Metro / native (from the Expo template)
+expo-env.d.ts
+.metro-health-check*
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+/ios
+/android

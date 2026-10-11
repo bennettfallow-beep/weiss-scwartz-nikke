@@ -1,0 +1,32 @@
+{
+  "android-icon-background.png": {
+    "source": "Expo blank-typescript template (create-expo-app, SDK 57)",
+    "license": "MIT",
+    "notes": "Temporary app icon; see assets/licenses/expo-template-MIT.txt. To be replaced by original art."
+  },
+  "android-icon-foreground.png": {
+    "source": "Expo blank-typescript template (create-expo-app, SDK 57)",
+    "license": "MIT",
+    "notes": "Temporary app icon; see assets/licenses/expo-template-MIT.txt. To be replaced by original art."
+  },
+  "android-icon-monochrome.png": {
+    "source": "Expo blank-typescript template (create-expo-app, SDK 57)",
+    "license": "MIT",
+    "notes": "Temporary app icon; see assets/licenses/expo-template-MIT.txt. To be replaced by original art."
+  },
+  "favicon.png": {
+    "source": "Expo blank-typescript template (create-expo-app, SDK 57)",
+    "license": "MIT",
+    "notes": "Temporary app icon; see assets/licenses/expo-template-MIT.txt. To be replaced by original art."
+  },
+  "icon.png": {
+    "source": "Expo blank-typescript template (create-expo-app, SDK 57)",
+    "license": "MIT",
+    "notes": "Temporary app icon; see assets/licenses/expo-template-MIT.txt. To be replaced by original art."
+  },
+  "splash-icon.png": {
+    "source": "Expo blank-typescript template (create-expo-app, SDK 57)",
+    "license": "MIT",
+    "notes": "Temporary app icon; see assets/licenses/expo-template-MIT.txt. To be replaced by original art."
+  }
+}
