@@ -3,32 +3,32 @@
 
 Source: Weiss Schwarz (English Edition) Comprehensive Rules v2.10. Statements are paraphrases, not rule text.
 
-Rows: 269 · verified 0 · planned 232 · deferred 33 · out 4
+Rows: 269 · verified 103 · planned 129 · deferred 33 · out 4
 
 ## GEN: Player count and golden rules (CR 1.1, 1.3)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| GEN-01 | A game has exactly two players; the comprehensive rules make no provision for any other player count. | §1.1.1 | planned | M1 | 0 |
+| GEN-01 | A game has exactly two players; the comprehensive rules make no provision for any other player count. | §1.1.1 | verified | M1 | 2 |
 | GEN-02 | Where a card's text and the comprehensive rules disagree, the card's text governs. | §1.3.1 | planned | M3 | 0 |
 | GEN-03 | If the English Edition and Japanese Edition text of a card conflict, each player is governed by the card text in their own language edition. | §1.3.1.1 | deferred | none | 0 |
-| GEN-04 | A player told to do something impossible simply does nothing; a player told to do several things of which only some are possible does as many of them as they can. | §1.3.2 | planned | M1 | 0 |
-| GEN-05 | An instruction to put something into a state it is already in (e.g., resting an already-rested character) has no effect: the thing does not newly enter that state and the action counts as not performed. | §1.3.2.1 | planned | M1 | 0 |
-| GEN-06 | An action required to be done zero or a negative number of times is not done at all, and a negative count never causes the opposite action to happen. | §1.3.2.2 | planned | M1 | 0 |
+| GEN-04 | A player told to do something impossible simply does nothing; a player told to do several things of which only some are possible does as many of them as they can. | §1.3.2 | verified | M1 | 2 |
+| GEN-05 | An instruction to put something into a state it is already in (e.g., resting an already-rested character) has no effect: the thing does not newly enter that state and the action counts as not performed. | §1.3.2.1 | verified | M1 | 1 |
+| GEN-06 | An action required to be done zero or a negative number of times is not done at all, and a negative count never causes the opposite action to happen. | §1.3.2.2 | verified | M1 | 3 |
 | GEN-07 | When one card effect tries to perform an action while another card effect at the same time prevents that action, the preventing effect wins. | §1.3.3 | planned | M3 | 0 |
-| GEN-08 | When both players must make decisions at the same moment, the turn player decides first, and the non-turn player then decides with knowledge of the turn player's choice. | §1.3.4 | planned | M1 | 0 |
+| GEN-08 | When both players must make decisions at the same moment, the turn player decides first, and the non-turn player then decides with knowledge of the turn player's choice. | §1.3.4 | verified | M1 | 1 |
 | GEN-09 | When a player must pick a number, it must be zero or a positive whole number unless stated otherwise; fractions and negative values are not allowed. | §1.3.5 | planned | M3 | 0 |
 
 ## WIN: Winning, losing, draws, conceding (CR 1.2)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| WIN-01 | The moment any player loses, the game ends at once; a player wins when their opponent has lost and they themselves have not. | §1.2.1 | planned | M1 | 0 |
-| WIN-02 | Meeting a losing condition does not end the game on the spot; the player loses through a rule action the next time rule actions are processed. | §1.2.2 | planned | M1 | 0 |
-| WIN-03 | A player who has four or more cards in their level zone meets a losing condition. | §1.2.2.1, §3.9.3 | planned | M1 | 0 |
-| WIN-04 | A player who has no cards in their deck and also no cards in their waiting room meets a losing condition. | §1.2.2.2 | planned | M1 | 0 |
-| WIN-05 | If both players lose at the same time, the game ends as a draw. | §1.2.3 | planned | M1 | 0 |
-| WIN-06 | A player may concede at any moment; conceding removes them from the game, makes them lose immediately without going through a check timing, and ends the game. | §1.2.4 | planned | M1 | 0 |
+| WIN-01 | The moment any player loses, the game ends at once; a player wins when their opponent has lost and they themselves have not. | §1.2.1 | verified | M1 | 2 |
+| WIN-02 | Meeting a losing condition does not end the game on the spot; the player loses through a rule action the next time rule actions are processed. | §1.2.2 | verified | M1 | 2 |
+| WIN-03 | A player who has four or more cards in their level zone meets a losing condition. | §1.2.2.1, §3.9.3 | verified | M1 | 1 |
+| WIN-04 | A player who has no cards in their deck and also no cards in their waiting room meets a losing condition. | §1.2.2.2 | verified | M1 | 3 |
+| WIN-05 | If both players lose at the same time, the game ends as a draw. | §1.2.3 | verified | M1 | 2 |
+| WIN-06 | A player may concede at any moment; conceding removes them from the game, makes them lose immediately without going through a check timing, and ends the game. | §1.2.4 | verified | M1 | 2 |
 | WIN-07 | Card effects cannot prevent or interfere with a concession, cannot compel a player to concede, and cannot turn a game loss into a concession. | §1.2.4.1 | planned | M3 | 0 |
 | WIN-08 | When a card effect makes a player win or lose, that result happens during the effect's resolution and the game ends right then, without waiting for a check timing. | §1.2.5 | planned | M3 | 0 |
 
@@ -36,74 +36,74 @@ Rows: 269 · verified 0 · planned 232 · deferred 33 · out 4
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| CARD-01 | A card's name identifies it; small reading-aid characters printed above the name, and any portions that are struck through or painted over, are not part of the name and are ignored whenever names are referenced. | §2.1.1, §2.1.1.1, §2.1.1.2 | planned | M1 | 0 |
+| CARD-01 | A card's name identifies it; small reading-aid characters printed above the name, and any portions that are struck through or painted over, are not part of the name and are ignored whenever names are referenced. | §2.1.1, §2.1.1.1, §2.1.1.2 | verified | M1 | 3 |
 | CARD-02 | Some cards have no Japanese card name because they did not yet exist in the Japanese Edition when the English product was first printed. | §2.1.1.3 | out | none | 0 |
 | CARD-03 | A name written in quotation marks inside card text refers, unless stated otherwise, to a card bearing exactly that name. | §2.1.2 | planned | M3 | 0 |
 | CARD-04 | Text of the form 'with "X" in its card name' matches cards whose name contains X as a portion: the bilingual form matches a part of the English name together with a part of the Japanese name, and the English-only form requires X to be bounded on each side by a punctuation mark or by nothing (start/end of the name). | §2.1.2.1, §2.1.2.2 | deferred | none | 0 |
 | CARD-05 | The illustration (including any flavor text printed above the card text), reminder text, collection ID, rarity, illustrator, and copyright information have no effect on gameplay. | §2.2.1, §2.2.2, §2.2.3, §2.12.3, §2.14.1, §2.14.2, §2.15.1, §2.15.2, §2.16.1, §2.16.2, §2.17.1, §2.17.2 | out | none | 0 |
-| CARD-06 | Every card is exactly one of three types: character, event, or climax. | §2.3.1, §2.3.2 | planned | M1 | 0 |
+| CARD-06 | Every card is exactly one of three types: character, event, or climax. | §2.3.1, §2.3.2 | verified | M1 | 2 |
 | CARD-07 | When card text says 'character' without naming a zone, it means a character on the stage. | §2.3.2.1.2 | planned | M3 | 0 |
 | CARD-08 | When card text says 'climax' (which may be abbreviated 'CX') without naming a zone, it means a climax card placed in the climax area. | §2.3.2.3.2, §2.3.2.3.3 | planned | M3 | 0 |
-| CARD-09 | Each card has a color, and its color restricts whether the card may be played, as set out in Section 8. | §2.4.1, §2.4.2 | planned | M1 | 0 |
+| CARD-09 | Each card has a color, and its color restricts whether the card may be played, as set out in Section 8. | §2.4.1, §2.4.2 | verified | M1 | 4 |
 | CARD-10 | Traits exist only on characters; they have no rules effect of their own but abilities and effects may refer to them, marked with double angle brackets. | §2.5.1, §2.5.2, §2.5.3 | planned | M3 | 0 |
-| CARD-11 | Level exists only on characters and events and is the minimum player level required to play that card, as governed by Section 8. | §2.6.1, §2.6.2 | planned | M1 | 0 |
-| CARD-12 | Cost exists only on characters and events; to play the card, that many cards must be moved from the player's stock to their waiting room. | §2.7.1, §2.7.2 | planned | M1 | 0 |
+| CARD-11 | Level exists only on characters and events and is the minimum player level required to play that card, as governed by Section 8. | §2.6.1, §2.6.2 | verified | M1 | 4 |
+| CARD-12 | Cost exists only on characters and events; to play the card, that many cards must be moved from the player's stock to their waiting room. | §2.7.1, §2.7.2 | verified | M1 | 6 |
 | CARD-13 | A card with the Counter icon may be played during the Counter Step of the opponent's turn. | §2.8.1, §2.8.2 | planned | M2 | 0 |
-| CARD-14 | Unless stated otherwise, a card with the Counter icon may also be played during its owner's own main phase. | §2.8.2.1 | planned | M1 | 0 |
+| CARD-14 | Unless stated otherwise, a card with the Counter icon may also be played during its owner's own main phase. | §2.8.2.1 | verified | M1 | 2 |
 | CARD-15 | A card with the Clock icon has an ability that is relevant while the card is in the clock. | §2.8.3 | deferred | none | 0 |
 | CARD-16 | Power exists only on characters and is the character's strength in battle. | §2.9.1 | planned | M2 | 0 |
 | CARD-17 | Soul exists only on characters and is the base amount of damage the character deals in its battle; it is shown by the number of soul icons rather than as a printed number. | §2.10.1, §2.10.2 | planned | M2 | 0 |
 | CARD-18 | A card's trigger icon(s) determine what happens when that card is revealed in the Trigger Step of an attack. | §2.11.1 | planned | M2 | 0 |
 | CARD-19 | Unless stated otherwise, a character's card text works only while it is on the stage and a climax's card text works only while it is in the climax area; however, an ability that by its nature is meant to be used in some other zone works in that zone. | §2.12.1, §2.12.2, §2.12.2.1, §2.12.2.2, §2.12.2.3 | planned | M3 | 0 |
 | CARD-20 | Title name and Weiss/Schwarz side affiliation (shown by a white, black, or white-to-black gradient side frame) have no rules meaning in themselves, although effects may refer to them. | §2.13.1, §2.13.2, §2.18.1, §2.18.1.1, §2.18.1.2, §2.18.1.3, §2.18.2 | out | none | 0 |
-| CARD-21 | When a rule or effect checks information a card does not have, missing numeric information counts as 0 and missing non-numeric information counts as nonexistent. | §2.19.1 | planned | M1 | 0 |
+| CARD-21 | When a rule or effect checks information a card does not have, missing numeric information counts as 0 and missing non-numeric information counts as nonexistent. | §2.19.1 | verified | M1 | 2 |
 | CARD-22 | When two non-numeric values are compared and at least one of them is missing, they are never treated as identical. | §2.19.2 | planned | M3 | 0 |
 
 ## ZONE: Zones of the game (CR 3)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| ZONE-01 | Unless stated otherwise, each player has their own separate copy of every zone. | §3.1.1 | planned | M1 | 0 |
-| ZONE-02 | Zones are classed as public or hidden according to whether card information in them is open, but the number of cards in every zone is open information that any player may check at any time. | §3.1.2, §3.1.3 | planned | M1 | 0 |
-| ZONE-03 | Unless stated otherwise, a card that moves to another zone is treated as a brand-new card there and no effects applied to it earlier carry over; a move from one stage position to another is the exception. | §3.1.4 | planned | M1 | 0 |
-| ZONE-04 | When several cards enter a zone together, their owner picks their order in that zone unless stated otherwise. | §3.1.5 | planned | M1 | 0 |
-| ZONE-05 | If cards go from a public zone into a hidden zone and their owner gets to choose the order, no other player may learn that order; however, when cards go to a specific position of a hidden zone, all players may know how many went there. | §3.1.5.1, §3.1.5.1.1 | planned | M1 | 0 |
-| ZONE-06 | If a card is sent to a zone without saying whose zone it is, and no other instruction applies, it goes to its owner's zone. | §3.1.6 | planned | M1 | 0 |
-| ZONE-07 | The deck, where a player's deck starts the game, is a hidden zone: its cards are face down, and no player may see their information or order or rearrange them. | §3.2.1, §3.2.2 | planned | M1 | 0 |
-| ZONE-08 | When something acts on several cards taken from the deck top or bottom, the cards are handled singly, one after another, in deck order. | §3.2.3 | planned | M1 | 0 |
+| ZONE-01 | Unless stated otherwise, each player has their own separate copy of every zone. | §3.1.1 | verified | M1 | 1 |
+| ZONE-02 | Zones are classed as public or hidden according to whether card information in them is open, but the number of cards in every zone is open information that any player may check at any time. | §3.1.2, §3.1.3 | verified | M1 | 3 |
+| ZONE-03 | Unless stated otherwise, a card that moves to another zone is treated as a brand-new card there and no effects applied to it earlier carry over; a move from one stage position to another is the exception. | §3.1.4 | verified | M1 | 2 |
+| ZONE-04 | When several cards enter a zone together, their owner picks their order in that zone unless stated otherwise. | §3.1.5 | verified | M1 | 3 |
+| ZONE-05 | If cards go from a public zone into a hidden zone and their owner gets to choose the order, no other player may learn that order; however, when cards go to a specific position of a hidden zone, all players may know how many went there. | §3.1.5.1, §3.1.5.1.1 | verified | M1 | 1 |
+| ZONE-06 | If a card is sent to a zone without saying whose zone it is, and no other instruction applies, it goes to its owner's zone. | §3.1.6 | verified | M1 | 1 |
+| ZONE-07 | The deck, where a player's deck starts the game, is a hidden zone: its cards are face down, and no player may see their information or order or rearrange them. | §3.2.1, §3.2.2 | verified | M1 | 2 |
+| ZONE-08 | When something acts on several cards taken from the deck top or bottom, the cards are handled singly, one after another, in deck order. | §3.2.3 | verified | M1 | 2 |
 | ZONE-09 | For an 'up to N' deck action, before handling each next card the player may declare that they stop, which ends the action; they may even stop before handling the first card. | §3.2.3.1, §3.2.3.1.1 | planned | M3 | 0 |
-| ZONE-10 | If the deck becomes empty partway through such a deck action, the action is paused, a refresh (9.2) is carried out, and the action then resumes. | §3.2.3.2 | planned | M1 | 0 |
+| ZONE-10 | If the deck becomes empty partway through such a deck action, the action is paused, a refresh (9.2) is carried out, and the action then resumes. | §3.2.3.2 | verified | M1 | 2 |
 | ZONE-11 | If the deck holds fewer cards than the action specifies, and cards would still remain in the deck after handling as many cards as it holds (e.g., merely looking at them), the player handles only the cards present and the action ends. | §3.2.3.3 | planned | M3 | 0 |
-| ZONE-12 | Shuffling puts the deck into an unpatterned random order, and the deck's owner always performs the shuffle regardless of who is master of the ability that called for it. | §3.2.4 | planned | M1 | 0 |
+| ZONE-12 | Shuffling puts the deck into an unpatterned random order, and the deck's owner always performs the shuffle regardless of who is master of the ability that called for it. | §3.2.4 | verified | M1 | 2 |
 | ZONE-13 | Cards flipped over from the deck are revealed and placed in the resolution zone. | §3.2.5 | planned | M2 | 0 |
-| ZONE-14 | Drawn cards go to the hand, which is hidden from the opponent; its owner may look at and reorder their own hand whenever they like. | §3.3.1, §3.3.2 | planned | M1 | 0 |
-| ZONE-15 | During the turn player's End Phase, if that player's hand holds more cards than the hand limit (seven unless an effect says otherwise), they must put cards from hand into their waiting room until they are at the limit. | §3.3.3, §3.3.3.1 | planned | M1 | 0 |
-| ZONE-16 | Unless stated otherwise, characters removed from the stage, used event and climax cards, and cards paid as costs go to the waiting room. | §3.4.1 | planned | M1 | 0 |
-| ZONE-17 | The waiting room is a public zone with all cards face up and viewable by everyone; each new card goes on top, and a player may reorder their own waiting room. | §3.4.2 | planned | M1 | 0 |
-| ZONE-18 | Each player's stage, where characters are placed, consists of five stage positions: three center-stage positions (left 1, middle 2, right 3) and two back-stage positions (left 4, right 5); a card on any stage position counts as being on the stage. | §3.5.1, §3.5.2, §3.6.1, §3.6.4 | planned | M1 | 0 |
-| ZONE-19 | The stage and its stage positions are public zones whose cards are face up and viewable by all, and in principle each stage position holds at most one card. | §3.5.3, §3.6.2 | planned | M1 | 0 |
-| ZONE-20 | A card put onto a stage position from any zone other than a stage position arrives in the stand state, while a card moved from one stage position to another keeps its current orientation. | §3.6.3 | planned | M1 | 0 |
-| ZONE-21 | Stage positions pair up front-to-back as 1-4, 2-4, 2-5 and 3-5: from a back-stage position, its paired center positions are 'in front', and from a center position, its paired back positions are 'behind'. | §3.6.5 | planned | M1 | 0 |
-| ZONE-22 | Center-stage positions face the opponent's in mirror order: your 1 faces their 3, your 2 faces their 2, and your 3 faces their 1. | §3.6.6 | planned | M1 | 0 |
-| ZONE-23 | A non-character card on a stage position is put into its owner's waiting room by rule action. | §3.6.7 | planned | M1 | 0 |
+| ZONE-14 | Drawn cards go to the hand, which is hidden from the opponent; its owner may look at and reorder their own hand whenever they like. | §3.3.1, §3.3.2 | verified | M1 | 4 |
+| ZONE-15 | During the turn player's End Phase, if that player's hand holds more cards than the hand limit (seven unless an effect says otherwise), they must put cards from hand into their waiting room until they are at the limit. | §3.3.3, §3.3.3.1 | verified | M1 | 4 |
+| ZONE-16 | Unless stated otherwise, characters removed from the stage, used event and climax cards, and cards paid as costs go to the waiting room. | §3.4.1 | verified | M1 | 2 |
+| ZONE-17 | The waiting room is a public zone with all cards face up and viewable by everyone; each new card goes on top, and a player may reorder their own waiting room. | §3.4.2 | verified | M1 | 2 |
+| ZONE-18 | Each player's stage, where characters are placed, consists of five stage positions: three center-stage positions (left 1, middle 2, right 3) and two back-stage positions (left 4, right 5); a card on any stage position counts as being on the stage. | §3.5.1, §3.5.2, §3.6.1, §3.6.4 | verified | M1 | 2 |
+| ZONE-19 | The stage and its stage positions are public zones whose cards are face up and viewable by all, and in principle each stage position holds at most one card. | §3.5.3, §3.6.2 | verified | M1 | 3 |
+| ZONE-20 | A card put onto a stage position from any zone other than a stage position arrives in the stand state, while a card moved from one stage position to another keeps its current orientation. | §3.6.3 | verified | M1 | 3 |
+| ZONE-21 | Stage positions pair up front-to-back as 1-4, 2-4, 2-5 and 3-5: from a back-stage position, its paired center positions are 'in front', and from a center position, its paired back positions are 'behind'. | §3.6.5 | verified | M1 | 1 |
+| ZONE-22 | Center-stage positions face the opponent's in mirror order: your 1 faces their 3, your 2 faces their 2, and your 3 faces their 1. | §3.6.6 | verified | M1 | 1 |
+| ZONE-23 | A non-character card on a stage position is put into its owner's waiting room by rule action. | §3.6.7 | verified | M1 | 2 |
 | ZONE-24 | Each stage position has its own marker area, which has the same positional relations as that position (center/back, left/middle/right, in front, behind, facing) but is a separate zone that is not on the stage; a character whose marker area holds cards is a 'character with marker(s)'. | §3.7.1.1, §3.7.1.2, §3.7.4 | deferred | none | 0 |
 | ZONE-25 | The marker area is hidden: by default its cards are face down and no one may see their information or order or reorder them; cards are added on top (in any order if several at once) and removed from the top in order. Some effects place markers face up, which all players may then see, and when a face-up marker is exchanged with a face-up card on the stage, both stay face up after the swap. | §3.7.2, §3.7.2.1, §3.7.2.1.1, §3.7.2.2 | deferred | none | 0 |
 | ZONE-26 | Markers travel with their character: if it moves to another stage position of the same master, its markers move with it and any markers already in the destination marker area go to their owner's waiting room; if it moves to any non-stage-position zone, its markers go to their owner's waiting room at the same time. | §3.7.3, §3.7.3.1, §3.7.3.2 | deferred | none | 0 |
-| ZONE-27 | The clock is a public zone whose cards are face up with their information and order visible to all; no player may reorder it, and each new card goes on top. | §3.8.1, §3.8.2 | planned | M1 | 0 |
-| ZONE-28 | When a player has seven or more cards in clock, a rule action has them choose one of the bottom seven clock cards to put into their level, and the other cards among those seven go to their waiting room in any order. | §3.8.3, §3.9.1 | planned | M1 | 0 |
-| ZONE-29 | The level zone is public: unless stated otherwise its cards are face up and viewable by all, players may not reorder the face-up cards in their own level, and new cards go on top. | §3.9.2, §3.9.2.1, §3.9.3 | planned | M1 | 0 |
+| ZONE-27 | The clock is a public zone whose cards are face up with their information and order visible to all; no player may reorder it, and each new card goes on top. | §3.8.1, §3.8.2 | verified | M1 | 3 |
+| ZONE-28 | When a player has seven or more cards in clock, a rule action has them choose one of the bottom seven clock cards to put into their level, and the other cards among those seven go to their waiting room in any order. | §3.8.3, §3.9.1 | verified | M1 | 3 |
+| ZONE-29 | The level zone is public: unless stated otherwise its cards are face up and viewable by all, players may not reorder the face-up cards in their own level, and new cards go on top. | §3.9.2, §3.9.2.1, §3.9.3 | verified | M1 | 2 |
 | ZONE-30 | Unless stated otherwise, face-down cards in the level are visible only to their owner and count as blank cards with no information; when one moves to another zone it is placed face up or face down according to the destination, and its information is not revealed if it moves to a hidden zone. | §3.9.2.2, §3.9.2.2.1, §3.9.2.2.2 | deferred | none | 0 |
-| ZONE-31 | The stock is a hidden zone: cards are face down, no one may see or reorder them, new cards go on top, and cards leaving the stock must be taken from the top in order. | §3.10.1, §3.10.2 | planned | M1 | 0 |
-| ZONE-32 | Climax cards are placed in the climax area (also called 'CX area') when played; it is a public zone, its cards are face up, and in principle it holds only one card. | §3.11.1, §3.11.2, §3.11.4 | planned | M1 | 0 |
-| ZONE-33 | A non-climax card in the climax area is put into its owner's waiting room by rule action. | §3.11.3 | planned | M1 | 0 |
+| ZONE-31 | The stock is a hidden zone: cards are face down, no one may see or reorder them, new cards go on top, and cards leaving the stock must be taken from the top in order. | §3.10.1, §3.10.2 | verified | M1 | 4 |
+| ZONE-32 | Climax cards are placed in the climax area (also called 'CX area') when played; it is a public zone, its cards are face up, and in principle it holds only one card. | §3.11.1, §3.11.2, §3.11.4 | verified | M1 | 2 |
+| ZONE-33 | A non-climax card in the climax area is put into its owner's waiting room by rule action. | §3.11.3 | verified | M1 | 1 |
 | ZONE-34 | The memory is a zone cards enter only when explicitly instructed; it is public, its cards are face up unless stated otherwise and viewable by all, and a player may reorder the face-up cards in their own memory. Cards there may be called simply 'memory'. | §3.12.1, §3.12.2, §3.12.2.1, §3.12.2.3 | deferred | none | 0 |
 | ZONE-35 | Unless stated otherwise, face-down cards in memory are visible only to their owner, must be kept so the order they were placed face down is clear, and count as blank unless their ability explicitly works face down there; when moved they are placed face up or down according to the destination without revealing information if it is hidden, and when shuffled by an effect no player may see them unless the effect says they may be seen or revealed. | §3.12.2.2, §3.12.2.2.1, §3.12.2.2.2, §3.12.2.2.3 | deferred | none | 0 |
-| ZONE-36 | A played event card goes to the resolution zone, and after its effect resolves it goes to its owner's waiting room. | §3.13.1, §3.13.1.1 | planned | M1 | 0 |
+| ZONE-36 | A played event card goes to the resolution zone, and after its effect resolves it goes to its owner's waiting room. | §3.13.1, §3.13.1.1 | verified | M1 | 2 |
 | ZONE-37 | A card revealed by a Trigger Check goes to the resolution zone, and once the revealed card's effect has resolved it goes face down into its owner's stock. | §3.13.1.2 | planned | M2 | 0 |
 | ZONE-38 | Cards revealed during the Damage Process go to the resolution zone; if Damage Cancel occurs they go to their owner's waiting room, otherwise to their owner's clock. | §3.13.1.3 | planned | M2 | 0 |
 | ZONE-39 | When several damage cards go to the clock together, they are placed on top of the clock in the same order in which they entered the resolution zone. | §3.13.1.3.1 | planned | M2 | 0 |
 | ZONE-40 | Cards placed in the resolution zone by a Brainstorm ability sit there temporarily and then go to their owner's waiting room. | §3.13.1.4 | deferred | none | 0 |
-| ZONE-41 | The resolution zone is public, with cards face up and their information and order visible to all; no player may reorder it, and each new card goes on top. | §3.13.2 | planned | M1 | 0 |
+| ZONE-41 | The resolution zone is public, with cards face up and their information and order visible to all; no player may reorder it, and each new card goes on top. | §3.13.2 | verified | M1 | 2 |
 
 ## CONC: Basic concepts (CR 4.1-4.9)
 
@@ -112,19 +112,19 @@ Rows: 269 · verified 0 · planned 232 · deferred 33 · out 4
 | CONC-01 | Every ability is an instruction that originates either from printed card text or from an effect, and each one belongs to exactly one category: activated, automatic, or continuous. | §4.1.1, §4.1.1.1 | planned | M3 | 0 |
 | CONC-02 | An effect is the content of what an ability instructs; the engine must distinguish one-shot effects from continuous effects as two of the three effect categories. | §4.1.2, §4.1.2.1 | planned | M3 | 0 |
 | CONC-03 | Replacement effects form a third, separate category of effects. | §4.1.2.1 | deferred | none | 0 |
-| CONC-04 | A card's owner is the player whose deck contained that card when the game began. | §4.2.1, §4.2.2 | planned | M1 | 0 |
+| CONC-04 | A card's owner is the player whose deck contained that card when the game began. | §4.2.1, §4.2.2 | verified | M1 | 4 |
 | CONC-05 | When the game is over, each player takes back the cards they own. | §4.2.3 | out | none | 0 |
-| CONC-06 | The master of a card is the player currently using it, which for a card in a zone is the player that zone belongs to. | §4.3.1, §4.3.2 | planned | M1 | 0 |
+| CONC-06 | The master of a card is the player currently using it, which for a card in a zone is the player that zone belongs to. | §4.3.1, §4.3.2 | verified | M1 | 3 |
 | CONC-07 | The master of an effect is whoever is master of the ability that generated that effect. | §4.3.3 | planned | M3 | 0 |
 | CONC-08 | Whoever plays an activated ability is its master. | §4.3.4 | planned | M3 | 0 |
 | CONC-09 | An automatic or continuous ability belongs (as master) to whoever is master of the card carrying it; if an effect created the ability, it belongs to that effect's master instead. | §4.3.5, §4.3.6 | planned | M3 | 0 |
-| CONC-10 | During a check timing, all pending rule actions are resolved first, and automatic abilities in a standby condition whose trigger conditions are met are resolved only once no rule actions remain. | §4.4.1, §4.4.2 | planned | M1 | 0 |
-| CONC-11 | A check timing always happens immediately before a player receives a play timing, and the player gets the play timing only after every rule action and automatic ability from that check timing has been resolved. | §4.5.1, §4.5.2 | planned | M1 | 0 |
-| CONC-12 | At a play timing the player either performs one action that is legal at that moment or chooses to do nothing; after a chosen action resolves, that same player gets another play timing unless something specifies otherwise. | §4.5.3, §4.5.3.1 | planned | M1 | 0 |
-| CONC-13 | When the player with a play timing chooses to do nothing, the game moves forward instead of granting another play timing. | §4.5.3.2 | planned | M1 | 0 |
-| CONC-14 | Each character on the stage is in exactly one of three orientations: stand (upright from its controller's view), rest (sideways) or reverse (upside down), and standing, resting or reversing a card switches it into that orientation. | §4.6.1, §4.6.1.1, §4.6.1.2, §4.6.1.3 | planned | M1 | 0 |
+| CONC-10 | During a check timing, all pending rule actions are resolved first, and automatic abilities in a standby condition whose trigger conditions are met are resolved only once no rule actions remain. | §4.4.1, §4.4.2 | verified | M1 | 3 |
+| CONC-11 | A check timing always happens immediately before a player receives a play timing, and the player gets the play timing only after every rule action and automatic ability from that check timing has been resolved. | §4.5.1, §4.5.2 | verified | M1 | 2 |
+| CONC-12 | At a play timing the player either performs one action that is legal at that moment or chooses to do nothing; after a chosen action resolves, that same player gets another play timing unless something specifies otherwise. | §4.5.3, §4.5.3.1 | verified | M1 | 3 |
+| CONC-13 | When the player with a play timing chooses to do nothing, the game moves forward instead of granting another play timing. | §4.5.3.2 | verified | M1 | 2 |
+| CONC-14 | Each character on the stage is in exactly one of three orientations: stand (upright from its controller's view), rest (sideways) or reverse (upside down), and standing, resting or reversing a card switches it into that orientation. | §4.6.1, §4.6.1.1, §4.6.1.2, §4.6.1.3 | verified | M1 | 3 |
 | CONC-15 | In card text, the stand, rest and reverse icons carry the same meaning as the corresponding words. | §4.6.1.1.1, §4.6.1.2.1, §4.6.1.3.1 | planned | M3 | 0 |
-| CONC-16 | An instruction to draw N cards moves cards into the drawing player's hand from the top of that player's own deck, taking the top card each time. | §4.7.1 | planned | M1 | 0 |
+| CONC-16 | An instruction to draw N cards moves cards into the drawing player's hand from the top of that player's own deck, taking the top card each time. | §4.7.1 | verified | M1 | 3 |
 | CONC-17 | An instruction to look at the top N cards of the deck, or at up to N cards from the top, lets the player check those cards' information while the cards stay in the deck. | §4.8.1 | planned | M3 | 0 |
 | CONC-18 | An instruction to reveal the top N cards of the deck, or up to N cards from the top, shows those cards' information openly while the cards stay in the deck. | §4.9.1 | planned | M3 | 0 |
 
@@ -165,67 +165,67 @@ Rows: 269 · verified 0 · planned 232 · deferred 33 · out 4
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| DECK-01 | Each player brings their own deck, and it must contain exactly 50 cards. | §5.1.1, §5.1.2.1 | planned | M1 | 0 |
-| DECK-02 | A deck may hold at most 4 cards with the same card name, and cards that share a name count toward the same limit even if any of their other information differs. | §5.1.2.2, §5.1.2.2.1 | planned | M1 | 0 |
-| DECK-03 | A deck may contain no more than 8 climax cards, and those climaxes are also bound by the 4-per-card-name limit. | §5.1.2.3 | planned | M1 | 0 |
+| DECK-01 | Each player brings their own deck, and it must contain exactly 50 cards. | §5.1.1, §5.1.2.1 | verified | M1 | 2 |
+| DECK-02 | A deck may hold at most 4 cards with the same card name, and cards that share a name count toward the same limit even if any of their other information differs. | §5.1.2.2, §5.1.2.2.1 | verified | M1 | 3 |
+| DECK-03 | A deck may contain no more than 8 climax cards, and those climaxes are also bound by the 4-per-card-name limit. | §5.1.2.3 | verified | M1 | 2 |
 | DECK-04 | If a card has a continuous ability about deck construction, that card's text replaces the standard deck construction rules to the extent it specifies. | §5.1.2.4 | planned | M3 | 0 |
 
 ## SETUP: Game preparation (CR 5.2)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| SETUP-01 | Before game setup continues, each player's deck must satisfy the deck construction rules. | §5.2.1.1 | planned | M1 | 0 |
-| SETUP-02 | Each deck is randomly shuffled and then placed face down in its player's deck zone. | §5.2.1.2 | planned | M1 | 0 |
-| SETUP-03 | The starting player is chosen at random, and no player can influence or choose the result, including the player selected by the random method. | §5.2.1.3, §5.2.1.3.1 | planned | M1 | 0 |
-| SETUP-04 | Each player draws 5 cards from their deck as their opening hand. | §5.2.1.4 | planned | M1 | 0 |
-| SETUP-05 | After opening hands are drawn, first the starting player and then the other player may put any number of cards from their hand into their own waiting room and draw the same number of cards; each player may do this only once. | §5.2.1.4 | planned | M1 | 0 |
-| SETUP-06 | The starting player is the turn player for the first turn of the game. | §5.2.1.5 | planned | M1 | 0 |
+| SETUP-01 | Before game setup continues, each player's deck must satisfy the deck construction rules. | §5.2.1.1 | verified | M1 | 1 |
+| SETUP-02 | Each deck is randomly shuffled and then placed face down in its player's deck zone. | §5.2.1.2 | verified | M1 | 2 |
+| SETUP-03 | The starting player is chosen at random, and no player can influence or choose the result, including the player selected by the random method. | §5.2.1.3, §5.2.1.3.1 | verified | M1 | 2 |
+| SETUP-04 | Each player draws 5 cards from their deck as their opening hand. | §5.2.1.4 | verified | M1 | 1 |
+| SETUP-05 | After opening hands are drawn, first the starting player and then the other player may put any number of cards from their hand into their own waiting room and draw the same number of cards; each player may do this only once. | §5.2.1.4 | verified | M1 | 5 |
+| SETUP-06 | The starting player is the turn player for the first turn of the game. | §5.2.1.5 | verified | M1 | 1 |
 
 ## TURN: Turn procedure (CR 6.1)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| TURN-01 | Players alternate as turn player; during a turn the turn player goes through the phases in a fixed sequence: Stand, Draw, Clock, Main, Climax, Attack, End. | §6.1.1, §6.8.1.5 | planned | M1 | 0 |
+| TURN-01 | Players alternate as turn player; during a turn the turn player goes through the phases in a fixed sequence: Stand, Draw, Clock, Main, Climax, Attack, End. | §6.1.1, §6.8.1.5 | verified | M1 | 2 |
 
 ## STAND: Stand phase (CR 6.2)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| STAND-01 | At the start of the Stand Phase, both the turn-start and Stand-Phase-start trigger conditions are met and a check timing follows. Once characters are stood, a further check timing is fully resolved before moving to the Draw Phase. | §6.2.1.1, §6.2.1.3 | planned | M1 | 0 |
-| STAND-02 | In the Stand Phase the turn player puts every character on their own stage into the Stand State. Characters on the non-turn player's stage are not stood. | §6.2.1, §6.2.1.2 | planned | M1 | 0 |
+| STAND-01 | At the start of the Stand Phase, both the turn-start and Stand-Phase-start trigger conditions are met and a check timing follows. Once characters are stood, a further check timing is fully resolved before moving to the Draw Phase. | §6.2.1.1, §6.2.1.3 | verified | M1 | 1 |
+| STAND-02 | In the Stand Phase the turn player puts every character on their own stage into the Stand State. Characters on the non-turn player's stage are not stood. | §6.2.1, §6.2.1.2 | verified | M1 | 1 |
 
 ## DRAW: Draw phase (CR 6.3)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| DRAW-01 | The Draw Phase opens with the 'at the beginning of draw phase' trigger condition and a check timing. After the draw, another check timing is fully resolved and play moves to the Clock Phase. | §6.3.1.1, §6.3.1.3 | planned | M1 | 0 |
-| DRAW-02 | In the Draw Phase the turn player draws exactly one card from their deck. | §6.3.1.2 | planned | M1 | 0 |
+| DRAW-01 | The Draw Phase opens with the 'at the beginning of draw phase' trigger condition and a check timing. After the draw, another check timing is fully resolved and play moves to the Clock Phase. | §6.3.1.1, §6.3.1.3 | verified | M1 | 2 |
+| DRAW-02 | In the Draw Phase the turn player draws exactly one card from their deck. | §6.3.1.2 | verified | M1 | 2 |
 
 ## CLOCK: Clock phase (CR 6.4)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| CLOCK-01 | The Clock Phase opens with the 'at the beginning of clock phase' trigger condition and a check timing. After the clock decision, another check timing is fully resolved and play moves to the Main Phase. | §6.4.1.1, §6.4.1.3 | planned | M1 | 0 |
-| CLOCK-02 | In the Clock Phase the turn player may choose one card from hand and put it into their clock. Only if they do so do they then draw two cards. | §6.4.1.2 | planned | M1 | 0 |
+| CLOCK-01 | The Clock Phase opens with the 'at the beginning of clock phase' trigger condition and a check timing. After the clock decision, another check timing is fully resolved and play moves to the Main Phase. | §6.4.1.1, §6.4.1.3 | verified | M1 | 3 |
+| CLOCK-02 | In the Clock Phase the turn player may choose one card from hand and put it into their clock. Only if they do so do they then draw two cards. | §6.4.1.2 | verified | M1 | 3 |
 
 ## MAIN: Main phase (CR 6.5)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| MAIN-01 | The Main Phase starts by meeting the 'at the beginning of main phase' trigger condition. The turn player then gets a play timing, preceded by its check timing, in which they may take main-phase actions in any order and as often as they like, as long as each cost can be paid. | §6.5.1.1, §6.5.1.2 | planned | M1 | 0 |
-| MAIN-02 | In the main-phase play timing the turn player may play a character card from hand onto a stage position of their own that they choose, and the character is placed in that position. | §6.5.1.2.1 | planned | M1 | 0 |
-| MAIN-03 | In the main-phase play timing the turn player may play an event card from hand. It goes to the player's resolution zone and, once its effect has resolved, moves to its owner's waiting room. | §6.5.1.2.2 | planned | M1 | 0 |
+| MAIN-01 | The Main Phase starts by meeting the 'at the beginning of main phase' trigger condition. The turn player then gets a play timing, preceded by its check timing, in which they may take main-phase actions in any order and as often as they like, as long as each cost can be paid. | §6.5.1.1, §6.5.1.2 | verified | M1 | 3 |
+| MAIN-02 | In the main-phase play timing the turn player may play a character card from hand onto a stage position of their own that they choose, and the character is placed in that position. | §6.5.1.2.1 | verified | M1 | 1 |
+| MAIN-03 | In the main-phase play timing the turn player may play an event card from hand. It goes to the player's resolution zone and, once its effect has resolved, moves to its owner's waiting room. | §6.5.1.2.2 | verified | M1 | 2 |
 | MAIN-04 | In the main-phase play timing the turn player may use any of their activated abilities that are currently valid to play. | §6.5.1.2.3 | planned | M3 | 0 |
-| MAIN-05 | The turn player may choose two of their stage positions and exchange what is in them. If both hold a card, the two cards are relocated at the same time. If only one holds a card, it moves into the empty position. If both are empty, nothing happens. | §6.5.1.2.4 | planned | M1 | 0 |
-| MAIN-06 | When the turn player chooses to take no action in the main-phase play timing, the Main Phase ends and play moves to the Climax Phase. | §6.5.1.3 | planned | M1 | 0 |
+| MAIN-05 | The turn player may choose two of their stage positions and exchange what is in them. If both hold a card, the two cards are relocated at the same time. If only one holds a card, it moves into the empty position. If both are empty, nothing happens. | §6.5.1.2.4 | verified | M1 | 4 |
+| MAIN-06 | When the turn player chooses to take no action in the main-phase play timing, the Main Phase ends and play moves to the Climax Phase. | §6.5.1.3 | verified | M1 | 1 |
 
 ## CLIMAX: Climax phase (CR 6.6)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| CLIMAX-01 | The Climax Phase opens with the 'at the beginning of climax phase' trigger condition and a check timing. After its play timing, another check timing is fully resolved and play moves to the Attack Phase. | §6.6.1.1, §6.6.1.3 | planned | M1 | 0 |
-| CLIMAX-02 | In the Climax Phase the turn player gets a play timing, preceded by its check timing, in which the only cards they may play are climax cards from their own hand; a played climax goes into their climax area. | §6.6.1, §6.6.1.2, §6.6.1.2.1 | planned | M1 | 0 |
-| CLIMAX-03 | The Climax Phase play timing can be used only once: after the turn player takes any action in it they get no further play timing, so at most one climax can be played in this phase. | §6.6.1.2.2 | planned | M1 | 0 |
+| CLIMAX-01 | The Climax Phase opens with the 'at the beginning of climax phase' trigger condition and a check timing. After its play timing, another check timing is fully resolved and play moves to the Attack Phase. | §6.6.1.1, §6.6.1.3 | verified | M1 | 2 |
+| CLIMAX-02 | In the Climax Phase the turn player gets a play timing, preceded by its check timing, in which the only cards they may play are climax cards from their own hand; a played climax goes into their climax area. | §6.6.1, §6.6.1.2, §6.6.1.2.1 | verified | M1 | 2 |
+| CLIMAX-03 | The Climax Phase play timing can be used only once: after the turn player takes any action in it they get no further play timing, so at most one climax can be played in this phase. | §6.6.1.2.2 | verified | M1 | 1 |
 | CLIMAX-04 | Card text that refers to the 'CX phase' means the Climax Phase. | §6.6.2 | planned | M3 | 0 |
 
 ## ATK: Attack phase and attack declaration (CR 6.7, 7.1-7.2)
@@ -251,11 +251,11 @@ Rows: 269 · verified 0 · planned 232 · deferred 33 · out 4
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| END-01 | The End Phase begins by meeting the 'at the end of turn' trigger condition, which puts automatic abilities with that wording into a standby condition, followed by a check timing. | §6.8.1.1 | planned | M1 | 0 |
-| END-02 | In the End Phase, if the turn player has more cards in hand than the hand limit (7 unless an effect changes it), they choose exactly the excess number of cards and put them into their waiting room. | §6.8.1.2, §3.3.3.1 | planned | M1 | 0 |
-| END-03 | In the End Phase, any card in the turn player's climax area is put into the waiting room. | §6.8.1.3 | planned | M1 | 0 |
+| END-01 | The End Phase begins by meeting the 'at the end of turn' trigger condition, which puts automatic abilities with that wording into a standby condition, followed by a check timing. | §6.8.1.1 | verified | M1 | 1 |
+| END-02 | In the End Phase, if the turn player has more cards in hand than the hand limit (7 unless an effect changes it), they choose exactly the excess number of cards and put them into their waiting room. | §6.8.1.2, §3.3.3.1 | verified | M1 | 2 |
+| END-03 | In the End Phase, any card in the turn player's climax area is put into the waiting room. | §6.8.1.3 | verified | M1 | 2 |
 | END-04 | After the End Phase check timing that follows the climax cleanup is fully resolved, effects lasting 'until end of turn' or 'during turn' stop applying. | §6.8.1.4 | planned | M2 | 0 |
-| END-05 | The turn ends, and the opponent becomes turn player starting from the Stand Phase, only when three conditions hold: the turn player's hand is within the limit, no automatic abilities or rule actions needed resolving in the 6.8.1.4 check timing, and no 'at the end of turn' or other automatic-ability trigger condition is still unfulfilled. Otherwise the End Phase starts over from the beginning. | §6.8.1.5 | planned | M1 | 0 |
+| END-05 | The turn ends, and the opponent becomes turn player starting from the Stand Phase, only when three conditions hold: the turn player's hand is within the limit, no automatic abilities or rule actions needed resolving in the 6.8.1.4 check timing, and no 'at the end of turn' or other automatic-ability trigger condition is still unfulfilled. Otherwise the End Phase starts over from the beginning. | §6.8.1.5 | verified | M1 | 4 |
 
 ## TSTEP: Trigger step (CR 7.3)
 
@@ -312,9 +312,9 @@ Rows: 269 · verified 0 · planned 232 · deferred 33 · out 4
 | ABL-04 | Activated abilities, automatic abilities, and cards in hand produce their effects only by being played and resolved. A continuous ability is never played; its effect simply holds for as long as its stated duration lasts. | §8.1.1.3, §8.1.1.3.1, §8.6.1 | planned | M3 | 0 |
 | ABL-05 | Effects are one-shot (the instructed action is carried out a single time and the effect is over), continuous (applies for its stated duration; with no stated duration it lasts for the rest of the game), or replacement (see ABL-23). | §8.2.1, §8.2.1.1, §8.2.1.2, §8.2.1.3, §8.8.1 | planned | M3 | 0 |
 | ABL-06 | When an effect (or part of it) is made inactive under a condition, the ability still exists while that condition holds but generates nothing and requires no choices; an effect said to be active under a condition is treated as inactive whenever that condition is unmet. | §8.3.1, §8.3.2, §8.3.3 | planned | M3 | 0 |
-| ABL-07 | At each check timing, first resolve every rule action currently due, all at the same time, and repeat this step as long as new rule actions arise; the check timing ends only when neither rule actions nor standby automatic abilities remain. | §8.5.1, §8.5.1.1, §8.5.1.4 | planned | M1 | 0 |
+| ABL-07 | At each check timing, first resolve every rule action currently due, all at the same time, and repeat this step as long as new rule actions arise; the check timing ends only when neither rule actions nor standby automatic abilities remain. | §8.5.1, §8.5.1.1, §8.5.1.4 | verified | M1 | 3 |
 | ABL-08 | Once rule actions are cleared at a check timing, if the turn player has automatic abilities in standby they pick one, play and resolve it, and rule actions are rechecked; only when the turn player has none waiting does the non-turn player pick and resolve one of theirs, again followed by a rule-action recheck. | §8.5.1.2, §8.5.1.3, §8.7.3 | planned | M3 | 0 |
-| ABL-09 | When a player receives a play timing, a check timing is resolved first; then the player may take one permitted action or do nothing. Taking an action grants them another play timing afterward unless stated otherwise, while doing nothing ends the play timing and the phase or step advances. | §8.5.2, §8.5.2.1, §8.5.2.2, §8.5.2.3 | planned | M1 | 0 |
+| ABL-09 | When a player receives a play timing, a check timing is resolved first; then the player may take one permitted action or do nothing. Taking an action grants them another play timing afterward unless stated otherwise, while doing nothing ends the play timing and the phase or step advances. | §8.5.2, §8.5.2.1, §8.5.2.2, §8.5.2.3 | verified | M1 | 6 |
 | ABL-10 | Whenever an automatic ability's trigger condition is met it enters standby, once per time the condition is met, and standby abilities are only played during a check timing. | §8.7.1, §8.7.2, §8.7.2.1 | planned | M3 | 0 |
 | ABL-11 | A player may not skip any automatic ability of theirs that is in standby; every one must be played. When the same ability is in standby several times, its master decides the order in which those instances resolve. | §8.7.3, §8.7.3.1 | planned | M3 | 0 |
 | ABL-12 | One standby instance of an automatic ability is removed when that ability finishes resolving, when it cannot be played for any reason, or when its master declines to pay its optional cost and so does not play it. | §8.7.3, §8.7.3.2, §8.7.3.2.1 | planned | M3 | 0 |
@@ -346,14 +346,14 @@ Rows: 269 · verified 0 · planned 232 · deferred 33 · out 4
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| PLAY-01 | A card can be played from hand only if it meets the color requirement: its color must match the color of at least one card in the player's level zone or clock. Level 0 characters and level 0 events are exempt. | §8.6.2.1, §8.6.2.1.1, §8.6.2.1.1.1 | planned | M1 | 0 |
-| PLAY-02 | A card can be played from hand only if its level does not exceed the number of cards in the player's level zone; climax cards are exempt from this level requirement. | §8.6.2.1, §8.6.2.1.2, §8.6.2.1.2.1 | planned | M1 | 0 |
-| PLAY-03 | While playing a card or ability the player makes any choices it requires; playing a character from hand includes choosing one of the player's own stage positions for it. | §8.6.2.2, §8.6.2.2.1 | planned | M1 | 0 |
-| PLAY-04 | If playing a card or activated ability has a cost, the player determines it and must pay all of it; a player who cannot pay in full cannot play that card or ability, and partial payment is never allowed. | §8.6.2.3, §8.6.2.3.1, §8.6.2.3.2 | planned | M1 | 0 |
-| PLAY-05 | A card or ability counts as 'played' at the point right after its cost is paid, and then it resolves; resolving an activated or automatic ability means carrying out its effect. | §8.6.2.4, §8.6.2.5, §8.6.2.5.4 | planned | M1 | 0 |
-| PLAY-06 | A played character resolves by being put on its chosen stage position; if another character already stood there, that earlier character is sent to the waiting room by rule action. | §8.6.2.5.1 | planned | M1 | 0 |
-| PLAY-07 | A played event is put in its player's resolution zone, its effect is carried out, and then it goes to its owner's waiting room. | §8.6.2.5.2 | planned | M1 | 0 |
-| PLAY-08 | A played climax resolves by being placed in its player's climax area. | §8.6.2.5.3 | planned | M1 | 0 |
+| PLAY-01 | A card can be played from hand only if it meets the color requirement: its color must match the color of at least one card in the player's level zone or clock. Level 0 characters and level 0 events are exempt. | §8.6.2.1, §8.6.2.1.1, §8.6.2.1.1.1 | verified | M1 | 5 |
+| PLAY-02 | A card can be played from hand only if its level does not exceed the number of cards in the player's level zone; climax cards are exempt from this level requirement. | §8.6.2.1, §8.6.2.1.2, §8.6.2.1.2.1 | verified | M1 | 3 |
+| PLAY-03 | While playing a card or ability the player makes any choices it requires; playing a character from hand includes choosing one of the player's own stage positions for it. | §8.6.2.2, §8.6.2.2.1 | verified | M1 | 3 |
+| PLAY-04 | If playing a card or activated ability has a cost, the player determines it and must pay all of it; a player who cannot pay in full cannot play that card or ability, and partial payment is never allowed. | §8.6.2.3, §8.6.2.3.1, §8.6.2.3.2 | verified | M1 | 2 |
+| PLAY-05 | A card or ability counts as 'played' at the point right after its cost is paid, and then it resolves; resolving an activated or automatic ability means carrying out its effect. | §8.6.2.4, §8.6.2.5, §8.6.2.5.4 | verified | M1 | 2 |
+| PLAY-06 | A played character resolves by being put on its chosen stage position; if another character already stood there, that earlier character is sent to the waiting room by rule action. | §8.6.2.5.1 | verified | M1 | 3 |
+| PLAY-07 | A played event is put in its player's resolution zone, its effect is carried out, and then it goes to its owner's waiting room. | §8.6.2.5.2 | verified | M1 | 2 |
+| PLAY-08 | A played climax resolves by being placed in its player's climax area. | §8.6.2.5.3 | verified | M1 | 3 |
 | PLAY-09 | When a card or ability says to choose, the targets (cards, players, etc.) are picked during resolution, from the options that exist at the moment that instruction is reached. | §8.6.3 | planned | M3 | 0 |
 | PLAY-10 | When a choice names a fixed number, the player must pick as many targets as they can up to that number and may not decline while able; if fewer are available they pick all of them and the effect applies to those, and if none are available nothing is chosen and every part of the effect tied to that target is ignored. | §8.6.3.1, §8.6.3.1.2, §8.6.3.1.3 | planned | M3 | 0 |
 | PLAY-11 | When a choice is worded 'choose up to N', the player may pick any number of targets from zero through N. | §8.6.3.1.1 | planned | M3 | 0 |
@@ -366,42 +366,42 @@ Rows: 269 · verified 0 · planned 232 · deferred 33 · out 4
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| RULE-01 | Rule actions are game-driven resolutions of two types; an interrupt-type rule action runs the moment its condition is met, suspending whatever is in progress without exception. | §9.1.1, §9.1.2, §9.1.2.1 | planned | M1 | 0 |
-| RULE-02 | When several interrupt rule actions are due at once, the turn player first performs all of those tied to their own cards or zones, then the non-turn player performs theirs; a player with more than one to perform chooses their order. | §9.1.2.1.1, §9.1.2.1.1.1, §9.1.2.1.1.2 | planned | M1 | 0 |
-| RULE-03 | A check-type rule action happens only if its condition holds during a check timing; a condition that was true only partway through another action and no longer holds at the check timing triggers nothing, and all check-type rule actions due at the same time are carried out simultaneously. | §9.1.2.2, §9.1.2.2.1 | planned | M1 | 0 |
+| RULE-01 | Rule actions are game-driven resolutions of two types; an interrupt-type rule action runs the moment its condition is met, suspending whatever is in progress without exception. | §9.1.1, §9.1.2, §9.1.2.1 | verified | M1 | 4 |
+| RULE-02 | When several interrupt rule actions are due at once, the turn player first performs all of those tied to their own cards or zones, then the non-turn player performs theirs; a player with more than one to perform chooses their order. | §9.1.2.1.1, §9.1.2.1.1.1, §9.1.2.1.1.2 | verified | M1 | 3 |
+| RULE-03 | A check-type rule action happens only if its condition holds during a check timing; a condition that was true only partway through another action and no longer holds at the check timing triggers nothing, and all check-type rule actions due at the same time are carried out simultaneously. | §9.1.2.2, §9.1.2.2.1 | verified | M1 | 5 |
 
 ## REF: Refresh (CR 9.2)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| REF-01 | As soon as a player's deck has no cards (an interrupt rule action, but never while a cost is being paid), that player moves their entire waiting room into the deck, shuffles it, and then puts the deck's top card into their clock. | §9.2.1, §9.2.2, §9.2.3, §9.2.4 | planned | M1 | 0 |
-| REF-02 | If the deck empties while the waiting room is also empty, the player loses immediately if they are mid damage process and have no climax in their resolution zone; otherwise the refresh simply ends, and no new refresh happens until the waiting room has cards while the deck is still empty. | §9.2.2.1 | planned | M1 | 0 |
+| REF-01 | As soon as a player's deck has no cards (an interrupt rule action, but never while a cost is being paid), that player moves their entire waiting room into the deck, shuffles it, and then puts the deck's top card into their clock. | §9.2.1, §9.2.2, §9.2.3, §9.2.4 | verified | M1 | 7 |
+| REF-02 | If the deck empties while the waiting room is also empty, the player loses immediately if they are mid damage process and have no climax in their resolution zone; otherwise the refresh simply ends, and no new refresh happens until the waiting room has cards while the deck is still empty. | §9.2.2.1 | verified | M1 | 2 |
 
 ## LVL: Level up (CR 9.3)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| LVL-01 | When a player has 7 or more cards in clock (an interrupt rule action, not performed during cost payment), they pick one of the bottom seven clock cards to put into their level zone and send the other six of those seven to their waiting room in any order. | §9.3.1, §9.3.2, §9.3.3 | planned | M1 | 0 |
+| LVL-01 | When a player has 7 or more cards in clock (an interrupt rule action, not performed during cost payment), they pick one of the bottom seven clock cards to put into their level zone and send the other six of those seven to their waiting room in any order. | §9.3.1, §9.3.2, §9.3.3 | verified | M1 | 7 |
 
 ## VERD: Losing verdict (CR 9.4)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| VERD-01 | As a check-type rule action, a player with four or more cards in their level zone loses the game; every player meeting a losing condition at that moment loses. | §9.4.1, §9.4.1.1 | planned | M1 | 0 |
-| VERD-02 | As a check-type rule action, a player who has no cards in either their deck or their waiting room loses the game. | §9.4.1, §9.4.1.2 | planned | M1 | 0 |
+| VERD-01 | As a check-type rule action, a player with four or more cards in their level zone loses the game; every player meeting a losing condition at that moment loses. | §9.4.1, §9.4.1.1 | verified | M1 | 3 |
+| VERD-02 | As a check-type rule action, a player who has no cards in either their deck or their waiting room loses the game. | §9.4.1, §9.4.1.2 | verified | M1 | 5 |
 
 ## PWR: Insufficient power (CR 9.5)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| PWR-01 | Check-type rule action: any character with power at or below 0 goes to its owner's waiting room. | §9.5.1 | planned | M1 | 0 |
+| PWR-01 | Check-type rule action: any character with power at or below 0 goes to its owner's waiting room. | §9.5.1 | verified | M1 | 4 |
 
 ## ILL: Illegal cards and unaffiliated markers (CR 9.6-9.7)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| ILL-01 | Check-type rule action: a non-character on a stage position, or a non-climax in the climax area, goes to its owner's waiting room. | §9.6.1 | planned | M1 | 0 |
-| ILL-02 | If a stage position holds more than one character, or the climax area holds more than one climax, every card there except the one placed most recently goes to its owner's waiting room as a check-type rule action; if several cards tie as most recently placed, all of them go. | §9.6.2, §9.6.2.1 | planned | M1 | 0 |
+| ILL-01 | Check-type rule action: a non-character on a stage position, or a non-climax in the climax area, goes to its owner's waiting room. | §9.6.1 | verified | M1 | 4 |
+| ILL-02 | If a stage position holds more than one character, or the climax area holds more than one climax, every card there except the one placed most recently goes to its owner's waiting room as a check-type rule action; if several cards tie as most recently placed, all of them go. | §9.6.2, §9.6.2.1 | verified | M1 | 6 |
 | ILL-03 | If a marker area contains cards while its matching stage position has no character, all of those cards go to their respective owners' waiting rooms as a check-type rule action. | §9.7.1 | deferred | none | 0 |
 
 ## KW: Keywords and keyword abilities (CR 10)

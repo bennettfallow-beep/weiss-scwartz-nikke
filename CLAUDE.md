@@ -14,7 +14,7 @@ npm run typecheck          # app + pure layers + node scripts/tests (3 tsconfigs
 npm run lint               # ESLint, including the purity rules
 npm test                   # Vitest unit + rule tests
 npm run test:fuzz          # seeded random-game fuzz (from M2)
-npm run check:matrix       # rules traceability; add -- --write to regenerate docs
+npm run check:matrix       # rules traceability + gate for finished milestones; -- --write regenerates docs
 npm run check:assets       # every file in assets/ has a license entry
 npm run build:web          # expo export --platform web -> dist/
 npm run e2e                # Playwright against dist/ (Chromium, phone viewports)

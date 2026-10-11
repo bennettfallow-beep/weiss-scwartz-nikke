@@ -47,9 +47,13 @@
       "sections": [
         "1.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/api/game.ts#createGame",
+        "src/engine/api/game.ts#validate",
+        "src/engine/model/types.ts#PlayerId"
+      ],
       "notes": "Engine state models exactly two seats. Any more-than-2-player variant is out of scope."
     },
     {
@@ -83,9 +87,11 @@
       "sections": [
         "1.3.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#drawOne"
+      ],
       "notes": "Applies to rule-driven and effect-driven actions alike (e.g., drawing, moving, or discarding more cards than exist)."
     },
     {
@@ -95,9 +101,11 @@
       "sections": [
         "1.3.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#execTask"
+      ],
       "notes": "Matters for costs, 'if you did' clauses (M3), and triggers that fire on a state change: none should fire or count as satisfied."
     },
     {
@@ -107,9 +115,13 @@
       "sections": [
         "1.3.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#queueDraws",
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/rules/flow.ts#execTask"
+      ],
       "notes": "E.g., 'draw -1' does nothing; it does not put a card back. Clamp computed counts at 0."
     },
     {
@@ -131,9 +143,11 @@
       "sections": [
         "1.3.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#runInterrupts"
+      ],
       "notes": "Engine needs a decision-ordering primitive: queue the turn player's prompt first and expose its result to the non-turn player's prompt."
     },
     {
@@ -155,9 +169,12 @@
       "sections": [
         "1.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#endGame",
+        "src/engine/api/game.ts#validate"
+      ],
       "notes": "If both lose together the result is a draw (WIN-05), not a win for either."
     },
     {
@@ -167,9 +184,12 @@
       "sections": [
         "1.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#checkTiming",
+        "src/engine/rules/ruleActions.ts#lossesDue"
+      ],
       "notes": "Ties into Section 9 (losing verdict is a check-type rule action, 9.4). Contrast with conceding (WIN-06) and effect-driven wins/losses (WIN-08), which skip the check timing."
     },
     {
@@ -180,9 +200,12 @@
         "1.2.2.1",
         "3.9.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#lossesDue",
+        "src/engine/rules/ruleActions.ts#LOSING_LEVEL"
+      ],
       "notes": "Enforced via the rule-action losing verdict (9.4.1.1)."
     },
     {
@@ -192,9 +215,12 @@
       "sections": [
         "1.2.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#lossesDue",
+        "src/engine/rules/ruleActions.ts#dueInterrupts"
+      ],
       "notes": "Both zones must be empty; an empty deck alone leads to refresh (9.2) instead. See 9.2.2.1 for the special immediate-loss case during a damage process."
     },
     {
@@ -204,9 +230,11 @@
       "sections": [
         "1.2.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#endGame"
+      ],
       "notes": "E.g., both players meet losing conditions and are judged in the same rule-action pass."
     },
     {
@@ -216,9 +244,13 @@
       "sections": [
         "1.2.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/rules/ruleActions.ts#endGame",
+        "src/engine/api/game.ts#validate"
+      ],
       "notes": "Concede must be accepted as an input at any decision point or while waiting."
     },
     {
@@ -254,9 +286,12 @@
         "2.1.1.1",
         "2.1.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/deck.ts#validateDeck",
+        "src/engine/model/cards.ts#validateCatalog"
+      ],
       "notes": "Card database should store the rules-relevant name with those portions removed; used for deck construction limits and for name references by effects."
     },
     {
@@ -327,9 +362,13 @@
         "2.3.1",
         "2.3.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/model/cards.ts#validateCatalog",
+        "src/engine/model/types.ts#CardKind",
+        "src/engine/rules/play.ts#allowedInWindow"
+      ],
       "notes": "Type drives which zones a card may legally occupy (ZONE-23, ZONE-33) and how it is played."
     },
     {
@@ -365,9 +404,12 @@
         "2.4.1",
         "2.4.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/play.ts#meetsColor",
+        "src/engine/model/cards.ts#validateCatalog"
+      ],
       "notes": "The color requirement itself is enforced per Section 8 rows."
     },
     {
@@ -392,9 +434,12 @@
         "2.6.1",
         "2.6.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/play.ts#meetsLevel",
+        "src/engine/model/cards.ts#validateCatalog"
+      ],
       "notes": "Climaxes have no level; when referenced it counts as 0 (CARD-21)."
     },
     {
@@ -405,9 +450,13 @@
         "2.7.1",
         "2.7.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/play.ts#canAfford",
+        "src/engine/rules/play.ts#payStock",
+        "src/engine/model/cards.ts#validateCatalog"
+      ],
       "notes": "Payment details are in Section 8. Stock cards are removed from the top (ZONE-31)."
     },
     {
@@ -430,9 +479,12 @@
       "sections": [
         "2.8.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/play.ts#allowedInWindow",
+        "src/engine/rules/play.ts#canPlayFromHand"
+      ],
       "notes": "Main-phase play of counter cards uses ordinary play rules (level, color, cost)."
     },
     {
@@ -525,9 +577,14 @@
       "sections": [
         "2.19.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/model/cards.ts#levelOf",
+        "src/engine/model/cards.ts#costOf",
+        "src/engine/model/cards.ts#powerOf",
+        "src/engine/model/cards.ts#soulOf"
+      ],
       "notes": "E.g., a climax's level, cost, power, and soul read as 0."
     },
     {
@@ -549,9 +606,13 @@
       "sections": [
         "3.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/model/types.ts#PlayerState",
+        "src/engine/api/game.ts#emptyPlayer",
+        "src/engine/core/zones.ts#moveCard"
+      ],
       "notes": ""
     },
     {
@@ -562,9 +623,13 @@
         "3.1.2",
         "3.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/api/view.ts#projectView",
+        "src/engine/api/view.ts#playerView",
+        "src/engine/core/zones.ts#isPublicZone"
+      ],
       "notes": "Player views must expose counts for every zone, including hidden ones."
     },
     {
@@ -574,9 +639,13 @@
       "sections": [
         "3.1.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/core/zones.ts#moveCard",
+        "src/engine/rules/flow.ts#swapSlots",
+        "src/engine/model/types.ts#CardInstance"
+      ],
       "notes": "Give a card a new object identity on each zone change; keep identity (and applied effects) on stage-position moves."
     },
     {
@@ -586,9 +655,13 @@
       "sections": [
         "3.1.5"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/api/game.ts#actionKey",
+        "src/engine/api/game.ts#validate"
+      ],
       "notes": "E.g., multiple damage or effect-moved cards; contrast ZONE-39 where the order is fixed."
     },
     {
@@ -599,9 +672,13 @@
         "3.1.5.1",
         "3.1.5.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/api/view.ts#projectView",
+        "src/engine/api/view.ts#redactEvent",
+        "src/engine/rules/ruleActions.ts#refresh"
+      ],
       "notes": "E.g., cards put on top or bottom of a deck: opponent sees the count but not the order."
     },
     {
@@ -611,9 +688,12 @@
       "sections": [
         "3.1.6"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/core/zones.ts#ownersZone",
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": "Owner, not current master, determines the default destination."
     },
     {
@@ -624,9 +704,13 @@
         "3.2.1",
         "3.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/api/view.ts#projectView",
+        "src/engine/api/game.ts#validate",
+        "src/engine/core/zones.ts#isPublicZone"
+      ],
       "notes": "Only shuffles (ZONE-12) or explicit effects change deck order."
     },
     {
@@ -636,9 +720,13 @@
       "sections": [
         "3.2.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#drawOne",
+        "src/engine/rules/flow.ts#queueDraws",
+        "src/engine/rules/flow.ts#run"
+      ],
       "notes": "Applies to draws, damage, and effect-driven actions; the one-at-a-time model is what lets a mid-action refresh (ZONE-10) occur."
     },
     {
@@ -661,9 +749,14 @@
       "sections": [
         "3.2.3.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#run",
+        "src/engine/rules/ruleActions.ts#runInterrupts",
+        "src/engine/rules/ruleActions.ts#dueInterrupts",
+        "src/engine/rules/ruleActions.ts#refresh"
+      ],
       "notes": "See 9.2.3: refresh is not resolved while a cost is being paid."
     },
     {
@@ -685,9 +778,13 @@
       "sections": [
         "3.2.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/core/rng.ts#shuffle",
+        "src/engine/rules/ruleActions.ts#refresh",
+        "src/engine/api/game.ts#createGame"
+      ],
       "notes": "Engine RNG performs the shuffle; event/log attribution goes to the deck owner."
     },
     {
@@ -710,9 +807,15 @@
         "3.3.1",
         "3.3.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#drawOne",
+        "src/engine/api/view.ts#projectView",
+        "src/engine/api/view.ts#redactEvent",
+        "src/engine/api/game.ts#validate",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Opponent's view of the hand shows count only."
     },
     {
@@ -723,9 +826,14 @@
         "3.3.3",
         "3.3.3.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#execTask",
+        "src/engine/rules/flow.ts#enterPhase",
+        "src/engine/rules/ruleActions.ts#HAND_LIMIT",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "Only the turn player is checked; the non-turn player may exceed the limit. Sequencing is in 6.8.1.2."
     },
     {
@@ -735,9 +843,15 @@
       "sections": [
         "3.4.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/core/zones.ts#ownersZone",
+        "src/engine/rules/play.ts#payStock",
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/rules/flow.ts#execTask",
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": "Default destination; combine with ZONE-06 (owner's zone)."
     },
     {
@@ -747,9 +861,14 @@
       "sections": [
         "3.4.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/api/view.ts#projectView",
+        "src/engine/core/zones.ts#moveCard",
+        "src/engine/api/game.ts#validate",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Only the owner may reorder their own waiting room."
     },
     {
@@ -762,9 +881,15 @@
         "3.6.1",
         "3.6.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/model/stage.ts#CENTER_STAGE",
+        "src/engine/model/stage.ts#BACK_STAGE",
+        "src/engine/model/stage.ts#isCenter",
+        "src/engine/model/types.ts#SLOTS",
+        "src/engine/rules/flow.ts#execTask"
+      ],
       "notes": ""
     },
     {
@@ -775,9 +900,12 @@
         "3.5.3",
         "3.6.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/api/view.ts#projectView",
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": "'In principle' one card per position: 9.6.2 resolves extras by rule action, keeping only the most recently placed card (all tied last-placed cards go if several)."
     },
     {
@@ -787,9 +915,12 @@
       "sections": [
         "3.6.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/core/zones.ts#moveCard",
+        "src/engine/rules/flow.ts#swapSlots"
+      ],
       "notes": "Swapping positions in the main phase must preserve rested/reversed state."
     },
     {
@@ -799,9 +930,12 @@
       "sections": [
         "3.6.5"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/model/stage.ts#inFrontOf",
+        "src/engine/model/stage.ts#behind"
+      ],
       "notes": "Position 2 has two positions behind it (4 and 5); position 4 has 1 and 2 in front of it, and 5 has 2 and 3."
     },
     {
@@ -811,9 +945,11 @@
       "sections": [
         "3.6.6"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/model/stage.ts#facing"
+      ],
       "notes": "Facing is defined only between center-stage positions; back-stage positions have no facing card. Used for frontal/side attacks (M2)."
     },
     {
@@ -823,9 +959,12 @@
       "sections": [
         "3.6.7"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#checkTiming",
+        "src/engine/core/zones.ts#ownersZone"
+      ],
       "notes": "Check-type rule action per 9.6.1."
     },
     {
@@ -879,9 +1018,14 @@
         "3.8.1",
         "3.8.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/core/zones.ts#moveCard",
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/api/game.ts#validate",
+        "src/engine/api/view.ts#projectView"
+      ],
       "notes": "Cards normally arrive in the Clock Phase or as damage. Clock order matters for level up (ZONE-28)."
     },
     {
@@ -892,9 +1036,15 @@
         "3.8.3",
         "3.9.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#dueInterrupts",
+        "src/engine/rules/ruleActions.ts#performInterrupt",
+        "src/engine/rules/ruleActions.ts#resolveLevelUp",
+        "src/engine/rules/ruleActions.ts#runInterrupts",
+        "src/engine/rules/ruleActions.ts#LEVEL_UP_AT"
+      ],
       "notes": "Only the bottom seven are involved; any clock cards above them stay in the clock. Interrupt-type rule action (9.3); not resolved during cost payment (9.3.3)."
     },
     {
@@ -906,9 +1056,13 @@
         "3.9.2.1",
         "3.9.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#resolveLevelUp",
+        "src/engine/api/view.ts#projectView",
+        "src/engine/api/game.ts#validate"
+      ],
       "notes": "A player's level equals the number of cards here; 4 or more is a losing condition (WIN-03)."
     },
     {
@@ -933,9 +1087,14 @@
         "3.10.1",
         "3.10.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/play.ts#payStock",
+        "src/engine/api/view.ts#projectView",
+        "src/engine/api/game.ts#validate",
+        "src/engine/core/zones.ts#isPublicZone"
+      ],
       "notes": "Cost payment takes cards from the top. Cards normally arrive after a trigger check (ZONE-37)."
     },
     {
@@ -947,9 +1106,13 @@
         "3.11.2",
         "3.11.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/rules/ruleActions.ts#checkTiming",
+        "src/engine/api/view.ts#projectView"
+      ],
       "notes": "If multiple climaxes end up there, 9.6.2 keeps only the most recently placed one (all go if several tie for last)."
     },
     {
@@ -959,9 +1122,12 @@
       "sections": [
         "3.11.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#checkTiming",
+        "src/engine/core/zones.ts#ownersZone"
+      ],
       "notes": "Check-type rule action per 9.6.1."
     },
     {
@@ -1002,9 +1168,12 @@
         "3.13.1",
         "3.13.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/core/zones.ts#ownersZone"
+      ],
       "notes": "The resolution zone is temporary holding while effects or damage resolve."
     },
     {
@@ -1062,9 +1231,13 @@
       "sections": [
         "3.13.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/api/view.ts#projectView",
+        "src/engine/api/game.ts#validate",
+        "src/engine/core/zones.ts#moveCard"
+      ],
       "notes": ""
     },
     {
@@ -1113,9 +1286,13 @@
         "4.2.1",
         "4.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/model/types.ts#CardInstance",
+        "src/engine/api/game.ts#createGame",
+        "src/engine/core/zones.ts#ownersZone"
+      ],
       "notes": "Ownership does not follow the card's current zone. Used for every 'owner's' destination, e.g. events going to the owner's waiting room and Return/Treasure sending cards to the owner's hand."
     },
     {
@@ -1138,9 +1315,13 @@
         "4.3.1",
         "4.3.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/core/zones.ts#masterOf",
+        "src/engine/rules/play.ts#canPlayFromHand",
+        "src/engine/rules/flow.ts#execTask"
+      ],
       "notes": "Master is different from owner: a card sitting in an opponent's zone has that opponent as master but keeps its original owner. 4.3.1 also applies the master concept to abilities and effects (CONC-07 to CONC-09)."
     },
     {
@@ -1188,9 +1369,11 @@
         "4.4.1",
         "4.4.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": "M1 needs only the rule-action half; resolving automatic abilities inside the check timing arrives with M3. The full loop and turn-player-first ordering are in 8.5 (outside this range)."
     },
     {
@@ -1201,9 +1384,12 @@
         "4.5.1",
         "4.5.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#execTask",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Applies every time a play timing is granted, including the re-grant after an action resolves."
     },
     {
@@ -1214,9 +1400,11 @@
         "4.5.3",
         "4.5.3.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Main-phase loop: action, check timing, play timing again."
     },
     {
@@ -1226,9 +1414,11 @@
       "sections": [
         "4.5.3.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Passing is what advances the current phase or step (e.g. Main Phase to Climax Phase)."
     },
     {
@@ -1241,9 +1431,13 @@
         "4.6.1.2",
         "4.6.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/model/types.ts#Orientation",
+        "src/engine/rules/flow.ts#execTask",
+        "src/engine/api/view.ts#projectView"
+      ],
       "notes": "Orientation is defined only for characters on the stage."
     },
     {
@@ -1267,9 +1461,12 @@
       "sections": [
         "4.7.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#drawOne",
+        "src/engine/rules/flow.ts#queueDraws"
+      ],
       "notes": "Empty-deck and refresh handling are covered by rules outside this section."
     },
     {
@@ -1585,9 +1782,13 @@
         "5.1.1",
         "5.1.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/deck.ts#validateDeck",
+        "src/engine/rules/deck.ts#DECK_SIZE",
+        "src/engine/api/game.ts#createGame"
+      ],
       "notes": ""
     },
     {
@@ -1598,9 +1799,12 @@
         "5.1.2.2",
         "5.1.2.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/deck.ts#validateDeck",
+        "src/engine/rules/deck.ts#MAX_COPIES_PER_NAME"
+      ],
       "notes": "Group cards by exact card name, ignoring collection ID, rarity and art variants. Partial name matching for effects is a separate, deferred topic."
     },
     {
@@ -1610,9 +1814,12 @@
       "sections": [
         "5.1.2.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/deck.ts#validateDeck",
+        "src/engine/rules/deck.ts#MAX_CLIMAX"
+      ],
       "notes": ""
     },
     {
@@ -1634,9 +1841,11 @@
       "sections": [
         "5.2.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/api/game.ts#createGame"
+      ],
       "notes": "Validate both decks before the game starts. Physically showing the deck to the opponent has no digital equivalent."
     },
     {
@@ -1646,9 +1855,13 @@
       "sections": [
         "5.2.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/api/game.ts#createGame",
+        "src/engine/core/rng.ts#shuffle",
+        "src/engine/api/view.ts#projectView"
+      ],
       "notes": "The optional shuffle by the opponent is a physical anti-cheating step; one fair engine shuffle covers it."
     },
     {
@@ -1659,9 +1872,12 @@
         "5.2.1.3",
         "5.2.1.3.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/api/game.ts#createGame",
+        "src/engine/core/rng.ts#nextInt"
+      ],
       "notes": "There is no option for the selected player to choose to go first or second."
     },
     {
@@ -1671,9 +1887,12 @@
       "sections": [
         "5.2.1.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/api/game.ts#createGame",
+        "src/engine/api/game.ts#OPENING_HAND"
+      ],
       "notes": ""
     },
     {
@@ -1683,9 +1902,12 @@
       "sections": [
         "5.2.1.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "Read 'any number' as 0 up to hand size (0 keeps the hand). Discarded cards go to the waiting room, not back into the deck."
     },
     {
@@ -1695,9 +1917,11 @@
       "sections": [
         "5.2.1.5"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#execTask"
+      ],
       "notes": ""
     },
     {
@@ -1708,9 +1932,12 @@
         "6.1.1",
         "6.8.1.5"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#enterPhase",
+        "src/engine/rules/flow.ts#execTask"
+      ],
       "notes": "The order comes from the subsection order 6.2-6.8 and the 'advance to' clause that closes each phase. The hand-over to the opponent is stated in 6.8.1.5. In M1 the Attack Phase can be a pass-through stub until M2. Effects that skip phases and extra turns are deferred."
     },
     {
@@ -1721,9 +1948,11 @@
         "6.2.1.1",
         "6.2.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#enterPhase"
+      ],
       "notes": "Both trigger conditions fire before any character is stood. The automatic abilities keyed to them are M3; the phase skeleton and check timings are M1."
     },
     {
@@ -1734,9 +1963,11 @@
         "6.2.1",
         "6.2.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#execTask"
+      ],
       "notes": "Only characters the turn player is master of. This is a state change, not a zone move."
     },
     {
@@ -1747,9 +1978,11 @@
         "6.3.1.1",
         "6.3.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#enterPhase"
+      ],
       "notes": ""
     },
     {
@@ -1759,9 +1992,12 @@
       "sections": [
         "6.3.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#drawOne",
+        "src/engine/rules/flow.ts#enterPhase"
+      ],
       "notes": "The draw is mandatory. Refresh on an empty deck and its penalty are governed outside this range."
     },
     {
@@ -1772,9 +2008,13 @@
         "6.4.1.1",
         "6.4.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#enterPhase",
+        "src/engine/rules/flow.ts#execTask",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Level-up and other rule actions caused by the clocked card are defined outside this range."
     },
     {
@@ -1784,9 +2024,12 @@
       "sections": [
         "6.4.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "Optional, at most one card. Declining skips both the clock placement and the two-card draw; the draw of two is not optional once a card was clocked."
     },
     {
@@ -1797,9 +2040,13 @@
         "6.5.1.1",
         "6.5.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#enterPhase",
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/rules/play.ts#canAfford"
+      ],
       "notes": "Unlike other phases, 6.5.1.1 lists no separate check timing; the check timing tied to the play timing covers it. Because actions can be repeated, the player returns to the play timing after each action until they pass."
     },
     {
@@ -1809,9 +2056,12 @@
       "sections": [
         "6.5.1.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "Rules outside this range cover level, color and cost requirements, and what happens to a character already in the chosen position."
     },
     {
@@ -1821,9 +2071,11 @@
       "sections": [
         "6.5.1.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "The zone flow (hand, resolution zone, waiting room) is M1. Resolving event effects is M3."
     },
     {
@@ -1845,9 +2097,12 @@
       "sections": [
         "6.5.1.2.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#swapSlots",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "No cost, so it can be repeated within the play timing. The simultaneous relocation matters for anything that reacts to position changes (M3)."
     },
     {
@@ -1857,9 +2112,11 @@
       "sections": [
         "6.5.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": ""
     },
     {
@@ -1870,9 +2127,12 @@
         "6.6.1.1",
         "6.6.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#enterPhase",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": ""
     },
     {
@@ -1884,9 +2144,12 @@
         "6.6.1.2",
         "6.6.1.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/play.ts#allowedInWindow",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Character and event cards cannot be played in this window."
     },
     {
@@ -1896,9 +2159,11 @@
       "sections": [
         "6.6.1.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Placing the climax is M1. Climax ability effects are M3; the Climax Combo icon is deferred."
     },
     {
@@ -2095,9 +2360,11 @@
       "sections": [
         "6.8.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#enterPhase"
+      ],
       "notes": "The phase skeleton and check timing are M1. Standby and resolution of automatic abilities are M3."
     },
     {
@@ -2108,9 +2375,13 @@
         "6.8.1.2",
         "3.3.3.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#execTask",
+        "src/engine/rules/ruleActions.ts#HAND_LIMIT",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "Only the turn player's hand is checked; the player chooses which cards to discard."
     },
     {
@@ -2120,9 +2391,11 @@
       "sections": [
         "6.8.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#execTask"
+      ],
       "notes": "Only the turn player's climax area. This happens after the hand-limit discard."
     },
     {
@@ -2144,9 +2417,12 @@
       "sections": [
         "6.8.1.5"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#execTask",
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": "Starting over means 6.8.1.1 runs again. Infinite end-phase loops are deferred."
     },
     {
@@ -2492,9 +2768,11 @@
         "8.5.1.1",
         "8.5.1.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": "In M1 there are no card automatic abilities, so the loop is rule actions only; M3 adds ABL-08. After any ability resolves, the loop returns to the rule-action step."
     },
     {
@@ -2521,9 +2799,12 @@
         "8.5.2.2",
         "8.5.2.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#execTask",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Drives the main phase action loop. The counter step overrides the 'another play timing' default (7.4.1.2.2)."
     },
     {
@@ -2816,9 +3097,12 @@
         "8.6.2.1.1",
         "8.6.2.1.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/play.ts#meetsColor",
+        "src/engine/rules/play.ts#canPlayFromHand"
+      ],
       "notes": "Climax cards are NOT exempt from color (only from level). A card failing either requirement cannot be played or revealed."
     },
     {
@@ -2830,9 +3114,12 @@
         "8.6.2.1.2",
         "8.6.2.1.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/play.ts#meetsLevel",
+        "src/engine/rules/play.ts#canPlayFromHand"
+      ],
       "notes": "Both PLAY-01 and PLAY-02 must hold for a card to be played."
     },
     {
@@ -2843,9 +3130,12 @@
         "8.6.2.2",
         "8.6.2.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/api/game.ts#legalActions",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Any of the five positions can be chosen, occupied or not; an occupant is handled by PLAY-06."
     },
     {
@@ -2857,9 +3147,12 @@
         "8.6.2.3.1",
         "8.6.2.3.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/play.ts#canAfford",
+        "src/engine/rules/play.ts#payStock"
+      ],
       "notes": "Check affordability (stock count) before committing to the play."
     },
     {
@@ -2871,9 +3164,12 @@
         "8.6.2.5",
         "8.6.2.5.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#playCard",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Emit a 'played' event at this point for 'when played' triggers (M3). Ability resolution itself is M3."
     },
     {
@@ -2883,9 +3179,12 @@
       "sections": [
         "8.6.2.5.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": "The rule action is ILL-02 (9.6.2). The displaced character moves stage to waiting room, so check its Encore interaction (KW-02) in M3."
     },
     {
@@ -2895,9 +3194,11 @@
       "sections": [
         "8.6.2.5.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": ""
     },
     {
@@ -2907,9 +3208,12 @@
       "sections": [
         "8.6.2.5.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": "If a climax is already there, ILL-02 sends all but the newest to the waiting room."
     },
     {
@@ -3009,9 +3313,12 @@
         "9.1.2",
         "9.1.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#run",
+        "src/engine/rules/ruleActions.ts#runInterrupts"
+      ],
       "notes": "Interrupt types here: refresh (9.2) and level up (9.3)."
     },
     {
@@ -3023,9 +3330,13 @@
         "9.1.2.1.1.1",
         "9.1.2.1.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#runInterrupts",
+        "src/engine/rules/ruleActions.ts#dueInterrupts",
+        "src/engine/rules/ruleActions.ts#performInterrupt"
+      ],
       "notes": ""
     },
     {
@@ -3036,9 +3347,11 @@
         "9.1.2.2",
         "9.1.2.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": "Check types here: losing verdict (9.4), power 0 or less (9.5), illegal cards (9.6), unaffiliated markers (9.7)."
     },
     {
@@ -3051,9 +3364,13 @@
         "9.2.3",
         "9.2.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#refresh",
+        "src/engine/rules/ruleActions.ts#dueInterrupts",
+        "src/engine/rules/play.ts#payStock"
+      ],
       "notes": "'Refresh' in card text means this. The added clock card can itself cause a level up (LVL-01)."
     },
     {
@@ -3063,9 +3380,11 @@
       "sections": [
         "9.2.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#dueInterrupts"
+      ],
       "notes": "The damage-process branch only becomes reachable in M2. Separately, VERD-02 makes a player with empty deck and waiting room lose at the next check timing."
     },
     {
@@ -3077,9 +3396,13 @@
         "9.3.2",
         "9.3.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#performInterrupt",
+        "src/engine/rules/ruleActions.ts#resolveLevelUp",
+        "src/engine/rules/ruleActions.ts#LEVEL_UP_AT"
+      ],
       "notes": "With more than 7 cards only the bottom seven are processed; cards left in clock can cause another level up. Reaching 4 level cards is a loss (VERD-01)."
     },
     {
@@ -3090,9 +3413,13 @@
         "9.4.1",
         "9.4.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#lossesDue",
+        "src/engine/rules/ruleActions.ts#endGame",
+        "src/engine/rules/ruleActions.ts#LOSING_LEVEL"
+      ],
       "notes": "If both players lose simultaneously the game is a draw (1.2.3)."
     },
     {
@@ -3103,9 +3430,11 @@
         "9.4.1",
         "9.4.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#lossesDue"
+      ],
       "notes": "Both zones must be empty at the check timing. Interacts with REF-02."
     },
     {
@@ -3115,9 +3444,11 @@
       "sections": [
         "9.5.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": "Checked only at check timing (RULE-03), using power after continuous effects. The move is stage to waiting room, so Encore can trigger in M3."
     },
     {
@@ -3127,9 +3458,11 @@
       "sections": [
         "9.6.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": ""
     },
     {
@@ -3140,9 +3473,12 @@
         "9.6.2",
         "9.6.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M1",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#checkTiming",
+        "src/engine/core/zones.ts#moveCard"
+      ],
       "notes": "Needs a placement timestamp per card in these zones. Used by PLAY-06 and PLAY-08."
     },
     {

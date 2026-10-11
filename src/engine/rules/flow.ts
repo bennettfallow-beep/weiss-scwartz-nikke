@@ -140,6 +140,28 @@ export function execTask(s: GameState, catalog: CardCatalog, task: Task): void {
       log(s, { kind: 'turnStart', player: s.active });
       queue(s, { t: 'phase', phase: 'stand' });
       return;
+    case 'played':
+      log(s, { kind: 'played', player: task.player, card: task.card });
+      return;
+    case 'resolveCard':
+      resolveCard(s, catalog, task.player, task.card, task.slot);
+      return;
+  }
+}
+
+/** CR 8.6.2.5.1-8.6.2.5.3: put the played card where its type goes. */
+function resolveCard(s: GameState, catalog: CardCatalog, player: PlayerId, card: CardId, slot: Slot | undefined): void {
+  const kind = defOf(s, catalog, card).kind;
+  if (kind === 'character') {
+    if (slot === undefined) throw new EngineFault('a character needs a stage position');
+    // A character already there is removed later by rule action (CR 9.6.2).
+    moveCard(s, card, { player, zone: 'stage', slot }, 'play');
+  } else if (kind === 'event') {
+    moveCard(s, card, { player, zone: 'resolution' }, 'play');
+    // Event effects are resolved here from M3 on.
+    moveCard(s, card, ownersZone(s, card, 'waiting'), 'eventResolved');
+  } else {
+    moveCard(s, card, { player, zone: 'climax' }, 'play');
   }
 }
 
@@ -165,9 +187,15 @@ function swapSlots(s: GameState, player: PlayerId, a: Slot, b: Slot): void {
   for (const c of cardsB) log(s, { kind: 'move', card: c.id, from: { player, zone: 'stage', slot: b }, to: { player, zone: 'stage', slot: a }, reason: 'swap' });
 }
 
-function playCard(s: GameState, catalog: CardCatalog, player: PlayerId, card: CardId): void {
+/**
+ * Pays the cost now; "played" and resolution are separate tasks so that an
+ * interrupt rule action that became due during payment (held back while
+ * paying, CR 9.2.3 / 9.3.3) runs as soon as payment ends (CR 9.1.2.1).
+ */
+function playCard(s: GameState, catalog: CardCatalog, player: PlayerId, card: CardId, slot?: Slot): Task[] {
   payStock(s, player, costOf(defOf(s, catalog, card)));
-  log(s, { kind: 'played', player, card });
+  const resolve: Task = slot === undefined ? { t: 'resolveCard', player, card } : { t: 'resolveCard', player, card, slot };
+  return [{ t: 'played', player, card }, resolve];
 }
 
 /** Applies an already-validated action to the working state. */
@@ -201,23 +229,14 @@ export function perform(s: GameState, catalog: CardCatalog, action: Action): voi
       }
       return;
     case 'PLAY_CHARACTER':
-      playCard(s, catalog, p, action.card);
-      // CR 8.6.2.5.1: a character already there is removed later by rule action (CR 9.6.2).
-      moveCard(s, action.card, { player: p, zone: 'stage', slot: action.slot }, 'play');
-      queue(s, { t: 'playTiming', window: 'main', checked: false });
+      queue(s, ...playCard(s, catalog, p, action.card, action.slot), { t: 'playTiming', window: 'main', checked: false });
       return;
     case 'PLAY_EVENT':
-      playCard(s, catalog, p, action.card);
-      moveCard(s, action.card, { player: p, zone: 'resolution' }, 'play');
-      // Event effects are resolved here from M3 on.
-      moveCard(s, action.card, ownersZone(s, action.card, 'waiting'), 'eventResolved');
-      queue(s, { t: 'playTiming', window: 'main', checked: false });
+      queue(s, ...playCard(s, catalog, p, action.card), { t: 'playTiming', window: 'main', checked: false });
       return;
     case 'PLAY_CLIMAX':
-      playCard(s, catalog, p, action.card);
-      moveCard(s, action.card, { player: p, zone: 'climax' }, 'play');
       // CR 6.6.1.2.2: one action ends the climax play timing.
-      queue(s, { t: 'check' }, { t: 'phase', phase: 'attack' });
+      queue(s, ...playCard(s, catalog, p, action.card), { t: 'check' }, { t: 'phase', phase: 'attack' });
       return;
     case 'SWAP':
       swapSlots(s, p, action.a, action.b);

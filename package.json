@@ -13,7 +13,7 @@
     "test": "vitest run --project unit",
     "test:fuzz": "vitest run --project fuzz",
     "rules:sections": "tsx scripts/extract-cr-sections.ts",
-    "check:matrix": "tsx scripts/check-matrix.ts",
+    "check:matrix": "tsx scripts/check-matrix.ts --milestone M1",
     "check:assets": "tsx scripts/check-assets.ts",
     "build:web": "expo export --platform web",
     "e2e": "playwright test",

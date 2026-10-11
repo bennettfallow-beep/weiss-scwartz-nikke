@@ -156,7 +156,11 @@ export type Task =
   | { t: 'handLimit' }
   | { t: 'climaxCleanup' }
   | { t: 'endOfTurn' }
-  | { t: 'startTurn' };
+  | { t: 'startTurn' }
+  /** CR 8.6.2.4: the card counts as played once its cost is paid. */
+  | { t: 'played'; player: PlayerId; card: CardId }
+  /** CR 8.6.2.5: the played card resolves. `slot` is the chosen stage position for a character. */
+  | { t: 'resolveCard'; player: PlayerId; card: CardId; slot?: Slot };
 
 /** The single decision the game is waiting for. */
 export type Pending =
