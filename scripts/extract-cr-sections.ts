@@ -4,6 +4,9 @@
 // gitignored docs/_private/. check-matrix uses this file to reject citations
 // to sections that do not exist.
 //
+// Also writes docs/_private/cr-v2.10.txt, the plain text that check-matrix's
+// verbatim-copy guard compares row statements against.
+//
 // Usage (needs the PDF locally and `pdftotext` from poppler-utils):
 //   npm run rules:sections
 import { execFileSync } from 'node:child_process';
@@ -14,10 +17,12 @@ import { join } from 'node:path';
 const ROOT = join(__dirname, '..');
 const PDF = join(ROOT, 'docs/_private/WSE-Comprehensive-Rules-v2.10.pdf');
 const OUT = join(ROOT, 'docs/cr-sections.json');
+const PRIVATE_TEXT = join(ROOT, 'docs/_private/cr-v2.10.txt');
 
 const pdf = readFileSync(PDF);
 const sha256 = createHash('sha256').update(pdf).digest('hex');
 const text = execFileSync('pdftotext', [PDF, '-'], { encoding: 'utf8' });
+writeFileSync(PRIVATE_TEXT, text);
 
 const sections = new Set<string>();
 for (const line of text.split('\n')) {
@@ -49,3 +54,4 @@ const out = {
 };
 writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
 console.log(`wrote ${OUT}: ${sorted.length} sections, sha256 ${sha256}`);
+console.log(`wrote ${PRIVATE_TEXT} (gitignored; used by the verbatim-copy guard)`);

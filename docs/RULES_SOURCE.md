@@ -17,8 +17,19 @@ The engine implements one document:
 - The PDF and its `pdftotext` output are copyrighted and are **not** in git. Keep them at
   `docs/_private/WSE-Comprehensive-Rules-v2.10.pdf` (gitignored).
 - `docs/cr-sections.json` (committed) holds only the list of section numbers and the hash.
-  `npm run rules:sections` rebuilds it from the private PDF.
+  `npm run rules:sections` rebuilds it from the private PDF and also writes the private plain
+  text `docs/_private/cr-v2.10.txt`.
+- `npm run check:matrix` uses that private text to reject rows that copy 10 or more words in a
+  row from the rules. Without it (e.g. in CI or a fresh clone) the check prints a note and skips
+  that guard, so run `npm run rules:sections` once in any new local or cloud checkout that has
+  the PDF.
 - `docs/rules-matrix.json` holds our own paraphrase of each rule plus its section number.
+
+## Setting up a new checkout
+
+1. Copy the PDF to `docs/_private/WSE-Comprehensive-Rules-v2.10.pdf`.
+2. Run `npm run rules:sections`. It must report the SHA-256 above; a different hash means a
+   different document.
 
 ## Updating to a new version
 

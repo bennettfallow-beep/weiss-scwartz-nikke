@@ -15,6 +15,7 @@
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
+import ts from 'typescript';
 import { z } from 'zod';
 
 const ROOT = join(__dirname, '..');
@@ -23,7 +24,10 @@ const SECTIONS = join(ROOT, 'docs/cr-sections.json');
 const MATRIX_MD = join(ROOT, 'docs/rules-matrix.md');
 const GAPS_MD = join(ROOT, 'docs/KNOWN_GAPS.md');
 const PRIVATE_TEXT = join(ROOT, 'docs/_private/cr-v2.10.txt');
+// Test files whose `it`/`test` titles can mark a row as covered. tests/fuzz is
+// excluded: fuzz checks invariants across random games, not individual rules.
 const TEST_DIRS = ['tests', 'e2e'];
+const TEST_EXCLUDE = ['tests/fuzz'];
 
 const MILESTONES = ['M1', 'M2', 'M3'] as const;
 
@@ -49,14 +53,28 @@ const Matrix = z
   })
   .strict();
 
-const args = process.argv.slice(2);
-const WRITE = args.includes('--write');
-const REQUIRE_DONE = args.includes('--require-done');
-const milestoneArg = args[args.indexOf('--milestone') + 1];
-const GATE = args.includes('--milestone') ? milestoneArg : undefined;
-if (GATE !== undefined && !(MILESTONES as readonly string[]).includes(GATE)) {
-  console.error(`--milestone must be one of ${MILESTONES.join(', ')}`);
-  process.exit(2);
+// Strict argument parsing: a typo must never silently skip a gate.
+let WRITE = false;
+let REQUIRE_DONE = false;
+let GATE: (typeof MILESTONES)[number] | undefined;
+{
+  const args = process.argv.slice(2);
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i] as string;
+    if (arg === '--write') WRITE = true;
+    else if (arg === '--require-done') REQUIRE_DONE = true;
+    else if (arg === '--milestone' || arg.startsWith('--milestone=')) {
+      const value = arg.includes('=') ? arg.slice(arg.indexOf('=') + 1) : args[++i];
+      if (!value || !(MILESTONES as readonly string[]).includes(value)) {
+        console.error(`--milestone needs one of ${MILESTONES.join(', ')}, got ${value ?? 'nothing'}`);
+        process.exit(2);
+      }
+      GATE = value as (typeof MILESTONES)[number];
+    } else {
+      console.error(`unknown argument: ${arg}`);
+      process.exit(2);
+    }
+  }
 }
 
 const errors: string[] = [];
@@ -70,6 +88,46 @@ function listFiles(dir: string): string[] {
     if (statSync(full).isDirectory()) return listFiles(full);
     return /\.(ts|tsx)$/.test(name) ? [full] : [];
   });
+}
+
+function parse(file: string): ts.SourceFile {
+  const kind = file.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
+  return ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, kind);
+}
+
+/** Top-level names declared in a file (functions, classes, types, consts...). */
+function declaredNames(file: string): Set<string> {
+  const names = new Set<string>();
+  for (const stmt of parse(file).statements) {
+    if (
+      (ts.isFunctionDeclaration(stmt) || ts.isClassDeclaration(stmt) || ts.isInterfaceDeclaration(stmt) ||
+        ts.isTypeAliasDeclaration(stmt) || ts.isEnumDeclaration(stmt)) &&
+      stmt.name
+    ) {
+      names.add(stmt.name.text);
+    } else if (ts.isVariableStatement(stmt)) {
+      for (const d of stmt.declarationList.declarations) if (ts.isIdentifier(d.name)) names.add(d.name.text);
+    }
+  }
+  return names;
+}
+
+/**
+ * Titles of tests that actually run: plain `it('...')` / `test('...')` calls.
+ * Comments, `it.skip`, `it.todo`, `test.only`, `describe` titles and
+ * unrelated `.test(` calls (e.g. RegExp#test) are not counted.
+ */
+function runnableTestTitles(file: string): string[] {
+  const titles: string[] = [];
+  const visit = (node: ts.Node): void => {
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && ['it', 'test'].includes(node.expression.text)) {
+      const first = node.arguments[0];
+      if (first && (ts.isStringLiteral(first) || ts.isNoSubstitutionTemplateLiteral(first))) titles.push(first.text);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(parse(file));
+  return titles;
 }
 
 // --- load -------------------------------------------------------------------
@@ -104,17 +162,18 @@ for (const row of matrix.rows) {
     const [file, symbol] = ref.split('#') as [string, string];
     const full = join(ROOT, file);
     if (!existsSync(full)) errors.push(`${where}: impl file ${file} does not exist`);
-    else if (!new RegExp(`\\b${symbol}\\b`).test(readFileSync(full, 'utf8'))) errors.push(`${where}: symbol ${symbol} not found in ${file}`);
+    else if (!declaredNames(full).has(symbol)) errors.push(`${where}: ${file} does not declare ${symbol} at top level`);
   }
 }
 
 // --- tests that cite rows -----------------------------------------------------
 const testsById = new Map<string, string[]>();
-const TITLE = /\b(?:it|test|describe)(?:\.\w+)*\(\s*(['"`])((?:\\.|(?!\1).)*)\1/g;
-for (const file of TEST_DIRS.flatMap((d) => listFiles(join(ROOT, d)))) {
-  const text = readFileSync(file, 'utf8');
-  for (const m of text.matchAll(TITLE)) {
-    for (const ref of (m[2] ?? '').matchAll(/\[([A-Z]+-\d{2})\]/g)) {
+const testFiles = TEST_DIRS.flatMap((d) => listFiles(join(ROOT, d))).filter(
+  (f) => !TEST_EXCLUDE.some((ex) => relative(ROOT, f).split('\\').join('/').startsWith(`${ex}/`)),
+);
+for (const file of testFiles) {
+  for (const title of runnableTestTitles(file)) {
+    for (const ref of title.matchAll(/\[([A-Z]+-\d{2})\]/g)) {
       const id = ref[1] as string;
       if (!ids.has(id)) errors.push(`${relative(ROOT, file)}: test cites unknown rule id [${id}]`);
       testsById.set(id, [...(testsById.get(id) ?? []), relative(ROOT, file)]);
@@ -131,7 +190,7 @@ for (const row of matrix.rows) {
 const planned = matrix.rows.filter((r) => r.status === 'planned');
 if (REQUIRE_DONE && planned.length > 0) errors.push(`--require-done: ${planned.length} rows still planned`);
 if (GATE) {
-  const upTo = MILESTONES.slice(0, MILESTONES.indexOf(GATE as (typeof MILESTONES)[number]) + 1) as readonly string[];
+  const upTo = MILESTONES.slice(0, MILESTONES.indexOf(GATE) + 1) as readonly string[];
   const open = planned.filter((r) => upTo.includes(r.milestone));
   if (open.length > 0) errors.push(`--milestone ${GATE}: ${open.length} rows still planned: ${open.map((r) => r.id).join(', ')}`);
 }
@@ -210,7 +269,7 @@ const outputs: [string, string][] = [
 ];
 for (const [path, content] of outputs) {
   if (WRITE) writeFileSync(path, content);
-  else if (!existsSync(path) || readFileSync(path, 'utf8') !== content) {
+  else if (!existsSync(path) || readFileSync(path, 'utf8').replace(/\r\n/g, '\n') !== content) {
     errors.push(`${relative(ROOT, path)} is stale; run: npm run check:matrix -- --write`);
   }
 }

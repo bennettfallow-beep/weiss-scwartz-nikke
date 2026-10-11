@@ -31,12 +31,14 @@ const ALLOWED_PACKAGES: Record<Layer, (pkg: string) => boolean> = {
   ui: () => true,
 };
 
-function listFiles(dir: string): string[] {
+const PURE_LAYERS: readonly Layer[] = ['engine', 'cards', 'ai', 'session'];
+
+function listFiles(dir: string, filter: (name: string) => boolean): string[] {
   if (!existsSync(dir)) return [];
   return readdirSync(dir).flatMap((name) => {
     const full = join(dir, name);
-    if (statSync(full).isDirectory()) return listFiles(full);
-    return /\.(ts|tsx)$/.test(name) ? [full] : [];
+    if (statSync(full).isDirectory()) return listFiles(full, filter);
+    return filter(name) ? [full] : [];
   });
 }
 
@@ -53,16 +55,23 @@ function resolveRelative(fromFile: string, spec: string): string | null {
   return null;
 }
 
-function importsOf(file: string): string[] {
-  const info = ts.preProcessFile(readFileSync(file, 'utf8'), true, true);
-  return info.importedFiles.map((f) => f.fileName);
+function scan(file: string): ts.PreProcessedFileInfo {
+  return ts.preProcessFile(readFileSync(file, 'utf8'), true, true);
 }
 
-const files = LAYERS.flatMap((layer) => listFiles(join(SRC, layer)));
+const files = LAYERS.flatMap((layer) => listFiles(join(SRC, layer), (name) => /\.(ts|tsx)$/.test(name)));
 
 describe('architecture: layer purity', () => {
   it('finds source files to check', () => {
     expect(files.some((f) => layerOf(f) === 'engine')).toBe(true);
+  });
+
+  // .js/.tsx/.d.ts files would escape tsconfig.engine.json and parts of lint.
+  it('pure layers contain only plain .ts source files', () => {
+    const offenders = PURE_LAYERS.flatMap((layer) =>
+      listFiles(join(SRC, layer), (name) => !/\.ts$/.test(name) || /\.d\.ts$/.test(name)),
+    ).map((f) => relative(ROOT, f));
+    expect(offenders).toEqual([]);
   });
 
   for (const file of files) {
@@ -72,7 +81,14 @@ describe('architecture: layer purity', () => {
 
     it(`${label} imports only what the ${layer} layer allows`, () => {
       const problems: string[] = [];
-      for (const spec of importsOf(file)) {
+      const info = scan(file);
+      if (layer !== 'ui') {
+        // One `/// <reference lib="dom" />` would give every pure file DOM types.
+        for (const ref of [...info.libReferenceDirectives, ...info.typeReferenceDirectives, ...info.referencedFiles]) {
+          problems.push(`triple-slash reference "${ref.fileName}" is not allowed in ${layer}`);
+        }
+      }
+      for (const spec of info.importedFiles.map((f) => f.fileName)) {
         if (!spec.startsWith('.')) {
           const pkg = spec.startsWith('@') ? spec.split('/').slice(0, 2).join('/') : (spec.split('/')[0] ?? spec);
           if (!ALLOWED_PACKAGES[layer](pkg)) problems.push(`package "${spec}" is not allowed in ${layer}`);

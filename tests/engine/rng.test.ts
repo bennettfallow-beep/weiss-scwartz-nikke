@@ -135,6 +135,27 @@ describe('seeded RNG', () => {
     expect(chi2).toBeLessThan(20.52);
   });
 
+  it('nextInt has no modulo bias even for bounds near 2^32', () => {
+    // n = 3 * 2^30. A plain `x % n` would land in the lowest third twice as
+    // often as in each other third (about 1/2, 1/4, 1/4); rejection sampling
+    // keeps each third at about 1/3.
+    const n = 3 * 2 ** 30;
+    const third = 2 ** 30;
+    const buckets = [0, 0, 0];
+    let rng = seedRng('modulo-bias');
+    const total = 30_000;
+    for (let i = 0; i < total; i++) {
+      const [x, next] = nextInt(rng, n);
+      const b = Math.floor(x / third);
+      buckets[b] = (buckets[b] ?? 0) + 1;
+      rng = next;
+    }
+    for (const count of buckets) {
+      expect(count / total).toBeGreaterThan(0.31);
+      expect(count / total).toBeLessThan(0.36);
+    }
+  });
+
   it('shuffle returns a permutation and leaves the input untouched', () => {
     fc.assert(
       fc.property(fc.string(), fc.array(fc.integer(), { maxLength: 60 }), (seed, items) => {

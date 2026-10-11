@@ -12,7 +12,7 @@ Cards whose text depends on these rules cannot be played as written. The in-app 
 
 ## CARD: Card information (CR 2)
 
-- **CARD-04** (§2.1.2.1, §2.1.2.2): Text of the form 'with "X" in its card name' matches cards whose name contains X as a portion: the bilingual form matches a part of the English name together with a part of the Japanese name, and the English-only form requires X to be bounded on each side by a punctuation mark or by nothing (start/end of the name). _Card-name partial matching is deferred. CR example: "MOB" matches 'Ritsu: Together With MOB', 'MOB: Gratitude Towards His Master' and 'Shigeo "MOB" Kageyama' but not 'Moblit' (so a space also counts as a valid boundary)._
+- **CARD-04** (§2.1.2.1, §2.1.2.2): Text of the form 'with "X" in its card name' matches cards whose name contains X as a portion: the bilingual form matches a part of the English name together with a part of the Japanese name, and the English-only form requires X to be bounded on each side by a punctuation mark or by nothing (start/end of the name). _Card-name partial matching is deferred. Illustration with invented names: "ORB" matches "Kael: Keeper of ORB", "ORB: Last Light" and "Mira \"ORB\" Vance", but not "Orbital" (a space counts as a valid boundary)._
 - **CARD-15** (§2.8.3): A card with the Clock icon has an ability that is relevant while the card is in the clock. _Clock icon is deferred in v1._
 
 ## ZONE: Zones of the game (CR 3)

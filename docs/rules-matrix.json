@@ -294,7 +294,7 @@
       "status": "deferred",
       "milestone": "none",
       "impl": [],
-      "notes": "Card-name partial matching is deferred. CR example: \"MOB\" matches 'Ritsu: Together With MOB', 'MOB: Gratitude Towards His Master' and 'Shigeo \"MOB\" Kageyama' but not 'Moblit' (so a space also counts as a valid boundary)."
+      "notes": "Card-name partial matching is deferred. Illustration with invented names: \"ORB\" matches \"Kael: Keeper of ORB\", \"ORB: Last Light\" and \"Mira \\\"ORB\\\" Vance\", but not \"Orbital\" (a space counts as a valid boundary)."
     },
     {
       "id": "CARD-05",
@@ -1488,7 +1488,7 @@
         "4.12.2.7.2"
       ],
       "status": "planned",
-      "milestone": "M2",
+      "milestone": "M3",
       "impl": [],
       "notes": "Self-damage only comes from effects, so this case can only be tested once M3 lands."
     },
@@ -1500,7 +1500,7 @@
         "4.12.2.7.1"
       ],
       "status": "planned",
-      "milestone": "M2",
+      "milestone": "M3",
       "impl": [],
       "notes": "Bind Shot to the next damage event, not to Damage Step damage. Damage before the Damage Step only comes from abilities, so this can only be tested once M3 lands."
     },
@@ -1512,7 +1512,7 @@
         "4.12.2.7.3"
       ],
       "status": "planned",
-      "milestone": "M2",
+      "milestone": "M3",
       "impl": [],
       "notes": "Damage to several players at once only comes from effects, so this can only be tested once M3 lands."
     },
@@ -3179,9 +3179,9 @@
         "10.2.2"
       ],
       "status": "planned",
-      "milestone": "M3",
+      "milestone": "M2",
       "impl": [],
-      "notes": "Triggers on any stage-to-waiting-room move, not only from Reverse. Optional; declining consumes the standby instance (ABL-12). If the card has left the waiting room before resolution the return fails (ABL-16)."
+      "notes": "Triggers on any stage-to-waiting-room move, not only from Reverse. Optional; declining consumes the standby instance (ABL-12). If the card has left the waiting room before resolution the return fails (ABL-16). Built in M2 as a rule-level ability so fuzzed games include Encore; card-specific Encore costs need the M3 ability system."
     },
     {
       "id": "KW-03",
@@ -3191,7 +3191,7 @@
         "10.2.3"
       ],
       "status": "planned",
-      "milestone": "M3",
+      "milestone": "M2",
       "impl": [],
       "notes": "Circled 3 = put exactly 3 stock cards into the waiting room (COST-04). The general Encore form is KW-02."
     },

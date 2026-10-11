@@ -18,7 +18,7 @@ env:
 jobs:
   static:
     name: typecheck, lint, unit tests, matrix, assets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: Playwright 1.56.1 must support the runner OS
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
@@ -35,7 +35,7 @@ jobs:
 
   web-e2e:
     name: web build + Playwright
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: Playwright 1.56.1 must support the runner OS
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7

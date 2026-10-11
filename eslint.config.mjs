@@ -8,7 +8,10 @@ import { defineConfig } from 'eslint/config';
 import reactHooks from 'eslint-plugin-react-hooks';
 import tseslint from 'typescript-eslint';
 
-const PURE = ['src/engine/**/*.ts', 'src/cards/**/*.ts', 'src/ai/**/*.ts', 'src/session/**/*.ts'];
+// Every file type, not just .ts: a .js or .tsx file in a pure layer must not
+// slip past these rules (the architecture test also rejects non-.ts files).
+const EXT = '{ts,tsx,mts,cts,js,jsx,mjs,cjs}';
+const PURE = ['engine', 'cards', 'ai', 'session'].map((layer) => `src/${layer}/**/*.${EXT}`);
 
 const FRAMEWORK_IMPORTS = [
   { group: ['react', 'react-*', 'react/*'], message: 'Pure layers cannot depend on React.' },
@@ -51,17 +54,26 @@ export default defineConfig(
       'no-restricted-syntax': [
         'error',
         { selector: "NewExpression[callee.name='Date']", message: 'Pure layers must not read the clock.' },
+        { selector: "CallExpression[callee.name='Date']", message: 'Pure layers must not read the clock.' },
+        { selector: "VariableDeclarator[init.name=/^(Math|Date|Intl)$/]", message: 'Do not alias Math, Date or Intl; it hides clock and entropy reads.' },
       ],
       'no-restricted-globals': [
         'error',
-        'window', 'document', 'localStorage', 'sessionStorage', 'navigator',
-        'setTimeout', 'setInterval', 'requestAnimationFrame', 'crypto', 'process', 'fetch', 'console',
+        'window', 'document', 'localStorage', 'sessionStorage', 'navigator', 'location',
+        'setTimeout', 'setInterval', 'setImmediate', 'queueMicrotask', 'requestAnimationFrame',
+        'crypto', 'process', 'fetch', 'console', 'performance', 'Intl',
+        'globalThis', 'global', 'self', 'eval', 'Function',
       ],
+      'no-eval': 'error',
+      'no-implied-eval': 'error',
+      'no-new-func': 'error',
+      // A single `/// <reference lib="dom" />` would give every pure file DOM types.
+      '@typescript-eslint/triple-slash-reference': ['error', { lib: 'never', path: 'never', types: 'never' }],
     },
   },
   {
     // The engine has zero dependencies, not even zod.
-    files: ['src/engine/**/*.ts'],
+    files: [`src/engine/**/*.${EXT}`],
     rules: {
       'no-restricted-imports': [
         'error',
