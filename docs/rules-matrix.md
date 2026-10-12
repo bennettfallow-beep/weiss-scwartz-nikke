@@ -3,7 +3,7 @@
 
 Source: Weiss Schwarz (English Edition) Comprehensive Rules v2.10. Statements are paraphrases, not rule text.
 
-Rows: 271 · verified 103 · planned 131 · deferred 33 · out 4
+Rows: 271 · verified 168 · planned 66 · deferred 33 · out 4
 
 ## GEN: Player count and golden rules (CR 1.1, 1.3)
 
@@ -48,12 +48,12 @@ Rows: 271 · verified 103 · planned 131 · deferred 33 · out 4
 | CARD-10 | Traits exist only on characters; they have no rules effect of their own but abilities and effects may refer to them, marked with double angle brackets. | §2.5.1, §2.5.2, §2.5.3 | planned | M3 | 0 |
 | CARD-11 | Level exists only on characters and events and is the minimum player level required to play that card, as governed by Section 8. | §2.6.1, §2.6.2 | verified | M1 | 4 |
 | CARD-12 | Cost exists only on characters and events; to play the card, that many cards must be moved from the player's stock to their waiting room. | §2.7.1, §2.7.2 | verified | M1 | 6 |
-| CARD-13 | A card with the Counter icon may be played during the Counter Step of the opponent's turn. | §2.8.1, §2.8.2 | planned | M2 | 4 |
+| CARD-13 | A card with the Counter icon may be played during the Counter Step of the opponent's turn. | §2.8.1, §2.8.2 | verified | M2 | 4 |
 | CARD-14 | Unless stated otherwise, a card with the Counter icon may also be played during its owner's own main phase. | §2.8.2.1 | verified | M1 | 2 |
 | CARD-15 | A card with the Clock icon has an ability that is relevant while the card is in the clock. | §2.8.3 | deferred | none | 0 |
-| CARD-16 | Power exists only on characters and is the character's strength in battle. | §2.9.1 | planned | M2 | 2 |
-| CARD-17 | Soul exists only on characters and is the base amount of damage the character deals in its battle; it is shown by the number of soul icons rather than as a printed number. | §2.10.1, §2.10.2 | planned | M2 | 2 |
-| CARD-18 | A card's trigger icon(s) determine what happens when that card is revealed in the Trigger Step of an attack. | §2.11.1 | planned | M2 | 2 |
+| CARD-16 | Power exists only on characters and is the character's strength in battle. | §2.9.1 | verified | M2 | 2 |
+| CARD-17 | Soul exists only on characters and is the base amount of damage the character deals in its battle; it is shown by the number of soul icons rather than as a printed number. | §2.10.1, §2.10.2 | verified | M2 | 2 |
+| CARD-18 | A card's trigger icon(s) determine what happens when that card is revealed in the Trigger Step of an attack. | §2.11.1 | verified | M2 | 2 |
 | CARD-19 | Unless stated otherwise, a character's card text works only while it is on the stage and a climax's card text works only while it is in the climax area; however, an ability that by its nature is meant to be used in some other zone works in that zone. | §2.12.1, §2.12.2, §2.12.2.1, §2.12.2.2, §2.12.2.3 | planned | M3 | 0 |
 | CARD-20 | Title name and Weiss/Schwarz side affiliation (shown by a white, black, or white-to-black gradient side frame) have no rules meaning in themselves, although effects may refer to them. | §2.13.1, §2.13.2, §2.18.1, §2.18.1.1, §2.18.1.2, §2.18.1.3, §2.18.2 | out | none | 0 |
 | CARD-21 | When a rule or effect checks information a card does not have, missing numeric information counts as 0 and missing non-numeric information counts as nonexistent. | §2.19.1 | verified | M1 | 2 |
@@ -76,7 +76,7 @@ Rows: 271 · verified 103 · planned 131 · deferred 33 · out 4
 | ZONE-10 | If the deck becomes empty partway through such a deck action, the action is paused, a refresh (9.2) is carried out, and the action then resumes. | §3.2.3.2 | verified | M1 | 2 |
 | ZONE-11 | If the deck holds fewer cards than the action specifies, and cards would still remain in the deck after handling as many cards as it holds (e.g., merely looking at them), the player handles only the cards present and the action ends. | §3.2.3.3 | planned | M3 | 0 |
 | ZONE-12 | Shuffling puts the deck into an unpatterned random order, and the deck's owner always performs the shuffle regardless of who is master of the ability that called for it. | §3.2.4 | verified | M1 | 2 |
-| ZONE-13 | Cards flipped over from the deck are revealed and placed in the resolution zone. | §3.2.5 | planned | M2 | 2 |
+| ZONE-13 | Cards flipped over from the deck are revealed and placed in the resolution zone. | §3.2.5 | verified | M2 | 2 |
 | ZONE-14 | Drawn cards go to the hand, which is hidden from the opponent; its owner may look at and reorder their own hand whenever they like. | §3.3.1, §3.3.2 | verified | M1 | 5 |
 | ZONE-15 | During the turn player's End Phase, if that player's hand holds more cards than the hand limit (seven unless an effect says otherwise), they must put cards from hand into their waiting room until they are at the limit. | §3.3.3, §3.3.3.1 | verified | M1 | 4 |
 | ZONE-16 | Unless stated otherwise, characters removed from the stage, used event and climax cards, and cards paid as costs go to the waiting room. | §3.4.1 | verified | M1 | 2 |
@@ -100,9 +100,9 @@ Rows: 271 · verified 103 · planned 131 · deferred 33 · out 4
 | ZONE-34 | The memory is a zone cards enter only when explicitly instructed; it is public, its cards are face up unless stated otherwise and viewable by all, and a player may reorder the face-up cards in their own memory. Cards there may be called simply 'memory'. | §3.12.1, §3.12.2, §3.12.2.1, §3.12.2.3 | deferred | none | 0 |
 | ZONE-35 | Unless stated otherwise, face-down cards in memory are visible only to their owner, must be kept so the order they were placed face down is clear, and count as blank unless their ability explicitly works face down there; when moved they are placed face up or down according to the destination without revealing information if it is hidden, and when shuffled by an effect no player may see them unless the effect says they may be seen or revealed. | §3.12.2.2, §3.12.2.2.1, §3.12.2.2.2, §3.12.2.2.3 | deferred | none | 0 |
 | ZONE-36 | A played event card goes to the resolution zone, and after its effect resolves it goes to its owner's waiting room. | §3.13.1, §3.13.1.1 | verified | M1 | 2 |
-| ZONE-37 | A card revealed by a Trigger Check goes to the resolution zone, and once the revealed card's effect has resolved it goes face down into its owner's stock. | §3.13.1.2 | planned | M2 | 2 |
-| ZONE-38 | Cards revealed during the Damage Process go to the resolution zone; if Damage Cancel occurs they go to their owner's waiting room, otherwise to their owner's clock. | §3.13.1.3 | planned | M2 | 2 |
-| ZONE-39 | When several damage cards go to the clock together, they are placed on top of the clock in the same order in which they entered the resolution zone. | §3.13.1.3.1 | planned | M2 | 2 |
+| ZONE-37 | A card revealed by a Trigger Check goes to the resolution zone, and once the revealed card's effect has resolved it goes face down into its owner's stock. | §3.13.1.2 | verified | M2 | 2 |
+| ZONE-38 | Cards revealed during the Damage Process go to the resolution zone; if Damage Cancel occurs they go to their owner's waiting room, otherwise to their owner's clock. | §3.13.1.3 | verified | M2 | 2 |
+| ZONE-39 | When several damage cards go to the clock together, they are placed on top of the clock in the same order in which they entered the resolution zone. | §3.13.1.3.1 | verified | M2 | 2 |
 | ZONE-40 | Cards placed in the resolution zone by a Brainstorm ability sit there temporarily and then go to their owner's waiting room. | §3.13.1.4 | deferred | none | 0 |
 | ZONE-41 | The resolution zone is public, with cards face up and their information and order visible to all; no player may reorder it, and each new card goes on top. | §3.13.2 | verified | M1 | 2 |
 
@@ -133,34 +133,34 @@ Rows: 271 · verified 103 · planned 131 · deferred 33 · out 4
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| DMG-01 | Dealing N damage to a player runs a Damage Process: the damaged player moves the top card of their own deck face up into their own resolution zone, one card at a time. | §4.10.1, §4.10.1.1 | planned | M2 | 3 |
-| DMG-02 | If a card moved to the resolution zone by a Damage Process is a climax, every card that process moved there goes to the waiting room and the process ends at once (Damage Cancel). Card text that refers to damage being canceled means this event. | §4.10.1.2, §4.10.1.2.1 | planned | M2 | 4 |
-| DMG-03 | Once the process has moved N cards to the resolution zone with no climax among them, all N cards go on top of the clock in the same order they entered the resolution zone and the process ends; otherwise the next card is moved. | §4.10.1.3 | planned | M2 | 2 |
-| DMG-04 | Moving cards into the clock by any means other than dealing damage is not a Damage Process, so it can never be canceled. | §4.10.2 | planned | M2 | 2 |
+| DMG-01 | Dealing N damage to a player runs a Damage Process: the damaged player moves the top card of their own deck face up into their own resolution zone, one card at a time. | §4.10.1, §4.10.1.1 | verified | M2 | 3 |
+| DMG-02 | If a card moved to the resolution zone by a Damage Process is a climax, every card that process moved there goes to the waiting room and the process ends at once (Damage Cancel). Card text that refers to damage being canceled means this event. | §4.10.1.2, §4.10.1.2.1 | verified | M2 | 4 |
+| DMG-03 | Once the process has moved N cards to the resolution zone with no climax among them, all N cards go on top of the clock in the same order they entered the resolution zone and the process ends; otherwise the next card is moved. | §4.10.1.3 | verified | M2 | 2 |
+| DMG-04 | Moving cards into the clock by any means other than dealing damage is not a Damage Process, so it can never be canceled. | §4.10.2 | verified | M2 | 2 |
 | DMG-05 | A general reference in an effect to cards moved into a zone or revealed by an effect excludes cards handled during a Damage Process; only an effect that names damage specifically counts those cards. | §4.10.3 | planned | M3 | 0 |
-| DMG-06 | When a character deals damage to another player in the Damage Step of an attack, the attacking character is the source of that damage. | §4.11.1, §4.11.1.1 | planned | M2 | 3 |
+| DMG-06 | When a character deals damage to another player in the Damage Step of an attack, the attacking character is the source of that damage. | §4.11.1, §4.11.1.1 | verified | M2 | 3 |
 | DMG-07 | Damage dealt by an event card, or by an effect of an ability that a card has, has that event card or that card as its source unless stated otherwise; if the source would be the player, the card is the source instead. | §4.11.1.2, §4.11.1.2.1 | planned | M3 | 0 |
 
 ## TRG: Trigger icons (CR 4.12)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| TRG-01 | A trigger icon's action is normally carried out by the turn player during the Trigger Step, but when an effect says to perform a trigger icon's effect, the master of that effect carries out the action. | §4.12.1 | planned | M2 | 1 |
-| TRG-02 | A card with no trigger icon causes no trigger action. | §4.12.2.1 | planned | M2 | 1 |
-| TRG-03 | Soul icon: the attacker gains +1 soul for the rest of the turn; this is mandatory and cannot be declined. | §4.12.2.2 | planned | M2 | 2 |
-| TRG-04 | Return icon: the performing player may choose one character on the opponent's stage and send it to its owner's hand; doing so is optional. | §4.12.2.3 | planned | M2 | 2 |
-| TRG-05 | Pool icon: the performing player may move the top card of their own deck into their stock; doing so is optional. | §4.12.2.4 | planned | M2 | 1 |
-| TRG-06 | Comeback icon: the performing player may choose a character in their own waiting room and add it to their hand; doing so is optional. | §4.12.2.5 | planned | M2 | 1 |
-| TRG-07 | Draw icon: the performing player may draw one card; doing so is optional. | §4.12.2.6 | planned | M2 | 1 |
-| TRG-08 | Shot icon: for the rest of the turn, an automatic ability waits for the attacking character's next damage to be canceled; when that happens, the opponent takes 1 damage. | §4.12.2.7 | planned | M2 | 3 |
+| TRG-01 | A trigger icon's action is normally carried out by the turn player during the Trigger Step, but when an effect says to perform a trigger icon's effect, the master of that effect carries out the action. | §4.12.1 | verified | M2 | 1 |
+| TRG-02 | A card with no trigger icon causes no trigger action. | §4.12.2.1 | verified | M2 | 1 |
+| TRG-03 | Soul icon: the attacker gains +1 soul for the rest of the turn; this is mandatory and cannot be declined. | §4.12.2.2 | verified | M2 | 2 |
+| TRG-04 | Return icon: the performing player may choose one character on the opponent's stage and send it to its owner's hand; doing so is optional. | §4.12.2.3 | verified | M2 | 2 |
+| TRG-05 | Pool icon: the performing player may move the top card of their own deck into their stock; doing so is optional. | §4.12.2.4 | verified | M2 | 1 |
+| TRG-06 | Comeback icon: the performing player may choose a character in their own waiting room and add it to their hand; doing so is optional. | §4.12.2.5 | verified | M2 | 1 |
+| TRG-07 | Draw icon: the performing player may draw one card; doing so is optional. | §4.12.2.6 | verified | M2 | 1 |
+| TRG-08 | Shot icon: for the rest of the turn, an automatic ability waits for the attacking character's next damage to be canceled; when that happens, the opponent takes 1 damage. | §4.12.2.7 | verified | M2 | 6 |
 | TRG-09 | Shot's trigger condition is not limited to damage aimed at the opponent: if the attacking character's next damage is dealt to its own player and is canceled, Shot still fires. | §4.12.2.7.2 | planned | M3 | 0 |
 | TRG-10 | Shot watches only the attacking character's first damage after the trigger. If the character deals damage before the Damage Step and that damage is canceled, Shot fires; if that earlier damage is not canceled, Shot is used up and a cancel in the Damage Step does not fire it. | §4.12.2.7.1 | planned | M3 | 0 |
 | TRG-11 | If the attacking character's next damage is dealt to several players at once, a cancel against any of them fires Shot, and Shot fires only once even if damage to more than one player is canceled. | §4.12.2.7.3 | planned | M3 | 0 |
-| TRG-12 | Treasure icon: the trigger card itself must go to its owner's hand (not optional), after which the performing player may put the top card of their deck into stock. Because the trigger card has changed zones, it is not moved to stock afterward. | §4.12.2.8, §4.12.2.8.1 | planned | M2 | 1 |
-| TRG-13 | Gate icon: the performing player may choose a climax card in their own waiting room and add it to their hand; doing so is optional. | §4.12.2.9 | planned | M2 | 1 |
-| TRG-14 | Standby icon: the performing player may choose a character in their own waiting room whose level is no higher than the player's level plus 1, and put it in rest state on any position of their stage; doing so is optional. | §4.12.2.10 | planned | M2 | 2 |
-| TRG-15 | The Standby placement may target a stage position that already holds a character; the character already there is then put into its owner's waiting room under the multiple-characters rule. | §4.12.2.10.1 | planned | M2 | 1 |
-| TRG-16 | Choice icon: the performing player may choose a character in their own waiting room whose trigger icon includes a soul icon, then either add it to their hand or put it into their stock; doing so is optional. | §4.12.2.11 | planned | M2 | 1 |
+| TRG-12 | Treasure icon: the trigger card itself must go to its owner's hand (not optional), after which the performing player may put the top card of their deck into stock. Because the trigger card has changed zones, it is not moved to stock afterward. | §4.12.2.8, §4.12.2.8.1 | verified | M2 | 2 |
+| TRG-13 | Gate icon: the performing player may choose a climax card in their own waiting room and add it to their hand; doing so is optional. | §4.12.2.9 | verified | M2 | 1 |
+| TRG-14 | Standby icon: the performing player may choose a character in their own waiting room whose level is no higher than the player's level plus 1, and put it in rest state on any position of their stage; doing so is optional. | §4.12.2.10 | verified | M2 | 2 |
+| TRG-15 | The Standby placement may target a stage position that already holds a character; the character already there is then put into its owner's waiting room under the multiple-characters rule. | §4.12.2.10.1 | verified | M2 | 1 |
+| TRG-16 | Choice icon: the performing player may choose a character in their own waiting room whose trigger icon includes a soul icon, then either add it to their hand or put it into their stock; doing so is optional. | §4.12.2.11 | verified | M2 | 1 |
 
 ## DECK: Deck construction (CR 5.1)
 
@@ -233,20 +233,20 @@ Rows: 271 · verified 103 · planned 131 · deferred 33 · out 4
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| ATK-01 | In the Attack Phase the turn player may attack the opponent with characters they are master of that are in the Stand State on their center stage. The phase runs as a sequence of steps that starts with the Attack Declaration Step. | §6.7.1, §7.1.1 | planned | M2 | 2 |
-| ATK-02 | One Attack Sub-Phase spans everything from Attack Declaration through the Battle Step, or through the Damage Step when there is no battle. | §7.1.2 | planned | M2 | 3 |
-| ATK-03 | Every Attack Declaration Step meets the 'at the beginning of attack declaration step' trigger condition, followed by a check timing. Only on the turn's first Attack Declaration Step is the 'at the beginning of attack phase' trigger condition met beforehand, with its own check timing. | §7.2.1.1, §7.2.1.2 | planned | M2 | 3 |
-| ATK-04 | To declare an attack, the turn player picks one character that is able to attack, and it becomes the attacker. Unless a card effect changes whether a character can attack, any Stand State character on their center stage qualifies. If no eligible character can be picked, this option is not available. | §7.2.1.3, §7.2.1.3.1, §7.2.1.3.1.1, §7.2.1.3.1.3 | planned | M2 | 4 |
-| ATK-05 | In the Attack Phase of the starting player's first turn, once an Attack Sub-Phase has already taken place, the turn player cannot choose another attacker, so that turn allows only a single attack. | §7.2.1.3.1.2 | planned | M2 | 2 |
-| ATK-06 | Instead of declaring an attack, the turn player may choose to end the Attack Phase, and play goes straight to the Encore Step. | §7.2.1.3.2 | planned | M2 | 2 |
-| ATK-07 | If no opposing character is facing the chosen attacker, the attack automatically becomes a Direct Attack and the attacker gets +1 soul until end of turn. | §7.2.1.4, §7.2.1.4.1 | planned | M2 | 2 |
-| ATK-08 | If an opposing character is facing the chosen attacker, the turn player chooses whether the attack is a Frontal Attack or a Side Attack. | §7.2.1.4.2 | planned | M2 | 2 |
-| ATK-09 | A Side Attack gives the attacker -X soul until end of turn, where X is the level of the facing character. If that level is not greater than 0, the attacker loses no soul. | §7.2.1.4.2 | planned | M2 | 3 |
-| ATK-10 | Once the attack type is chosen, the type and its soul change stay fixed for that attack, even if the facing character changes or leaves. For example, a Side Attack whose facing character is returned to hand remains a Side Attack and keeps any soul penalty. | §7.2.1.4.3 | planned | M2 | 3 |
-| ATK-11 | From the point the attack type is set until the Attack Sub-Phase ends, the chosen character is the attacking character (direct, frontal or side attacking character) and is in the 'attacked' state, but only while it does not move to another zone. | §7.2.1.5 | planned | M2 | 3 |
-| ATK-12 | In a Frontal Attack, while it stays in its zone, the facing character becomes the defending character (the one 'being frontal attacked'). For the Attack Sub-Phase, the attacker and defender are both 'in battle' and each is the other's battle opponent. | §7.2.1.5.1 | planned | M2 | 3 |
-| ATK-13 | In a Frontal or Side Attack, the character facing the attacker is in the 'being attacked' state for the Attack Sub-Phase as long as it stays in its zone. | §7.2.1.5.2 | planned | M2 | 2 |
-| ATK-14 | After its attack states are set, the attacker is put into the Rest State. A check timing is then fully resolved and play moves to the Trigger Step. | §7.2.1.5.3, §7.2.1.6 | planned | M2 | 2 |
+| ATK-01 | In the Attack Phase the turn player may attack the opponent with characters they are master of that are in the Stand State on their center stage. The phase runs as a sequence of steps that starts with the Attack Declaration Step. | §6.7.1, §7.1.1 | verified | M2 | 2 |
+| ATK-02 | One Attack Sub-Phase spans everything from Attack Declaration through the Battle Step, or through the Damage Step when there is no battle. | §7.1.2 | verified | M2 | 3 |
+| ATK-03 | Every Attack Declaration Step meets the 'at the beginning of attack declaration step' trigger condition, followed by a check timing. Only on the turn's first Attack Declaration Step is the 'at the beginning of attack phase' trigger condition met beforehand, with its own check timing. | §7.2.1.1, §7.2.1.2 | verified | M2 | 3 |
+| ATK-04 | To declare an attack, the turn player picks one character that is able to attack, and it becomes the attacker. Unless a card effect changes whether a character can attack, any Stand State character on their center stage qualifies. If no eligible character can be picked, this option is not available. | §7.2.1.3, §7.2.1.3.1, §7.2.1.3.1.1, §7.2.1.3.1.3 | verified | M2 | 4 |
+| ATK-05 | In the Attack Phase of the starting player's first turn, once an Attack Sub-Phase has already taken place, the turn player cannot choose another attacker, so that turn allows only a single attack. | §7.2.1.3.1.2 | verified | M2 | 2 |
+| ATK-06 | Instead of declaring an attack, the turn player may choose to end the Attack Phase, and play goes straight to the Encore Step. | §7.2.1.3.2 | verified | M2 | 2 |
+| ATK-07 | If no opposing character is facing the chosen attacker, the attack automatically becomes a Direct Attack and the attacker gets +1 soul until end of turn. | §7.2.1.4, §7.2.1.4.1 | verified | M2 | 2 |
+| ATK-08 | If an opposing character is facing the chosen attacker, the turn player chooses whether the attack is a Frontal Attack or a Side Attack. | §7.2.1.4.2 | verified | M2 | 2 |
+| ATK-09 | A Side Attack gives the attacker -X soul until end of turn, where X is the level of the facing character. If that level is not greater than 0, the attacker loses no soul. | §7.2.1.4.2 | verified | M2 | 3 |
+| ATK-10 | Once the attack type is chosen, the type and its soul change stay fixed for that attack, even if the facing character changes or leaves. For example, a Side Attack whose facing character is returned to hand remains a Side Attack and keeps any soul penalty. | §7.2.1.4.3 | verified | M2 | 3 |
+| ATK-11 | From the point the attack type is set until the Attack Sub-Phase ends, the chosen character is the attacking character (direct, frontal or side attacking character) and is in the 'attacked' state, but only while it does not move to another zone. | §7.2.1.5 | verified | M2 | 4 |
+| ATK-12 | In a Frontal Attack, while it stays in its zone, the facing character becomes the defending character (the one 'being frontal attacked'). For the Attack Sub-Phase, the attacker and defender are both 'in battle' and each is the other's battle opponent. | §7.2.1.5.1 | verified | M2 | 4 |
+| ATK-13 | In a Frontal or Side Attack, the character facing the attacker is in the 'being attacked' state for the Attack Sub-Phase as long as it stays in its zone. | §7.2.1.5.2 | verified | M2 | 2 |
+| ATK-14 | After its attack states are set, the attacker is put into the Rest State. A check timing is then fully resolved and play moves to the Trigger Step. | §7.2.1.5.3, §7.2.1.6 | verified | M2 | 2 |
 
 ## END: End phase (CR 6.8)
 
@@ -255,53 +255,53 @@ Rows: 271 · verified 103 · planned 131 · deferred 33 · out 4
 | END-01 | The End Phase begins by meeting the 'at the end of turn' trigger condition, which puts automatic abilities with that wording into a standby condition, followed by a check timing. | §6.8.1.1 | verified | M1 | 1 |
 | END-02 | In the End Phase, if the turn player has more cards in hand than the hand limit (7 unless an effect changes it), they choose exactly the excess number of cards and put them into their waiting room. | §6.8.1.2, §3.3.3.1 | verified | M1 | 2 |
 | END-03 | In the End Phase, any card in the turn player's climax area is put into the waiting room. | §6.8.1.3 | verified | M1 | 2 |
-| END-04 | After the End Phase check timing that follows the climax cleanup is fully resolved, effects lasting 'until end of turn' or 'during turn' stop applying. | §6.8.1.4 | planned | M2 | 0 |
+| END-04 | After the End Phase check timing that follows the climax cleanup is fully resolved, effects lasting 'until end of turn' or 'during turn' stop applying. | §6.8.1.4 | verified | M2 | 4 |
 | END-05 | The turn ends, and the opponent becomes turn player starting from the Stand Phase, only when three conditions hold: the turn player's hand is within the limit, no automatic abilities or rule actions needed resolving in the 6.8.1.4 check timing, and no 'at the end of turn' or other automatic-ability trigger condition is still unfulfilled. Otherwise the End Phase starts over from the beginning. | §6.8.1.5 | verified | M1 | 4 |
 
 ## TSTEP: Trigger step (CR 7.3)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| TSTEP-01 | After the Trigger-Step-start trigger condition and its check timing, the turn player reveals their deck's top card into the resolution zone face up and performs the action of each trigger icon it shows at that moment. | §7.3.1.1, §7.3.1.2 | planned | M2 | 1 |
-| TSTEP-02 | If the checked card has more than one trigger icon, the turn player carries out their actions in whatever order they choose. | §7.3.1.2.1 | planned | M2 | 2 |
-| TSTEP-03 | The trigger icons carried out are the ones the card had when it entered the resolution zone. Icons it gains afterwards have no effect, and icons it loses afterwards are still carried out. | §7.3.1.2.2 | planned | M2 | 1 |
-| TSTEP-04 | After the icon actions, the checked card moves face down from the resolution zone into stock. The whole sequence, from putting the card in the resolution zone to placing it in stock, is called a 'Trigger Check'. | §7.3.1.2.3 | planned | M2 | 2 |
+| TSTEP-01 | After the Trigger-Step-start trigger condition and its check timing, the turn player reveals their deck's top card into the resolution zone face up and performs the action of each trigger icon it shows at that moment. | §7.3.1.1, §7.3.1.2 | verified | M2 | 1 |
+| TSTEP-02 | If the checked card has more than one trigger icon, the turn player carries out their actions in whatever order they choose. | §7.3.1.2.1 | verified | M2 | 2 |
+| TSTEP-03 | The trigger icons carried out are the ones the card had when it entered the resolution zone. Icons it gains afterwards have no effect, and icons it loses afterwards are still carried out. | §7.3.1.2.2 | verified | M2 | 1 |
+| TSTEP-04 | After the icon actions, the checked card moves face down from the resolution zone into stock. The whole sequence, from putting the card in the resolution zone to placing it in stock, is called a 'Trigger Check'. | §7.3.1.2.3 | verified | M2 | 2 |
 | TSTEP-05 | Card text about 'this card's trigger check' means the trigger checks made for this card's attack. 'Your character's trigger check' means the trigger checks made for attacks by your characters. | §7.3.1.2.3.1 | planned | M3 | 0 |
-| TSTEP-06 | After the trigger check a check timing is fully resolved. A Frontal Attack then goes to the Counter Step, while Direct and Side Attacks go straight to the Damage Step. | §7.3.1.3 | planned | M2 | 2 |
+| TSTEP-06 | After the trigger check a check timing is fully resolved. A Frontal Attack then goes to the Counter Step, while Direct and Side Attacks go straight to the Damage Step. | §7.3.1.3 | verified | M2 | 2 |
 
 ## CTR: Counter step (CR 7.4)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| CTR-01 | In the Counter Step, which only Frontal Attacks reach, the 'at the beginning of counter step' trigger condition is met and the non-turn player gets a play timing preceded by its check timing. Afterwards a check timing is fully resolved and play moves to the Damage Step. | §7.4.1, §7.4.1.1, §7.4.1.2, §7.4.1.3 | planned | M2 | 6 |
-| CTR-02 | In the Counter Step play timing, the non-turn player may play only event cards or character abilities that carry the Counter Icon. | §7.4.1.2.1 | planned | M2 | 2 |
-| CTR-03 | The non-turn player gets only one action in the Counter Step: after taking any action, such as playing one card or one activated ability, they get no further play timing. | §7.4.1.2.2 | planned | M2 | 3 |
+| CTR-01 | In the Counter Step, which only Frontal Attacks reach, the 'at the beginning of counter step' trigger condition is met and the non-turn player gets a play timing preceded by its check timing. Afterwards a check timing is fully resolved and play moves to the Damage Step. | §7.4.1, §7.4.1.1, §7.4.1.2, §7.4.1.3 | verified | M2 | 6 |
+| CTR-02 | In the Counter Step play timing, the non-turn player may play only event cards or character abilities that carry the Counter Icon. | §7.4.1.2.1 | verified | M2 | 2 |
+| CTR-03 | The non-turn player gets only one action in the Counter Step: after taking any action, such as playing one card or one activated ability, they get no further play timing. | §7.4.1.2.2 | verified | M2 | 3 |
 
 ## DSTEP: Damage step (CR 7.5)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| DSTEP-01 | After the 'at the beginning of damage step' trigger condition and its check timing, if an attacking character exists, it deals damage to the non-turn player equal to its soul. | §7.5.1.1, §7.5.1.2 | planned | M2 | 3 |
-| DSTEP-02 | If the attacker's soul is 0 or less, it deals no damage at all. The game never treats this as dealing zero or negative damage. | §7.5.1.2.1 | planned | M2 | 3 |
-| DSTEP-03 | If the attacking character has ceased to exist for any reason or its master has changed, it deals no damage. | §7.5.1.2.2 | planned | M2 | 3 |
-| DSTEP-04 | After damage, a check timing is fully resolved; if the attack is a Frontal Attack, play then moves to the Battle Step. | §7.5.1.3 | planned | M2 | 3 |
-| DSTEP-05 | For a Direct or Side Attack, after the post-damage check timing the 'at the end of the attack' trigger condition is met and a check timing is resolved; then the Attack Sub-Phase ends and play returns to the Attack Declaration Step. | §7.5.1.3, §7.5.1.4 | planned | M2 | 4 |
+| DSTEP-01 | After the 'at the beginning of damage step' trigger condition and its check timing, if an attacking character exists, it deals damage to the non-turn player equal to its soul. | §7.5.1.1, §7.5.1.2 | verified | M2 | 3 |
+| DSTEP-02 | If the attacker's soul is 0 or less, it deals no damage at all. The game never treats this as dealing zero or negative damage. | §7.5.1.2.1 | verified | M2 | 3 |
+| DSTEP-03 | If the attacking character has ceased to exist for any reason or its master has changed, it deals no damage. | §7.5.1.2.2 | verified | M2 | 4 |
+| DSTEP-04 | After damage, a check timing is fully resolved; if the attack is a Frontal Attack, play then moves to the Battle Step. | §7.5.1.3 | verified | M2 | 3 |
+| DSTEP-05 | For a Direct or Side Attack, after the post-damage check timing the 'at the end of the attack' trigger condition is met and a check timing is resolved; then the Attack Sub-Phase ends and play returns to the Attack Declaration Step. | §7.5.1.3, §7.5.1.4 | verified | M2 | 4 |
 
 ## BTL: Battle step (CR 7.6)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| BTL-01 | After the 'at the beginning of battle step' trigger condition and its check timing, if both the attacking and defending characters exist, their powers are compared and the one with lower power is put into the Reverse State. If their powers are equal, both are reversed. | §7.6.1.1, §7.6.1.2 | planned | M2 | 5 |
-| BTL-02 | If either the attacking or the defending character has ceased to exist for any reason or changed master, no power comparison takes place and neither is reversed. | §7.6.1.3 | planned | M2 | 5 |
-| BTL-03 | After the battle a check timing is fully resolved. Then the 'at the end of the attack' trigger condition is met with another check timing, the Attack Sub-Phase ends and play returns to the Attack Declaration Step. | §7.6.1.4, §7.6.1.5 | planned | M2 | 3 |
+| BTL-01 | After the 'at the beginning of battle step' trigger condition and its check timing, if both the attacking and defending characters exist, their powers are compared and the one with lower power is put into the Reverse State. If their powers are equal, both are reversed. | §7.6.1.1, §7.6.1.2 | verified | M2 | 5 |
+| BTL-02 | If either the attacking or the defending character has ceased to exist for any reason or changed master, no power comparison takes place and neither is reversed. | §7.6.1.3 | verified | M2 | 5 |
+| BTL-03 | After the battle a check timing is fully resolved. Then the 'at the end of the attack' trigger condition is met with another check timing, the Attack Sub-Phase ends and play returns to the Attack Declaration Step. | §7.6.1.4, §7.6.1.5 | verified | M2 | 3 |
 
 ## ENC: Encore step (CR 7.7)
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| ENC-01 | After the 'at the beginning of encore step' trigger condition and its check timing, while the turn player has Reverse State characters on their stage, they choose one, put it into its owner's waiting room and fully resolve a check timing, then repeat. | §7.7.1.1, §7.7.1.2 | planned | M2 | 0 |
-| ENC-02 | Once the turn player has no reversed characters left, the non-turn player likewise picks one of their Reverse State stage characters, puts it into its owner's waiting room and resolves a check timing. After each such check timing, the procedure goes back to the turn player's step (7.7.1.2). | §7.7.1.3 | planned | M2 | 0 |
-| ENC-03 | When neither removal loop applies, a check timing is fully resolved. If either player then has a Reverse State character on stage, the Encore Step returns to 7.7.1.2; otherwise play moves to the End Phase. | §7.7.1.4 | planned | M2 | 0 |
+| ENC-01 | After the 'at the beginning of encore step' trigger condition and its check timing, while the turn player has Reverse State characters on their stage, they choose one, put it into its owner's waiting room and fully resolve a check timing, then repeat. | §7.7.1.1, §7.7.1.2 | verified | M2 | 3 |
+| ENC-02 | Once the turn player has no reversed characters left, the non-turn player likewise picks one of their Reverse State stage characters, puts it into its owner's waiting room and resolves a check timing. After each such check timing, the procedure goes back to the turn player's step (7.7.1.2). | §7.7.1.3 | verified | M2 | 4 |
+| ENC-03 | When neither removal loop applies, a check timing is fully resolved. If either player then has a Reverse State character on stage, the Encore Step returns to 7.7.1.2; otherwise play moves to the End Phase. | §7.7.1.4 | verified | M2 | 3 |
 
 ## ABL: Abilities, effects and timing (CR 8.1-8.3, 8.5, 8.7-8.12)
 
@@ -377,7 +377,7 @@ Rows: 271 · verified 103 · planned 131 · deferred 33 · out 4
 |---|---|---|---|---|---|
 | REF-01 | As soon as a player's deck has no cards (an interrupt rule action, but never while a cost is being paid), that player moves their entire waiting room into the deck, shuffles it, and then puts the deck's top card into their clock. | §9.2.1, §9.2.2, §9.2.3, §9.2.4 | verified | M1 | 7 |
 | REF-02 | If the deck empties while the waiting room is also empty (and no damage process is under way), the refresh simply ends, and no new refresh happens until the waiting room has cards while the deck is still empty. | §9.2.2.1 | verified | M1 | 2 |
-| REF-03 | If the deck becomes empty while the waiting room is also empty in the middle of a damage process, and the resolution zone holds no climax, that player loses on the spot instead of the refresh ending. | §9.2.2.1 | planned | M2 | 4 |
+| REF-03 | If the deck becomes empty while the waiting room is also empty in the middle of a damage process, and the resolution zone holds no climax, that player loses on the spot instead of the refresh ending. | §9.2.2.1 | verified | M2 | 4 |
 
 ## LVL: Level up (CR 9.3)
 
@@ -411,13 +411,13 @@ Rows: 271 · verified 103 · planned 131 · deferred 33 · out 4
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
 | KW-01 | Alarm is a keyword label for abilities that grant an ability, or let a trigger condition be met, while the card is the top card of its owner's clock; the keyword itself has no effect. | §10.1.1, §10.1.2 | deferred | none | 0 |
-| KW-02 | Encore [cost] is an automatic ability: when this card goes from the stage to the waiting room, its master may pay the cost, and if they do, the card is put back on the stage position it occupied just before, in the Rest State. | §10.2.1, §10.2.2 | planned | M2 | 0 |
-| KW-03 | Unless something states otherwise, every character has the ability Encore [3] (pay 3 stock). | §10.2.3 | planned | M2 | 0 |
+| KW-02 | Encore [cost] is an automatic ability: when this card goes from the stage to the waiting room, its master may pay the cost, and if they do, the card is put back on the stage position it occupied just before, in the Rest State. | §10.2.1, §10.2.2 | verified | M2 | 7 |
+| KW-03 | Unless something states otherwise, every character has the ability Encore [3] (pay 3 stock). | §10.2.3 | verified | M2 | 3 |
 | KW-04 | A 'when (player) uses this card's Encore' trigger is met when that character is put onto the stage from the waiting room by an Encore effect. | §10.2.4 | planned | M3 | 0 |
 | KW-05 | Assist is a continuous keyword ability: the text after it is an active effect only while the character is on the back stage. | §10.3.1, §10.3.2 | deferred | none | 0 |
 | KW-06 | Bond/'Name' [cost] is an automatic ability: when this character is played and placed on stage, or placed on stage from hand, its master may pay the cost to return a card with that name from their waiting room to hand; if several names are listed, a card matching any one of them may be chosen. | §10.4.1, §10.4.2, §10.4.2.1 | deferred | none | 0 |
-| KW-07 | Backup is an activated keyword ability that the non-turn player uses from their hand during the Counter Step of an attack sub-phase in which one of their characters is frontal attacked. | §10.5.1 | planned | M2 | 5 |
-| KW-08 | Backup (X), Level (Y) [cost]: after paying the cost, the player picks one of their own characters that is currently defending and raises its power by X for the rest of the turn. The ability is usable only during the opponent's Counter Step, and only when the player's level is at least Y. | §10.5.2 | planned | M2 | 5 |
+| KW-07 | Backup is an activated keyword ability that the non-turn player uses from their hand during the Counter Step of an attack sub-phase in which one of their characters is frontal attacked. | §10.5.1 | verified | M2 | 7 |
+| KW-08 | Backup (X), Level (Y) [cost]: after paying the cost, the player picks one of their own characters that is currently defending and raises its power by X for the rest of the turn. The ability is usable only during the opponent's Counter Step, and only when the player's level is at least Y. | §10.5.2 | verified | M2 | 5 |
 | KW-09 | A 'when (player) uses Backup' trigger is met once that player finishes paying the cost of a Backup ability. | §10.5.3 | planned | M3 | 0 |
 | KW-10 | Great Performance: while this character is in the middle position of its master's center stage and is not Reversed, any attack by an opposing character becomes a frontal attack against this character as though it were the defending character. | §10.6.1, §10.6.2 | deferred | none | 0 |
 | KW-11 | Brainstorm labels effects that flip a set number of cards off the top of the deck into the waiting room and check their information; the flipped cards all go to the resolution zone first and then move to the waiting room together, and 'uses Brainstorm' means the moment they land in the waiting room. | §10.7.1, §10.7.2, §10.7.3, §10.7.4 | deferred | none | 0 |

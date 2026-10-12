@@ -657,6 +657,31 @@ describe('ATK: attack states', () => {
     expect(slotOf(s3, attacker)).toBe(5);
   });
 
+  it('[ATK-11] an attacker that leaves the stage and is put back on the same position is a new card, not the attacking character', () => {
+    const s0 = attackPhase({ stage: { 2: 'Y2' } }, { stage: { 2: 'R0' } });
+    const attacker = idAt(s0, 0, 2); // 7000
+    const defender = idAt(s0, 1, 2); // 3000
+    const s1 = act(s0, cat, attack(2, 'frontal'));
+    expect(s1.pending).toEqual({ kind: 'play', player: 1, window: 'counter' });
+
+    // Effects (simulated) return the attacker to its owner's hand and then put it back on position 2.
+    const s2 = ops.deepClone(s1);
+    ops.moveCard(s2, attacker, { player: 0, zone: 'hand' }, 'effect');
+    ops.moveCard(s2, attacker, { player: 0, zone: 'stage', slot: 2 }, 'effect');
+    expect(idAt(s2, 0, 2)).toBe(attacker);
+    expect(s2.cards[attacker]?.epoch).not.toBe(s1.attack?.attacker.epoch);
+
+    const s3 = act(s2, cat, pass(1));
+    const ev = since(s2, s3);
+    // Same card, same position, but a new object: it deals no damage and does not battle.
+    expect(eventsOf(ev, 'damage')).toEqual([]);
+    expect(eventsOf(ev, 'battle')).toEqual([]);
+    expect(s3.players[1].clock).toEqual([]);
+    expect(orientationOf(s3, defender)).toBe('stand');
+    // It came back standing and has not attacked as this object, so it may be chosen again.
+    expect(attackChoices(s3)).toEqual(['2:frontal', '2:side']);
+  });
+
   it('[ATK-12] in a frontal attack the facing character is the defending character: Backup targets it and it battles the attacker', () => {
     // Y0 on position 1 keeps the phase going after this attack, so the battle result can be seen.
     const s0 = attackPhase({ stage: { 1: 'Y0', 2: 'Y2' } }, { stage: { 2: 'R1' }, hand: ['RB'], stock: ['G0'] });
@@ -716,6 +741,35 @@ describe('ATK: attack states', () => {
     expect(eventsOf(since(s2, s3), 'battle')).toEqual([]);
     expect(orientationOf(s3, attacker)).toBe('rest');
     expect(orientationOf(s3, defender)).toBe('stand');
+  });
+
+  it('[ATK-12] the defending character is the card object chosen at declaration: a newcomer on its position, or the defender put back there, does not defend', () => {
+    const s0 = attackPhase({ stage: { 2: 'Y2' } }, { stage: { 2: 'R1' }, hand: ['R0', 'RB'], stock: ['G0'] });
+    const defender = idAt(s0, 1, 2); // 4500, against an attacker of 7000
+    const backup = cardIn(s0, 1, 'hand', 'RB');
+    const s1 = act(s0, cat, attack(2, 'frontal'));
+    expect(canBackup(s1, cat, 1, backup)).toBe(true);
+
+    // (a) The defender is returned to hand and another character is put on its position (simulated effects).
+    const swapped = ops.deepClone(s1);
+    const newcomer = cardIn(swapped, 1, 'hand', 'R0'); // 3000
+    ops.moveCard(swapped, defender, { player: 1, zone: 'hand' }, 'effect');
+    ops.moveCard(swapped, newcomer, { player: 1, zone: 'stage', slot: 2 }, 'effect');
+    expect(canBackup(swapped, cat, 1, backup)).toBe(false);
+    expect(legalActions(swapped, cat).map((a) => a.type)).not.toContain('BACKUP');
+    const a = act(swapped, cat, pass(1));
+    expect(eventsOf(since(swapped, a), 'battle')).toEqual([]);
+    expect(orientationOf(a, newcomer)).toBe('stand');
+
+    // (b) The defender is returned to hand and put back on the same position: a new object, not the defender.
+    const back = ops.deepClone(s1);
+    ops.moveCard(back, defender, { player: 1, zone: 'hand' }, 'effect');
+    ops.moveCard(back, defender, { player: 1, zone: 'stage', slot: 2 }, 'effect');
+    expect(idAt(back, 1, 2)).toBe(defender);
+    expect(canBackup(back, cat, 1, backup)).toBe(false);
+    const b = act(back, cat, pass(1));
+    expect(eventsOf(since(back, b), 'battle')).toEqual([]);
+    expect(orientationOf(b, defender)).toBe('stand');
   });
 
   it('[ATK-13] in a frontal or side attack the character facing the attacker is the one being attacked; a direct attack has none', () => {

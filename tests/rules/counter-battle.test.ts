@@ -547,6 +547,64 @@ describe('KW: Backup', () => {
     expect(defsIn(r.state, 1, 'hand')).toEqual(['BK0']);
   });
 
+  it('[KW-07] Backup needs a character of theirs that is still frontal attacked: not once the defender went back to hand or changed master', () => {
+    // Player 0 attacks from position 3 into player 1's position 1. RETX's return icon may send the defender back to hand first.
+    const s0 = attackPhase(
+      { deck: [...PLAIN, 'RETX'], stage: { 2: 'Y0', 3: 'Y1' } },
+      { stage: { 1: 'R1' }, hand: ['BK0', 'RC0'], stock: ['G0', 'G0'] },
+    );
+    const defender = idAt(s0, 1, 1);
+    const s1 = go(s0, attack(3, 'frontal')).state;
+    expect(s1.pending).toMatchObject({ kind: 'choose', player: 0, reason: 'return' });
+
+    // Declining the return: the defender stays, so Backup is offered.
+    const kept = go(s1, pass(0)).state;
+    expect(kept.pending).toEqual(counterPrompt(1));
+    expect(offers(kept)).toEqual(['BACKUP:BK0', 'PASS', 'PLAY_EVENT:RC0']);
+
+    // Returning it: the Counter Step and its play timing still come, and a counter event is still playable, but Backup is not.
+    const bounced = go(s1, { type: 'CHOOSE_CARD', player: 0, card: defender }).state;
+    expect(bounced.pending).toEqual(counterPrompt(1));
+    expect(bounced.players[1].hand).toContain(defender);
+    const bk = cardIn(bounced, 1, 'hand', 'BK0');
+    expect(offers(bounced)).toEqual(['PASS', 'PLAY_EVENT:RC0']);
+    expect(attempt(bounced, backup(1, bk))).toBe('ILLEGAL_ACTION');
+    expect(canBackup(bounced, cat, 1, bk)).toBe(false);
+
+    // An effect (simulated) hands the defender to player 0, onto the same position number: player 1 no longer has a defender.
+    const switched = ops.deepClone(kept);
+    ops.moveCard(switched, defender, { player: 0, zone: 'stage', slot: 1 }, 'effect');
+    expect(switched.cards[defender]?.epoch).toBe(kept.cards[defender]?.epoch);
+    expect(offers(switched)).toEqual(['PASS', 'PLAY_EVENT:RC0']);
+    expect(canBackup(switched, cat, 1, cardIn(switched, 1, 'hand', 'BK0'))).toBe(false);
+  });
+
+  it('[KW-07] Backup belongs to the Counter Step alone: not in the Trigger Step before it nor the Damage Step after it, with the same defender in place', () => {
+    // BX's draw icon pauses the Trigger Step on player 0's yes/no; six clock cards make player 1 level up during the Damage Step.
+    const s0 = attackPhase(
+      { deck: [...PLAIN, 'BX'], stage: { 1: 'Y0', 2: 'Y2' } },
+      { stage: { 2: 'R1' }, hand: ['BK0'], stock: ['G0'], clock: ['G0', 'G0', 'G0', 'G0', 'G0', 'G0'] },
+    );
+    const defender = idAt(s0, 1, 2);
+    const inTrigger = go(s0, attack(2, 'frontal')).state;
+    expect(inTrigger.step).toBe('trigger');
+    expect(inTrigger.pending).toEqual({ kind: 'confirm', player: 0, reason: 'draw' });
+    const bk = cardIn(inTrigger, 1, 'hand', 'BK0');
+    expect(canBackup(inTrigger, cat, 1, bk)).toBe(false);
+
+    const inCounter = go(inTrigger, pass(0)).state;
+    expect(inCounter.step).toBe('counter');
+    expect(canBackup(inCounter, cat, 1, bk)).toBe(true);
+
+    // Player 1 passes; the damage makes them level up, so they have a decision while the same defender still stands there.
+    const inDamage = go(inCounter, pass(1)).state;
+    expect(inDamage.step).toBe('damage');
+    expect(inDamage.pending).toMatchObject({ kind: 'levelUp', player: 1 });
+    expect(idAt(inDamage, 1, 2)).toBe(defender);
+    expect(canBackup(inDamage, cat, 1, bk)).toBe(false);
+    expect(attempt(inDamage, backup(1, bk))).toBe('ILLEGAL_ACTION');
+  });
+
   it('[KW-08] after the cost (stock, then the card itself) the defending character gets +X power; nothing else does', () => {
     const s0 = attackPhase({ stage: { 1: 'Y0', 2: 'Y2' } }, { stage: { 1: 'R0', 2: 'R1', 4: 'B0' }, hand: ['BK0'], stock: ['G0', 'B1'] });
     const s1 = go(s0, attack(2, 'frontal')).state;

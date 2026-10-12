@@ -4,7 +4,7 @@ An unofficial two-player card battler for phones that plays by the Weiss Schwarz
 Edition) Comprehensive Rules v2.10. It uses original placeholder cards and art, has
 hot-seat and vs-AI modes, and needs no server. Not affiliated with Bushiroad.
 
-**Status:** M0 (foundations). The rules engine is not playable yet. See `docs/PLAN.md`.
+**Status:** M2 (combat) done. The rules engine plays complete games with no card abilities yet, and there is no game screen yet. See `docs/PLAN.md`.
 
 ## Run it
 

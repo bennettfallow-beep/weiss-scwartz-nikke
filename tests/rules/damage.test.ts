@@ -191,6 +191,14 @@ describe('DMG: the damage process', () => {
     expect(reveals.map((e) => e.card)).toEqual([next]);
     expect(eventsOf(done.events, 'damageTaken').map((e) => e.cards)).toEqual([[first, next]]);
     expect(done.state.players[1].clock.slice(-2)).toEqual([first, next]);
+
+    // Each card is looked at before the next one leaves the deck: with a climax on top, 3 damage turns over that card alone.
+    const s3 = attackPhase({ deck: PLAIN, stage: { 1: 'Y3', 2: 'Y0' } }, { deck: ['B0', 'G0', 'YX'] });
+    const r3 = strike(s3, 1, 'direct');
+    expect(eventsOf(r3.events, 'damage').map((e) => e.amount)).toEqual([3]);
+    const turned = eventsOf(r3.events, 'move').filter((e) => e.reason === 'damage');
+    expect(turned.map((e) => defOfId(r3.state, e.card))).toEqual(['YX']);
+    expect(defsIn(r3.state, 1, 'deck')).toEqual(['B0', 'G0']);
   });
 
   it('[DMG-01] damage dealt by an effect (the Shot icon) runs the same process: one card into the resolution zone, then to the clock or canceled', () => {
@@ -408,7 +416,7 @@ describe('DMG: the damage process', () => {
     expect(eventsOf(paused.events, 'damage')).toEqual([expect.objectContaining({ target: 1, amount: 2, source: attacker })]);
   });
 
-  it("[DMG-06] Shot tells sources apart: a canceled damage from a different attacker does not set off the first attacker's Shot", () => {
+  it("[DMG-06] Shot tells sources apart: a canceled damage from another attacker, or from the same card as a new object, does not set off the first attacker's Shot", () => {
     // Attack 1: Y1 beside R1 (soul 1 - 1 = 0, so no damage) checks a Shot climax: Shot now watches Y1.
     // Attack 2: Y2 attacks directly and its damage is canceled. Its source is Y2, so Y1's Shot stays quiet.
     const s0 = attackPhase(
@@ -426,6 +434,18 @@ describe('DMG: the damage process', () => {
     expect(eventsOf(second.events, 'auto')).toEqual([]);
     expect(eventsOf(second.events, 'damage').map((e) => e.source)).toEqual([y2]);
     expect(second.state.watchers.map((w) => w.source.card)).toEqual([y1]);
+
+    // The same card as a new object is another source as well. Y1 leaves the stage and comes back (simulated effect),
+    // then attacks R1 head on and that damage is canceled: the source is the new Y1, not the object Shot is watching.
+    const back = ops.deepClone(first.state);
+    ops.moveCard(back, y1, { player: 0, zone: 'waiting' }, 'effect');
+    ops.moveCard(back, y1, { player: 0, zone: 'stage', slot: 1 }, 'effect');
+    const third = strike(back, 1, 'frontal');
+    expect(eventsOf(third.events, 'damageCanceled')).toEqual([
+      expect.objectContaining({ source: y1, cards: [cardIn(first.state, 1, 'deck', 'YX')] }),
+    ]);
+    expect(eventsOf(third.events, 'auto')).toEqual([]);
+    expect(eventsOf(third.events, 'damage').map((e) => [e.source, e.amount])).toEqual([[y1, 1]]);
   });
 });
 
@@ -578,6 +598,23 @@ describe('DSTEP: the Damage Step', () => {
     expect(defsIn(r.state, 1, 'deck')).toEqual(['G0', 'B0', 'R0']);
     expect(r.state.players[1].clock).toEqual([]);
     expect(r.state.players[0].clock).toEqual([]);
+  });
+
+  it('[DSTEP-03] an attacker moved to another position of its own stage deals no damage, though object and master are unchanged', () => {
+    const s0 = attackPhase({ deck: PLAIN, stage: { 1: 'Y1', 2: 'Y0' } }, { deck: ['G0', 'B0', 'R0'], stage: { 3: 'R0' } });
+    const attacker = idAt(s0, 0, 1);
+    const atCounter = go(s0, declare(s0, 1, 'frontal')).state;
+
+    // An effect (simulated) moves the attacker from position 1 to the empty position 3 of the same stage.
+    const shifted = ops.deepClone(atCounter);
+    ops.moveCard(shifted, attacker, { player: 0, zone: 'stage', slot: 3 }, 'effect');
+    expect(shifted.cards[attacker]?.epoch).toBe(atCounter.attack?.attacker.epoch);
+    expect(masterOf(shifted, attacker)).toBe(0);
+
+    const r = go(shifted, pass(1));
+    expect(damageKinds(r.events)).toEqual([]);
+    expect(defsIn(r.state, 1, 'deck')).toEqual(['G0', 'B0', 'R0']);
+    expect(r.state.players[1].clock).toEqual([]);
   });
 
   it('[DSTEP-04] in a frontal attack the check timing after damage comes next, then the Battle Step; the attack does not end in between', () => {
@@ -790,8 +827,9 @@ describe('ZONE: damage cards in the resolution zone and the clock', () => {
 
 describe('REF-03: deck and waiting room empty mid-damage', () => {
   it('[REF-03] the deck empties mid-damage with an empty waiting room and no climax revealed: that player loses at once, without waiting for a check timing', () => {
-    // 3 damage, but player 1 has two cards and an empty waiting room.
-    const s = attackPhase({ deck: PLAIN, stage: { 1: 'Y3', 2: 'Y0' } }, { deck: ['G0', 'B0'] });
+    // 3 damage, but player 1 has two cards and an empty waiting room. Climaxes in the clock and stock do not count:
+    // only a climax in the resolution zone would save the player.
+    const s = attackPhase({ deck: PLAIN, stage: { 1: 'Y3', 2: 'Y0' } }, { deck: ['G0', 'B0'], clock: ['RX'], stock: ['BX'] });
     const r = strike(s, 1, 'direct');
     expect(from(trace(r.state, r.events), 'damage:')).toEqual([
       'damage:p1:3:Y3',
@@ -803,7 +841,7 @@ describe('REF-03: deck and waiting room empty mid-damage', () => {
     expect(r.state.result).toEqual({ kind: 'win', winner: 0, loser: 1, reason: 'deckOut' });
     expect(eventsOf(r.events, 'ruleAction')).toEqual([expect.objectContaining({ rule: 'loss', players: [1] })]);
     // The process never finished: nothing reached the clock.
-    expect(r.state.players[1].clock).toEqual([]);
+    expect(defsIn(r.state, 1, 'clock')).toEqual(['RX']);
     expect(defsIn(r.state, 1, 'resolution')).toEqual(['B0', 'G0']);
   });
 

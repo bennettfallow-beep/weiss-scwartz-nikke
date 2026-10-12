@@ -65,7 +65,7 @@ export function locate(s: GameState, id: CardId): Location | null {
   return null;
 }
 
-/** CR 4.3.2: the master of a card in a zone is the player the zone belongs to. */
+/** CR 4.3.2: whoever owns the zone a card is in is that card's master. */
 export function masterOf(s: GameState, id: CardId): PlayerId {
   const loc = locate(s, id);
   if (!loc) throw new EngineFault(`card ${id} is in no zone`);

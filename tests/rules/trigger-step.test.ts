@@ -143,6 +143,34 @@ function triggerStep(s: GameState, events: readonly GameEvent[]): string[] {
 const iconsDone = (events: readonly GameEvent[]): TriggerIcon[] =>
   events.flatMap((e) => (e.kind === 'icon' ? [e.icon] : []));
 
+/** Damage processes, their outcome and automatic abilities, in order. */
+const damageTrace = (step: Step): string[] => trace(step.state, step.events).filter((x) => x.startsWith('damage') || x.startsWith('auto:'));
+
+/**
+ * A copy of the state with one of the turn player's stage characters stood up. No rule
+ * does this mid-turn; it stands in for a card effect (M3) so one character can attack twice.
+ */
+function standUp(s: GameState, card: CardId): GameState {
+  const next = ops.deepClone(s);
+  for (const cards of next.players[next.active].stage) for (const c of cards) if (c.id === card) c.orientation = 'stand';
+  return next;
+}
+
+/** Declines every decision (no clock, pass, no) until `stop` holds. */
+function passUntil(s: GameState, stop: (st: GameState) => boolean): Step {
+  let state = s;
+  const events: GameEvent[] = [];
+  for (let i = 0; i < 60 && !stop(state); i++) {
+    const p = state.pending;
+    if (!p) throw new Error('no decision pending');
+    const r = go(state, p.kind === 'clock' ? { type: 'CLOCK', player: p.player, card: null } : { type: 'PASS', player: p.player });
+    state = r.state;
+    events.push(...r.events);
+  }
+  if (!stop(state)) throw new Error('passUntil: condition never reached');
+  return { state, events };
+}
+
 /** Definitions on each stage position with orientation, e.g. 'Y2:rest'. Index i is position i + 1. */
 function stageOf(s: GameState, player: PlayerId): string[][] {
   return s.players[player].stage.map((cards) => cards.map((c) => `${defOfId(s, c.id)}:${c.orientation}`));
@@ -365,12 +393,14 @@ describe('TRG: trigger icon actions', () => {
     expect(currentSoul(next.state, cat, attacker)).toBe(1);
   });
 
-  it('[TRG-03] two soul icons on one card give +1 soul twice', () => {
-    const s = withTop('SOUL2X', {}, { stage: { 3: 'R0' } });
-    const r = attack(s, 'frontal');
+  it('[TRG-03] two soul icons on one card give +1 soul twice, to the attacker whichever position it attacks from', () => {
+    // Y0 attacks from position 2 (R0 faces it); Y1 on position 1 is not attacking and must not gain soul.
+    const s = withTop('SOUL2X', {}, { stage: { 2: 'R0' } });
+    const r = attack(s, 'frontal', 2);
     expect(iconsDone(r.events)).toEqual(['soul', 'soul']);
-    expect(trace(r.state, r.events).filter((x) => x.startsWith('modifier:'))).toEqual(['modifier:Y1:soul:1', 'modifier:Y1:soul:1']);
-    expect(currentSoul(r.state, cat, cardIn(r.state, 0, 'stage', 'Y1'))).toBe(3);
+    expect(trace(r.state, r.events).filter((x) => x.startsWith('modifier:'))).toEqual(['modifier:Y0:soul:1', 'modifier:Y0:soul:1']);
+    expect(currentSoul(r.state, cat, cardIn(r.state, 0, 'stage', 'Y0'))).toBe(3);
+    expect(currentSoul(r.state, cat, cardIn(r.state, 0, 'stage', 'Y1'))).toBe(1);
   });
 
   it("[TRG-04] a return icon offers any one character on the opponent's stage (optional); the chosen one goes to its owner's hand", () => {
@@ -502,18 +532,83 @@ describe('TRG: trigger icon actions', () => {
     expect(r.events.filter((e) => e.kind === 'auto')).toEqual([expect.objectContaining({ player: 0, ability: 'shot' })]);
   });
 
-  it('[TRG-08] shot does nothing when the damage is not canceled, and it never fires for another character', () => {
-    // First attack (with shot): 2 plain cards, not canceled. Second attack by Y0: a climax cancels it.
-    // (The G0s are left for player 1's next turn, which this runs into.)
+  it("[TRG-08] shot does nothing when the damage goes through, and that damage uses up the watch: the same character's later canceled damage does not fire it", () => {
+    // First attack (with shot): 2 plain cards, not canceled. Then the same Y1 attacks again and a climax cancels it.
     const s = withTop('SHOTX', {}, { deck: ['G0', 'G0', 'G0', 'YX', 'B0', 'B0'] });
     const first = attack(s);
     expect(iconsDone(first.events)).toEqual(['shot']);
-    expect(trace(first.state, first.events).filter((x) => x.startsWith('damage'))).toEqual(['damage:1:2', 'damageTaken']);
-    const second = attack(first.state, 'direct', 2);
-    expect(iconsDone(second.events)).toEqual([]);
-    expect(trace(second.state, second.events).filter((x) => x.startsWith('damage') || x.startsWith('auto'))).toEqual(['damage:1:2', 'damageCanceled']);
-    expect(defsIn(second.state, 1, 'clock')).toEqual(['B0', 'B0']);
-    expect(defsIn(second.state, 1, 'waiting')).toEqual(['YX']);
+    expect(damageTrace(first)).toEqual(['damage:1:2', 'damageTaken']);
+
+    // Soul 3: printed 1, plus the first Direct Attack's +1 (still in force this turn), plus this one's.
+    const again = attack(standUp(first.state, cardIn(first.state, 0, 'stage', 'Y1')), 'direct', 1);
+    expect(iconsDone(again.events)).toEqual([]);
+    expect(damageTrace(again)).toEqual(['damage:1:3', 'damageCanceled']);
+    expect(defsIn(again.state, 1, 'clock')).toEqual(['B0', 'B0']);
+    expect(defsIn(again.state, 1, 'waiting')).toEqual(['YX']);
+  });
+
+  it("[TRG-08] the watch belongs to the attacking character only and lasts for the turn: another character's canceled damage does not fire it, the attacker's next damage later that turn does", () => {
+    // Y1 side-attacks R1 (level 1), so its soul drops to 0 and it deals no damage: the watch stays open.
+    // Player 0's deck, top first: SHOTX for that attack, G0 for Y0's attack, YX (+1 soul) for Y1's second attack.
+    const s = attackPhase(
+      { deck: [...FILL, 'YX', 'G0', 'SHOTX'], stage: { ...ATTACKERS, 3: 'B0' } },
+      { deck: ['G0', 'G0', 'G0', 'B0', 'RX', 'YX'], stage: { 3: 'R1' } },
+    );
+    const side = attack(s, 'side');
+    expect(iconsDone(side.events)).toEqual(['shot']);
+    expect(damageTrace(side)).toEqual([]);
+
+    // Y0 (another character) attacks and its damage is canceled: no shot.
+    const byY0 = attack(side.state, 'direct', 2);
+    expect(damageTrace(byY0)).toEqual(['damage:1:2', 'damageCanceled']);
+
+    // Y1, the same card object, attacks again later in the turn. The side penalty (-1) lasts the turn, so the
+    // soul icon brings it back to 1. Its damage is canceled, so shot deals 1.
+    const y1 = cardIn(byY0.state, 0, 'stage', 'Y1');
+    const later = goAll(standUp(byY0.state, y1), [
+      { type: 'ATTACK', player: 0, slot: 1, attack: 'frontal' },
+      { type: 'PASS', player: 1 },
+    ]);
+    expect(damageTrace(later)).toEqual(['damage:1:1', 'damageCanceled', 'auto:shot', 'damage:1:1', 'damageTaken']);
+    expect(later.events.filter((e) => e.kind === 'auto')).toEqual([expect.objectContaining({ player: 0, ability: 'shot', card: y1 })]);
+    expect(defsIn(later.state, 1, 'waiting')).toEqual(['YX', 'RX']);
+    expect(defsIn(later.state, 1, 'clock')).toEqual(['B0']);
+  });
+
+  it('[TRG-08] the watch follows the card object: after the attacker has left the stage and come back, its canceled damage does not fire shot', () => {
+    const s = attackPhase({ deck: [...FILL, 'G0', 'SHOTX'], stage: { ...ATTACKERS, 3: 'B0' } }, { deck: [...FILL, 'YX'], stage: { 3: 'R1' } });
+    const y1 = cardIn(s, 0, 'stage', 'Y1');
+    const side = attack(s, 'side'); // soul 0: no damage, the watch stays open
+    expect(iconsDone(side.events)).toEqual(['shot']);
+
+    // Stand-in for an M3 effect: Y1 goes to the waiting room and back to position 1, a new card object.
+    const back = ops.deepClone(side.state);
+    ops.moveCard(back, y1, { player: 0, zone: 'waiting' }, 'effect');
+    ops.moveCard(back, y1, { player: 0, zone: 'stage', slot: 1 }, 'effect');
+    const r = goAll(back, [
+      { type: 'ATTACK', player: 0, slot: 1, attack: 'frontal' },
+      { type: 'PASS', player: 1 },
+    ]);
+    expect(damageTrace(r)).toEqual(['damage:1:1', 'damageCanceled']);
+    expect(r.events.some((e) => e.kind === 'auto')).toBe(false);
+  });
+
+  it("[TRG-08] the watch ends with the turn: the attacker's first damage in a later turn does not fire it", () => {
+    // Turn 2: Y1 side-attacks with shot but deals no damage. Turn 4: Y1's damage is canceled.
+    const s = attackPhase({ deck: [...FILL, 'G0', 'G0', 'SHOTX'], stage: ATTACKERS }, { deck: [...FILL, 'YX', 'G0'], stage: { 3: 'R1' } });
+    const side = attack(s, 'side');
+    expect(iconsDone(side.events)).toEqual(['shot']);
+    expect(damageTrace(side)).toEqual([]);
+
+    const turn = side.state.turn;
+    const myNextAttack = passUntil(side.state, (st) => st.turn === turn + 2 && st.pending?.kind === 'attack' && st.pending.player === 0);
+    expect(myNextAttack.events.some((e) => e.kind === 'effectsExpired')).toBe(true);
+    const r = goAll(myNextAttack.state, [
+      { type: 'ATTACK', player: 0, slot: 1, attack: 'frontal' },
+      { type: 'PASS', player: 1 },
+    ]);
+    expect(damageTrace(r)).toEqual(['damage:1:1', 'damageCanceled']);
+    expect(r.events.some((e) => e.kind === 'auto')).toBe(false);
   });
 
   it("[TRG-08] shot's extra damage is an ordinary damage process: it can be canceled too, and that does not fire shot again", () => {
@@ -560,6 +655,27 @@ describe('TRG: trigger icon actions', () => {
     expect(no.state.players[0].hand).toEqual([treasure]);
     expect(defsIn(no.state, 0, 'deck')).toEqual(['G0', 'B0']);
     expect(no.events.some((e) => e.kind === 'move' && e.reason === 'triggerToStock')).toBe(false);
+  });
+
+  it("[TRG-12] a treasure card owned by the opponent returns to the opponent's hand; the optional stock card still comes from the turn player's own deck", () => {
+    // A treasure card owned by player 1 is put on top of player 0's deck, so player 0's trigger check reveals it.
+    const s = attackPhase({ deck: ['G0', 'B0'], stage: ATTACKERS }, { deck: [...FILL], hand: ['TREAX'] });
+    const foreign = cardIn(s, 1, 'hand', 'TREAX');
+    ops.moveCard(s, foreign, { player: 0, zone: 'deck' }, 'effect');
+    const r = attack(s);
+    expect(r.state.pending).toEqual({ kind: 'confirm', player: 0, reason: 'treasure' });
+    expect(r.state.players[1].hand).toEqual([foreign]);
+    expect(r.state.players[0].hand).toEqual([]);
+    expect(r.events.filter((e) => e.kind === 'move' && e.card === foreign).map((e) => (e.kind === 'move' ? e.to : null))).toEqual([
+      { player: 0, zone: 'resolution' },
+      { player: 1, zone: 'hand' },
+    ]);
+
+    const yes = go(r.state, { type: 'ACCEPT', player: 0 });
+    expect(defsIn(yes.state, 0, 'stock')).toEqual(['B0']);
+    expect(defsIn(yes.state, 0, 'deck')).toEqual(['G0']);
+    expect(defsIn(yes.state, 1, 'stock')).toEqual([]);
+    expect(yes.state.players[1].hand).toEqual([foreign]);
   });
 
   it("[TRG-13] a gate icon offers only the climaxes in the turn player's own waiting room; the chosen one goes to hand", () => {

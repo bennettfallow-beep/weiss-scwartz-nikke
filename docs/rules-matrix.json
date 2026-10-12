@@ -467,9 +467,17 @@
         "2.8.1",
         "2.8.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/play.ts#allowedInWindow",
+        "src/engine/rules/play.ts#canPlayFromHand",
+        "src/engine/rules/play.ts#meetsColor",
+        "src/engine/rules/play.ts#meetsLevel",
+        "src/engine/rules/play.ts#canAfford",
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "Counter-step play belongs to the attack/battle milestone."
     },
     {
@@ -506,9 +514,14 @@
       "sections": [
         "2.9.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/model/cards.ts#validateCatalog",
+        "src/engine/model/cards.ts#powerOf",
+        "src/engine/rules/combat.ts#battle",
+        "src/engine/rules/effects.ts#currentPower"
+      ],
       "notes": "Battle comparison is M2. Power must still be stored in M1 for the power-at-or-below-0 rule action (9.5). Non-characters count as 0 power when referenced (CARD-21)."
     },
     {
@@ -519,9 +532,13 @@
         "2.10.1",
         "2.10.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/model/cards.ts#soulOf",
+        "src/engine/model/cards.ts#validateCatalog",
+        "src/engine/rules/combat.ts#attackDamage"
+      ],
       "notes": "Card data must convert soul-icon count to an integer. Non-characters count as 0 soul when referenced (CARD-21)."
     },
     {
@@ -531,9 +548,12 @@
       "sections": [
         "2.11.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#triggerCheck",
+        "src/engine/rules/combat.ts#performIcon"
+      ],
       "notes": "A card may carry zero, one, or several trigger icons; icon behaviors are defined in Section 7 rows."
     },
     {
@@ -807,9 +827,12 @@
       "sections": [
         "3.2.5"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#triggerCheck",
+        "src/engine/rules/damage.ts#damageReveal"
+      ],
       "notes": "Used by the trigger check (ZONE-37) and by effects that flip cards (M3)."
     },
     {
@@ -1196,9 +1219,12 @@
       "sections": [
         "3.13.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#triggerCheck",
+        "src/engine/rules/combat.ts#triggerToStock"
+      ],
       "notes": "The card stays in the resolution zone while its trigger icon effect resolves."
     },
     {
@@ -1208,9 +1234,13 @@
       "sections": [
         "3.13.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/damage.ts#damageReveal",
+        "src/engine/rules/damage.ts#finishDamage",
+        "src/engine/api/view.ts#projectView"
+      ],
       "notes": ""
     },
     {
@@ -1220,9 +1250,11 @@
       "sections": [
         "3.13.1.3.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/damage.ts#finishDamage"
+      ],
       "notes": "Clock order affects later level-up choices (bottom seven), so preserve the resolution-zone order exactly; this overrides owner-chosen order (ZONE-04)."
     },
     {
@@ -1514,9 +1546,14 @@
         "4.10.1",
         "4.10.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/damage.ts#startDamage",
+        "src/engine/rules/damage.ts#damageReveal",
+        "src/engine/rules/damage.ts#damageCheck",
+        "src/engine/rules/autos.ts#resolveAuto"
+      ],
       "notes": "Applies to every 'deal damage' instruction, whether from battle or from effects. Each moved card is checked for a climax before the next one moves."
     },
     {
@@ -1527,9 +1564,13 @@
         "4.10.1.2",
         "4.10.1.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/damage.ts#damageCheck",
+        "src/engine/rules/damage.ts#finishDamage",
+        "src/engine/rules/damage.ts#settleShots"
+      ],
       "notes": "No cards from a canceled process reach the clock; per 3.13.1.3 they go to the owner's waiting room. Emit a damage-canceled event, which Shot uses in M2 and card text uses in M3."
     },
     {
@@ -1539,9 +1580,12 @@
       "sections": [
         "4.10.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/damage.ts#damageCheck",
+        "src/engine/rules/damage.ts#finishDamage"
+      ],
       "notes": "Keep the order in which cards entered the resolution zone when placing them in the clock."
     },
     {
@@ -1551,9 +1595,14 @@
       "sections": [
         "4.10.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/rules/ruleActions.ts#refresh",
+        "src/engine/rules/damage.ts#damageCheck",
+        "src/engine/rules/damage.ts#finishDamage"
+      ],
       "notes": "Covers the Clock Phase placement and effects that move cards to the clock directly; these must not go through the Damage Process steps or check for a climax."
     },
     {
@@ -1576,9 +1625,14 @@
         "4.11.1",
         "4.11.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#attackDamage",
+        "src/engine/rules/damage.ts#startDamage",
+        "src/engine/rules/damage.ts#finishDamage",
+        "src/engine/rules/damage.ts#settleShots"
+      ],
       "notes": "Record a source on every damage event; Shot (4.12.2.7) needs to know whether the damage was dealt by the attacking character."
     },
     {
@@ -1601,9 +1655,12 @@
       "sections": [
         "4.12.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#triggerCheck",
+        "src/engine/rules/combat.ts#performIcon"
+      ],
       "notes": "In M2 the performer is always the turn player; the 'perform the effect of (icon)' route only comes from card effects (M3)."
     },
     {
@@ -1613,9 +1670,12 @@
       "sections": [
         "4.12.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#triggerCheck",
+        "src/engine/rules/combat.ts#nextIcon"
+      ],
       "notes": ""
     },
     {
@@ -1625,9 +1685,14 @@
       "sections": [
         "4.12.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#performIcon",
+        "src/engine/rules/combat.ts#attackerNow",
+        "src/engine/rules/effects.ts#addTurnEffect",
+        "src/engine/rules/effects.ts#expireTurnEffects"
+      ],
       "notes": "Mandatory, unlike the optional actions of most other icons (Treasure's return to hand is also mandatory)."
     },
     {
@@ -1637,9 +1702,12 @@
       "sections": [
         "4.12.2.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#performIcon",
+        "src/engine/rules/flow.ts#chooseCard"
+      ],
       "notes": "Targets only the opponent's stage characters; the destination is the owner's hand."
     },
     {
@@ -1649,9 +1717,12 @@
       "sections": [
         "4.12.2.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#performIcon",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": ""
     },
     {
@@ -1661,9 +1732,12 @@
       "sections": [
         "4.12.2.5"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#performIcon",
+        "src/engine/rules/flow.ts#chooseCard"
+      ],
       "notes": "Only character cards are valid choices."
     },
     {
@@ -1673,9 +1747,13 @@
       "sections": [
         "4.12.2.6"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#performIcon",
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/rules/flow.ts#drawOne"
+      ],
       "notes": ""
     },
     {
@@ -1685,9 +1763,15 @@
       "sections": [
         "4.12.2.7"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#performIcon",
+        "src/engine/rules/damage.ts#settleShots",
+        "src/engine/rules/autos.ts#playStandby",
+        "src/engine/rules/autos.ts#resolveAuto",
+        "src/engine/rules/effects.ts#expireTurnEffects"
+      ],
       "notes": "Model as a turn-scoped automatic ability bound to the specific attacking character. The extra 1 damage is an ordinary 'deal damage', so it runs a normal Damage Process."
     },
     {
@@ -1734,9 +1818,13 @@
         "4.12.2.8",
         "4.12.2.8.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#performIcon",
+        "src/engine/rules/combat.ts#triggerToStock",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Normally a trigger-checked card goes to stock after its trigger resolves (3.13.1.2, 7.3.1.2.3); Treasure overrides this because the card has already left the resolution zone."
     },
     {
@@ -1746,9 +1834,12 @@
       "sections": [
         "4.12.2.9"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#performIcon",
+        "src/engine/rules/flow.ts#chooseCard"
+      ],
       "notes": "Only climax cards are valid choices."
     },
     {
@@ -1758,9 +1849,14 @@
       "sections": [
         "4.12.2.10"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#performIcon",
+        "src/engine/rules/flow.ts#chooseCard",
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/rules/effects.ts#playerLevel"
+      ],
       "notes": "Compare against the player's level; this section names no color or cost requirement. The character enters rested."
     },
     {
@@ -1770,9 +1866,13 @@
       "sections": [
         "4.12.2.10.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/rules/flow.ts#chooseCard",
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": "Relies on the 9.6.2 check-type rule action for multiple characters on one stage position (M1): the card placed last stays."
     },
     {
@@ -1782,9 +1882,13 @@
       "sections": [
         "4.12.2.11"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#performIcon",
+        "src/engine/rules/flow.ts#chooseCard",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Two choices: first the target (which must have a soul trigger icon), then its destination (hand or stock)."
     },
     {
@@ -2199,9 +2303,14 @@
         "6.7.1",
         "7.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#enterPhase",
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/rules/combat.ts#attackOptions",
+        "src/engine/rules/combat.ts#attackDecision"
+      ],
       "notes": "By default back stage, rested and reversed characters cannot attack; card effects that change attack eligibility (7.2.1.3.1.1) are M3."
     },
     {
@@ -2211,9 +2320,13 @@
       "sections": [
         "7.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/rules/combat.ts#declareAttack",
+        "src/engine/rules/flow.ts#execTask"
+      ],
       "notes": "The Attack Sub-Phase is the scope for per-attack states (attacking, defending, being attacked, in battle) and for 'end of the attack' timing."
     },
     {
@@ -2224,9 +2337,13 @@
         "7.2.1.1",
         "7.2.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/rules/flow.ts#enterPhase",
+        "src/engine/rules/flow.ts#execTask"
+      ],
       "notes": "The 'beginning of attack phase' trigger must not fire again when play loops back after each attack."
     },
     {
@@ -2239,9 +2356,14 @@
         "7.2.1.3.1.1",
         "7.2.1.3.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#attackOptions",
+        "src/engine/rules/combat.ts#attackDecision",
+        "src/engine/rules/combat.ts#declareAttack",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "Rested, reversed and back-stage characters are ineligible by default. Card effects that grant or deny the ability to attack are M3."
     },
     {
@@ -2251,9 +2373,13 @@
       "sections": [
         "7.2.1.3.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#attackOptions",
+        "src/engine/rules/combat.ts#declareAttack",
+        "src/engine/rules/combat.ts#attackDecision"
+      ],
       "notes": "The limit applies only to the starting player's first turn; the second player's first turn is unrestricted."
     },
     {
@@ -2263,9 +2389,13 @@
       "sections": [
         "7.2.1.3.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/rules/combat.ts#attackDecision",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "This is the only remaining option when no eligible attacker exists (ATK-04). The Trigger, Counter, Damage and Battle Steps are skipped."
     },
     {
@@ -2276,9 +2406,16 @@
         "7.2.1.4",
         "7.2.1.4.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#attackOptions",
+        "src/engine/rules/combat.ts#facingCharacter",
+        "src/engine/rules/combat.ts#declareAttack",
+        "src/engine/model/stage.ts#facing",
+        "src/engine/rules/effects.ts#addTurnEffect",
+        "src/engine/rules/effects.ts#expireTurnEffects"
+      ],
       "notes": "There is no player choice. The soul bonus lasts until end of turn, not only for this attack."
     },
     {
@@ -2288,9 +2425,15 @@
       "sections": [
         "7.2.1.4.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#attackOptions",
+        "src/engine/rules/combat.ts#facingCharacter",
+        "src/engine/rules/combat.ts#declareAttack",
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/model/stage.ts#facing"
+      ],
       "notes": "A Direct Attack is not possible while a character faces the attacker."
     },
     {
@@ -2300,9 +2443,13 @@
       "sections": [
         "7.2.1.4.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#declareAttack",
+        "src/engine/rules/effects.ts#addTurnEffect",
+        "src/engine/rules/effects.ts#currentSoul"
+      ],
       "notes": "Use the facing character's level at the time the attack type is chosen; later changes do not affect it (see ATK-10)."
     },
     {
@@ -2312,9 +2459,13 @@
       "sections": [
         "7.2.1.4.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#declareAttack",
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/rules/effects.ts#addTurnEffect"
+      ],
       "notes": ""
     },
     {
@@ -2324,9 +2475,14 @@
       "sections": [
         "7.2.1.5"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#declareAttack",
+        "src/engine/rules/combat.ts#attackerNow",
+        "src/engine/rules/effects.ts#stillAt",
+        "src/engine/rules/effects.ts#refOf"
+      ],
       "notes": "If the attacker changes zone, it stops being the attacking character, so later steps find no attacker (DSTEP-03, BTL-02). Each stage position is itself a zone (3.6.1), so do not exempt moves between stage positions."
     },
     {
@@ -2336,9 +2492,16 @@
       "sections": [
         "7.2.1.5.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#declareAttack",
+        "src/engine/rules/combat.ts#defenderNow",
+        "src/engine/rules/combat.ts#canBackup",
+        "src/engine/rules/combat.ts#useBackup",
+        "src/engine/rules/combat.ts#battle",
+        "src/engine/rules/effects.ts#stillAt"
+      ],
       "notes": ""
     },
     {
@@ -2348,9 +2511,12 @@
       "sections": [
         "7.2.1.5.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#declareAttack",
+        "src/engine/rules/combat.ts#enterStep"
+      ],
       "notes": "A side-attacked character is 'being attacked' but is not a defending character and is not in battle."
     },
     {
@@ -2361,9 +2527,13 @@
         "7.2.1.5.3",
         "7.2.1.6"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#declareAttack",
+        "src/engine/rules/combat.ts#setOrientation",
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": ""
     },
     {
@@ -2418,9 +2588,12 @@
       "sections": [
         "6.8.1.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#enterPhase",
+        "src/engine/rules/effects.ts#expireTurnEffects"
+      ],
       "notes": "These effects still apply during the hand-limit discard, the climax cleanup and that check timing. The first effects of this kind are the attack-type and trigger soul changes in M2."
     },
     {
@@ -2446,9 +2619,13 @@
         "7.3.1.1",
         "7.3.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/rules/combat.ts#triggerCheck",
+        "src/engine/rules/combat.ts#nextIcon"
+      ],
       "notes": "What each icon does is defined in 4.12, outside this range. Refresh when the deck runs out is also handled outside this range."
     },
     {
@@ -2458,9 +2635,12 @@
       "sections": [
         "7.3.1.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#nextIcon",
+        "src/engine/rules/combat.ts#orderIcon"
+      ],
       "notes": "This is a player decision the engine must prompt for."
     },
     {
@@ -2470,9 +2650,12 @@
       "sections": [
         "7.3.1.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#triggerCheck",
+        "src/engine/rules/combat.ts#nextIcon"
+      ],
       "notes": "Snapshot the card's icons when it enters the resolution zone."
     },
     {
@@ -2482,9 +2665,12 @@
       "sections": [
         "7.3.1.2.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#triggerToStock",
+        "src/engine/rules/combat.ts#nextIcon"
+      ],
       "notes": "Goes to stock face down whatever the card type, but only if it is still in the resolution zone: an icon action such as Treasure (4.12.2.8) moves it to hand first."
     },
     {
@@ -2506,9 +2692,13 @@
       "sections": [
         "7.3.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/rules/ruleActions.ts#checkTiming",
+        "src/engine/rules/autos.ts#playStandby"
+      ],
       "notes": ""
     },
     {
@@ -2521,9 +2711,14 @@
         "7.4.1.2",
         "7.4.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/rules/flow.ts#execTask",
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": "The turn player gets no play timing in this step."
     },
     {
@@ -2533,9 +2728,14 @@
       "sections": [
         "7.4.1.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/play.ts#allowedInWindow",
+        "src/engine/rules/play.ts#canPlayFromHand",
+        "src/engine/rules/combat.ts#canBackup",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "Other events and abilities are not playable here. Counter-icon character abilities depend on M3 activated-ability support (Backup)."
     },
     {
@@ -2545,9 +2745,11 @@
       "sections": [
         "7.4.1.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": ""
     },
     {
@@ -2558,9 +2760,13 @@
         "7.5.1.1",
         "7.5.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/rules/combat.ts#attackDamage",
+        "src/engine/rules/effects.ts#currentSoul"
+      ],
       "notes": "How damage resolves (cards moved one at a time, cancelled by a climax) is defined outside this range."
     },
     {
@@ -2570,9 +2776,12 @@
       "sections": [
         "7.5.1.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/damage.ts#startDamage",
+        "src/engine/rules/combat.ts#attackDamage"
+      ],
       "notes": "The engine must not emit a damage event in this case."
     },
     {
@@ -2582,9 +2791,13 @@
       "sections": [
         "7.5.1.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#attackDamage",
+        "src/engine/rules/combat.ts#attackerNow",
+        "src/engine/rules/effects.ts#stillAt"
+      ],
       "notes": "Ceasing to exist includes leaving its zone (see ATK-11)."
     },
     {
@@ -2594,9 +2807,13 @@
       "sections": [
         "7.5.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/rules/ruleActions.ts#checkTiming",
+        "src/engine/rules/autos.ts#playStandby"
+      ],
       "notes": ""
     },
     {
@@ -2607,9 +2824,12 @@
         "7.5.1.3",
         "7.5.1.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/rules/flow.ts#execTask"
+      ],
       "notes": "Split from DSTEP-04. The Frontal Attack path meets 'at the end of the attack' in the Battle Step instead (BTL-03)."
     },
     {
@@ -2620,9 +2840,14 @@
         "7.6.1.1",
         "7.6.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#battle",
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/rules/combat.ts#setOrientation",
+        "src/engine/rules/effects.ts#currentPower"
+      ],
       "notes": "Compare current power at that moment, including any modifiers."
     },
     {
@@ -2632,9 +2857,14 @@
       "sections": [
         "7.6.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#battle",
+        "src/engine/rules/combat.ts#attackerNow",
+        "src/engine/rules/combat.ts#defenderNow",
+        "src/engine/rules/effects.ts#stillAt"
+      ],
       "notes": "A defender that left its zone is no longer the defending character (ATK-12)."
     },
     {
@@ -2645,9 +2875,12 @@
         "7.6.1.4",
         "7.6.1.5"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/rules/flow.ts#execTask"
+      ],
       "notes": ""
     },
     {
@@ -2658,9 +2891,15 @@
         "7.7.1.1",
         "7.7.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#enterStep",
+        "src/engine/rules/combat.ts#encoreLoop",
+        "src/engine/rules/combat.ts#sendReversed",
+        "src/engine/rules/combat.ts#reversedOn",
+        "src/engine/rules/flow.ts#chooseCard"
+      ],
       "notes": "Characters go one at a time, with a check timing between each. The default Encore keyword (M3) acts in those check timings."
     },
     {
@@ -2670,9 +2909,13 @@
       "sections": [
         "7.7.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#encoreLoop",
+        "src/engine/rules/combat.ts#sendReversed",
+        "src/engine/rules/flow.ts#chooseCard"
+      ],
       "notes": "The CR text loops back to 7.7.1.2 after each removal by the non-turn player, so any turn-player character reversed in the meantime is handled first."
     },
     {
@@ -2682,9 +2925,13 @@
       "sections": [
         "7.7.1.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#encoreLoop",
+        "src/engine/rules/combat.ts#encoreEnd",
+        "src/engine/rules/combat.ts#reversedOn"
+      ],
       "notes": ""
     },
     {
@@ -3407,9 +3654,12 @@
       "sections": [
         "9.2.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/damage.ts#damageDeckOut",
+        "src/engine/rules/ruleActions.ts#runInterrupts"
+      ],
       "notes": "Unlike VERD-02 this loss does not wait for a check timing. Reachable only once damage exists (M2)."
     },
     {
@@ -3539,9 +3789,16 @@
         "10.2.1",
         "10.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/autos.ts#collectTriggers",
+        "src/engine/rules/autos.ts#playStandby",
+        "src/engine/rules/autos.ts#playable",
+        "src/engine/rules/autos.ts#inWaitingRoom",
+        "src/engine/rules/autos.ts#resolveAuto",
+        "src/engine/rules/autos.ts#payEncore"
+      ],
       "notes": "Triggers on any stage-to-waiting-room move, not only from Reverse. Optional; declining consumes the standby instance (ABL-12). If the card has left the waiting room before resolution the return fails (ABL-16). Built in M2 as a rule-level ability so fuzzed games include Encore; card-specific Encore costs need the M3 ability system."
     },
     {
@@ -3551,9 +3808,15 @@
       "sections": [
         "10.2.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/autos.ts#ENCORE_COST",
+        "src/engine/rules/autos.ts#collectTriggers",
+        "src/engine/rules/autos.ts#playable",
+        "src/engine/rules/autos.ts#payEncore",
+        "src/engine/rules/play.ts#payStock"
+      ],
       "notes": "Circled 3 = put exactly 3 stock cards into the waiting room (COST-04). The general Encore form is KW-02."
     },
     {
@@ -3602,9 +3865,15 @@
       "sections": [
         "10.5.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#canBackup",
+        "src/engine/rules/combat.ts#useBackup",
+        "src/engine/rules/combat.ts#defenderNow",
+        "src/engine/api/game.ts#legalActions",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Counter Step only occurs for frontal attacks (7.3.1.3), so Backup is unavailable on side and direct attacks. It is used from hand, not from stage; counter-step limits of 7.4.1.2 apply. Where the card goes is set by its printed cost, not by 10.5. Built in M2 as a rule-level keyword: card data gives backup {power, level, stock}, and the cost is that many stock, then this card from hand to the waiting room (the usual printed cost)."
     },
     {
@@ -3614,9 +3883,17 @@
       "sections": [
         "10.5.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M2",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/combat.ts#canBackup",
+        "src/engine/rules/combat.ts#useBackup",
+        "src/engine/rules/combat.ts#defenderNow",
+        "src/engine/rules/effects.ts#addTurnEffect",
+        "src/engine/rules/effects.ts#playerLevel",
+        "src/engine/rules/effects.ts#expireTurnEffects",
+        "src/engine/rules/play.ts#payStock"
+      ],
       "notes": "Level = number of cards in the player's level zone. M2 has exactly one defending character, so the choice is made for the player."
     },
     {
