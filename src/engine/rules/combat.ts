@@ -152,7 +152,8 @@ export function defenderNow(s: GameState): CardId | null {
 export function triggerCheck(s: GameState, catalog: CardCatalog): void {
   const player = s.active;
   const top = topOf(s.players[player], 'deck');
-  if (top === undefined) return; // deck and waiting room both empty: nothing to reveal
+  // Deck and waiting room both empty: there is no card to reveal, so nothing happens (CR 1.3.2); the next check timing ends the game.
+  if (top === undefined) return;
   moveCard(s, top, { player, zone: 'resolution' }, 'triggerCheck');
   const icons = [...(defOf(s, catalog, top).triggers ?? [])];
   s.triggerCheck = { player, card: refOf(s, top), remaining: icons };

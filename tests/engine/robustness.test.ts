@@ -163,6 +163,18 @@ describe('untrusted input', () => {
   });
 });
 
+describe('card data the engine cannot run is rejected up front', () => {
+  it('createGame refuses unknown or malformed trigger icons and a non-boolean counter flag (found in M2 review)', () => {
+    for (const bad of [{ triggers: ['bogus'] }, { triggers: 'soul' }, { triggers: 5 }, { counter: 'yes' }]) {
+      const cat = { ...catalog, YX: { ...catalog.YX, ...bad } } as unknown as typeof catalog;
+      const r = createGame({ seed: 's', decks: decks() }, cat);
+      expect(r.ok, JSON.stringify(bad)).toBe(false);
+      if (!r.ok) expect(r.errors.some((e) => e.code === 'CATALOG_TRIGGER' || e.code === 'CATALOG_FIELD')).toBe(true);
+    }
+    expect(createGame({ seed: 's', decks: decks() }, catalog).ok).toBe(true);
+  });
+});
+
 describe('validation agrees with the legal action list', () => {
   it('MULLIGAN and DISCARD: validate accepts exactly the listed sets, in any order', () => {
     const states = [newGame('oracle-1'), makeState(catalog, { start: 'end', players: [{ hand: ['Y0', 'Y1', 'Y2', 'Y3', 'R0', 'R1', 'B0', 'B1', 'G0'], deck: ['Y0'] }, { deck: ['R0'] }] })];

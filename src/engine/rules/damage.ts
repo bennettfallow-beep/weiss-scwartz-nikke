@@ -31,11 +31,8 @@ export function damageReveal(s: GameState): void {
   const d = s.damage;
   if (!d) throw new EngineFault('damageReveal without a damage process');
   const top = topOf(s.players[d.target], 'deck');
-  if (top === undefined) {
-    // Nothing left to reveal: finish with the cards already revealed (CR 1.3.2).
-    finishDamage(s, false);
-    return;
-  }
+  // Unreachable in M2: an empty deck is refreshed, or is an immediate loss (CR 9.2.2.1), before this task runs.
+  if (top === undefined) throw new EngineFault('damage process with an empty deck');
   moveCard(s, top, { player: d.target, zone: 'resolution' }, 'damage');
   d.cards.push(top);
   queue(s, { t: 'damageCheck' });

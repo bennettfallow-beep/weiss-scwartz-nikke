@@ -1,6 +1,6 @@
 // Card information accessors and catalog validation.
 
-import { CARD_KINDS, COLORS } from './types';
+import { CARD_KINDS, COLORS, TRIGGER_ICONS } from './types';
 import type { CardCatalog, CardDef, EngineError } from './types';
 
 /**
@@ -71,6 +71,12 @@ export function validateCatalog(catalog: CardCatalog): EngineError[] {
     if (def.level !== undefined && isNonNegativeInt(def.level) && def.level > 3) {
       errors.push({ code: 'CATALOG_RANGE', message: `${at}: level must be 0-3` });
     }
+    // CR 4.12.2: trigger icons come from a closed set. Anything else would reach the trigger step as an icon nobody can resolve.
+    const triggers: unknown = def.triggers;
+    if (triggers !== undefined && (!Array.isArray(triggers) || !triggers.every((t) => TRIGGER_ICONS.includes(t as never)))) {
+      errors.push({ code: 'CATALOG_TRIGGER', message: `${at}: triggers must be a list of trigger icons (${TRIGGER_ICONS.join(', ')})` });
+    }
+    if (def.counter !== undefined && typeof def.counter !== 'boolean') errors.push({ code: 'CATALOG_FIELD', message: `${at}: counter must be true or false` });
     if (def.backup !== undefined) {
       const b = def.backup as Partial<Record<'power' | 'level' | 'stock', unknown>> | null;
       if (def.kind !== 'character') errors.push({ code: 'CATALOG_FIELD', message: `${at}: only characters have Backup` });
