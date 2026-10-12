@@ -23,13 +23,51 @@ function sampleStates(): GameState[] {
   const clock = makeState(catalog, { start: 'clock', players: [{ hand: ['Y0', 'Y1'], deck: ['Y0', 'Y0', 'Y0'] }, { deck: ['R0'] }] });
   const discard = makeState(catalog, { start: 'end', players: [{ hand: Array<string>(9).fill('Y0'), deck: ['Y0'] }, { deck: ['R0'] }] });
   const levelUp = makeState(catalog, { start: 'main', players: [{ clock: Array<string>(7).fill('Y0'), deck: ['Y0'] }, { deck: ['R0'] }] });
-  return [mulligan, main, clock, discard, levelUp];
+  return [mulligan, main, clock, discard, levelUp, ...combatStates()];
+}
+
+/** Combat decisions: the attack prompt, the counter window, an optional choice, a yes/no, and Encore. */
+function combatStates(): GameState[] {
+  const cat = catalog;
+  const attack = makeState(cat, { start: 'attack', players: [{ deck: ['Y0', 'Y0', 'Y0'], stage: { 1: 'Y1', 2: 'Y2' } }, { deck: ['R0', 'R0', 'R0'], stage: { 2: 'R1' }, hand: ['RC0'], stock: ['R0'] }] });
+  const counter = act(attack, cat, { type: 'ATTACK', player: 0, slot: 2, attack: 'frontal' });
+  const confirm = act(makeState(cat, { start: 'attack', players: [{ deck: ['Y0', 'Y0', 'BX'], stage: { 1: 'Y1' } }, { deck: ['R0', 'R0', 'R0'] }] }), cat, {
+    type: 'ATTACK',
+    player: 0,
+    slot: 1,
+    attack: 'direct',
+  });
+  const encore = makeState(cat, { start: 'main', players: [{ deck: ['Y0', 'Y0'], hand: ['Y0'], stock: ['Y0', 'Y0', 'Y0'], stage: { 1: 'Y1' } }, { deck: ['R0'] }] });
+  const encorePrompt = act(encore, cat, { type: 'PLAY_CHARACTER', player: 0, card: cardIn(encore, 0, 'hand', 'Y0'), slot: 1 });
+  return [attack, counter, confirm, encorePrompt];
 }
 
 const anyAction = fc.oneof(
   fc.anything(),
   fc.record({
-    type: fc.constantFrom('MULLIGAN', 'CLOCK', 'PLAY_CHARACTER', 'PLAY_EVENT', 'PLAY_CLIMAX', 'SWAP', 'PASS', 'LEVEL_UP', 'CHOOSE_INTERRUPT', 'DISCARD', 'REORDER', 'CONCEDE', 'NOPE'),
+    type: fc.constantFrom(
+      'MULLIGAN',
+      'CLOCK',
+      'PLAY_CHARACTER',
+      'PLAY_EVENT',
+      'PLAY_CLIMAX',
+      'SWAP',
+      'PASS',
+      'LEVEL_UP',
+      'CHOOSE_INTERRUPT',
+      'DISCARD',
+      'REORDER',
+      'CONCEDE',
+      'ATTACK',
+      'BACKUP',
+      'ORDER_ICON',
+      'CHOOSE_CARD',
+      'CHOOSE_SLOT',
+      'CHOOSE_DEST',
+      'ACCEPT',
+      'ORDER_AUTO',
+      'NOPE',
+    ),
     player: fc.oneof(fc.constantFrom(0, 1), fc.anything()),
     card: fc.oneof(fc.string(), fc.constant(null), fc.anything()),
     slot: fc.oneof(fc.integer({ min: -1, max: 7 }), fc.anything()),
@@ -40,6 +78,10 @@ const anyAction = fc.oneof(
     cards: fc.anything(),
     order: fc.anything(),
     interrupt: fc.anything(),
+    attack: fc.oneof(fc.constantFrom('direct', 'frontal', 'side'), fc.anything()),
+    icon: fc.oneof(fc.constantFrom('soul', 'pool', 'draw', 'nope'), fc.anything()),
+    dest: fc.oneof(fc.constantFrom('hand', 'stock', 'deck'), fc.anything()),
+    auto: fc.oneof(fc.integer({ min: -2, max: 400 }), fc.anything()),
   }),
 );
 
