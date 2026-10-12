@@ -24,8 +24,17 @@ export function checkInvariants(s: GameState, catalog: CardCatalog): string[] {
   if (s.result !== null && s.pending !== null) v.push('game is over but a decision is pending');
   if (s.result === null && s.pending === null) v.push('game is not over but no decision is pending');
 
-  // At ordinary decision points the rule actions have already run.
-  const settled = s.pending !== null && (s.pending.kind === 'play' || s.pending.kind === 'clock' || s.pending.kind === 'discard');
+  // Attack bookkeeping exists only in the Attack Phase. A finished game keeps where it stopped.
+  if (s.result === null && (s.step !== null) !== (s.phase === 'attack')) v.push(`step ${String(s.step)} does not match phase ${s.phase}`);
+  if (s.result === null && s.attack !== null && s.phase !== 'attack') v.push('an attack exists outside the Attack Phase');
+
+  // At ordinary decision points the rule actions and standby abilities have already run.
+  const settled = s.pending !== null && (s.pending.kind === 'play' || s.pending.kind === 'clock' || s.pending.kind === 'discard' || s.pending.kind === 'attack');
+  if (settled) {
+    if (s.damage !== null) v.push('a damage process is still open at a decision point');
+    if (s.triggerCheck !== null) v.push('a trigger check is still open at a decision point');
+    if (s.standby.length > 0) v.push(`${s.standby.length} standby abilities were not played`);
+  }
   for (const player of [0, 1] as const) {
     const p = s.players[player];
     if (p.stage.length !== 5) v.push(`player ${player} stage has ${p.stage.length} positions`);
@@ -34,6 +43,7 @@ export function checkInvariants(s: GameState, catalog: CardCatalog): string[] {
         if (cards.length > 1) v.push(`player ${player} position ${i + 1} holds ${cards.length} cards`);
       });
       if (p.climax.length > 1) v.push(`player ${player} climax area holds ${p.climax.length} cards`);
+      if (p.resolution.length > 0) v.push(`player ${player} resolution zone holds ${p.resolution.length} cards`);
       if (s.result === null && p.level.length >= LOSING_LEVEL) v.push(`player ${player} has level ${p.level.length} but has not lost`);
     }
     if (s.result === null && p.deck.length === 0 && p.waiting.length > 0 && s.pending?.kind !== 'levelUp' && s.pending?.kind !== 'interruptOrder') {

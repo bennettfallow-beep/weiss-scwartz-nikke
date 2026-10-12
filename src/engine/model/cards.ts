@@ -71,6 +71,13 @@ export function validateCatalog(catalog: CardCatalog): EngineError[] {
     if (def.level !== undefined && isNonNegativeInt(def.level) && def.level > 3) {
       errors.push({ code: 'CATALOG_RANGE', message: `${at}: level must be 0-3` });
     }
+    if (def.backup !== undefined) {
+      const b = def.backup as Partial<Record<'power' | 'level' | 'stock', unknown>> | null;
+      if (def.kind !== 'character') errors.push({ code: 'CATALOG_FIELD', message: `${at}: only characters have Backup` });
+      if (typeof b !== 'object' || b === null || !isNonNegativeInt(b.power) || !isNonNegativeInt(b.level) || !isNonNegativeInt(b.stock)) {
+        errors.push({ code: 'CATALOG_RANGE', message: `${at}: backup needs whole numbers >= 0 for power, level and stock` });
+      }
+    }
   }
   return errors;
 }

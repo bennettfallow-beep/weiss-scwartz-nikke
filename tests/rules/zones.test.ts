@@ -15,6 +15,7 @@ import {
   legalActions,
   masterOf,
   nextInt,
+  HIDDEN,
   projectView,
   seedRng,
   SLOTS,
@@ -612,6 +613,7 @@ describe('3.4 waiting room', () => {
     let t = act(s, cat, { type: 'PLAY_EVENT', player: 0, card: cardIn(s, 0, 'hand', 'EV') });
     t = act(t, cat, { type: 'PLAY_CHARACTER', player: 0, card: cardIn(t, 0, 'hand', 'CA'), slot: 1 });
     t = act(t, cat, { type: 'PASS', player: 0 }, { type: 'PLAY_CLIMAX', player: 0, card: cardIn(t, 0, 'hand', 'YX') });
+    t = act(t, cat, { type: 'PASS', player: 0 }); // no attack this turn
     const toWaiting = movesOf(newEvents(s, t)).filter((e) => e.to.zone === 'waiting');
     expect(toWaiting.map((e) => [defOfId(t, e.card), e.reason])).toEqual([
       ['CI', 'cost'], // stock paid for the event
@@ -921,12 +923,16 @@ describe('3.10 stock', () => {
     expect(defsIn(after, 0, 'waiting')).toEqual(['CD', 'CC']);
   });
 
-  it('[ZONE-31] a card put into the stock goes on top of it', () => {
-    // Cards reach the stock from trigger checks (M2); place one directly.
-    const s = makeState(cat, { players: [{ deck: ['CC', 'G0'], stock: ['CA', 'CB'] }, { deck: deck() }], start: 'main' });
-    const t = ops.deepClone(s);
-    ops.moveCard(t, cardIn(t, 0, 'deck', 'CC'), { player: 0, zone: 'stock' }, 'effect');
-    expect(defsIn(t, 0, 'stock')).toEqual(['CA', 'CB', 'CC']);
+  it('[ZONE-31] a trigger-checked card goes on top of the stock, face down to the opponent', () => {
+    // Player 0 attacks directly; the revealed CC is put into stock after its (empty) trigger.
+    const s = makeState(cat, { players: [{ deck: ['G0', 'CC'], stock: ['CA', 'CB'], stage: { 1: 'Y0' } }, { deck: deck() }], start: 'attack' });
+    const after = act(s, cat, { type: 'ATTACK', player: 0, slot: 1, attack: 'direct' });
+    expect(defsIn(after, 0, 'stock')).toEqual(['CA', 'CB', 'CC']);
+    const toStock = movesOf(newEvents(s, after)).filter((e) => e.to.zone === 'stock');
+    expect(toStock.map((e) => [defOfId(after, e.card), e.from.zone, e.reason])).toEqual([['CC', 'resolution', 'triggerToStock']]);
+    // The opponent saw it revealed, but the move into the stock carries no card.
+    expect(movesOf(projectView(after, 1).log.slice(s.log.length)).filter((e) => e.to.zone === 'stock').map((e) => e.card)).toEqual([HIDDEN]);
+    expect(projectView(after, 1).players[0].counts.stock).toBe(3);
   });
 });
 
@@ -1034,13 +1040,36 @@ describe('3.13 resolution zone', () => {
     expect(defsIn(after, 0, 'resolution')).toEqual(['CA', 'CB']);
   });
 
-  it('[ZONE-41] nobody may reorder the resolution zone, and a new card goes on top', () => {
-    const s = makeState(cat, { players: [{ deck: ['CC', 'G0'], resolution: ['CA', 'CB'] }, { deck: deck() }], start: 'main' });
-    expect(attempt(s, { type: 'REORDER', player: 0, zone: 'resolution', order: [...s.players[0].resolution].reverse() })).toBe('NOT_REORDERABLE');
-    // In M1 the zone only holds an event for an instant; place a card directly to check where it lands.
-    const t = ops.deepClone(s);
-    ops.moveCard(t, cardIn(t, 0, 'deck', 'CC'), { player: 0, zone: 'resolution' }, 'effect');
-    expect(defsIn(t, 0, 'resolution')).toEqual(['CA', 'CB', 'CC']);
+  it('[ZONE-41] damage cards stack in the resolution zone in the order revealed, visible to both players and not reorderable', () => {
+    // Player 1 takes 2 damage from a direct attack. Their deck holds exactly 2 cards, so the second
+    // reveal empties it: the refresh puts a card into a clock of 6, and the level-up prompt arrives
+    // while both damage cards are still in the resolution zone.
+    const s = makeState(cat, {
+      players: [
+        { deck: deck(), stage: { 1: 'Y0' } },
+        { deck: ['CA', 'CB'], waiting: ['G0', 'G0'], clock: ['CC', 'CD', 'CE', 'CF', 'CG', 'CH'] },
+      ],
+      start: 'attack',
+    });
+    const mid = act(s, cat, { type: 'ATTACK', player: 0, slot: 1, attack: 'direct' });
+    expect(mid.pending?.kind).toBe('levelUp');
+    expect(mid.damage?.cards.length).toBe(2);
+    // CB was the top card, so it was revealed first and sits at the bottom of the resolution zone.
+    for (const viewer of [0, 1] as const) {
+      expect(projectView(mid, viewer).players[1].resolution.map((c) => c.def)).toEqual(['CB', 'CA']);
+    }
+    expect(attempt(mid, { type: 'REORDER', player: 1, zone: 'resolution', order: [...mid.players[1].resolution].reverse() })).toBe('NOT_REORDERABLE');
+    expect(attempt(mid, { type: 'REORDER', player: 0, zone: 'resolution', order: [...mid.players[1].resolution].reverse() })).toBe('NOT_REORDERABLE');
+    // After the level up the damage finishes and both cards go to the clock in that same order.
+    const done = act(mid, cat, { type: 'LEVEL_UP', player: 1, card: cardIn(mid, 1, 'clock', 'CC') });
+    const toClock = movesOf(newEvents(mid, done)).filter((e) => e.reason === 'damageToClock');
+    expect(toClock.map((e) => [defOfId(done, e.card), e.from.zone])).toEqual([
+      ['CB', 'resolution'],
+      ['CA', 'resolution'],
+    ]);
+    const clock = done.players[1].clock;
+    expect(clock.indexOf(cardIn(done, 1, 'clock', 'CA'))).toBe(clock.indexOf(cardIn(done, 1, 'clock', 'CB')) + 1);
+    expect(done.players[1].resolution).toEqual([]);
   });
 });
 
@@ -1112,6 +1141,7 @@ describe('4.2-4.3 owner and master', () => {
 
     // Player 1 ends the turn; player 0 (the master) stands the borrowed card.
     t = act(t, cat, { type: 'CLOCK', player: 1, card: null }, { type: 'PASS', player: 1 }, { type: 'PASS', player: 1 });
+    t = act(t, cat, { type: 'PASS', player: 1 }); // CD could attack; player 1 ends the Attack Phase instead
     expect(t.active).toBe(0);
     expect(orientation(t, borrowed)).toBe('stand');
     expect(t.cards[borrowed]?.owner).toBe(1);

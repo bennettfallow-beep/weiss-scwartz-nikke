@@ -132,6 +132,8 @@ export function moveCard(s: GameState, id: CardId, to: ZoneRef, reason: MoveReas
   if (!(from.zone === 'stage' && to.zone === 'stage')) inst.epoch += 1;
 
   const fromRef: ZoneRef = from.slot === undefined ? { player: from.player, zone: from.zone } : { player: from.player, zone: from.zone, slot: from.slot };
+  // Remembered until the next check timing looks for trigger conditions (CR 8.7.2).
+  s.moved.push({ card: id, epoch: inst.epoch, from: fromRef, to: { ...to } });
   log(s, { kind: 'move', card: id, from: fromRef, to, reason });
 }
 

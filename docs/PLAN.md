@@ -121,6 +121,28 @@ Screens: Home, Deck pick, Game board, Log (+ replay export), Rules/Help, Game ov
 | M5 | Session layer + UI shell + handoff | e2e smoke, privacy test, screenshots for you | M |
 | M6 | Full UI flow, save/resume, import UI, a11y basics, docs, device checklist | `npm run verify` green | M-L |
 
+## Follow-ups carried between milestones
+Things a milestone found but left for a later one, so they are not lost.
+
+- **M2 (from M1 review):**
+  - Build REF-03 (out of cards in the middle of damage).
+  - Re-cite ZONE-31 (stock) and ZONE-41 (resolution zone order) with real combat paths.
+- **M3:**
+  - END-05: restarting the End Phase meets "at the end of turn" again; check CR 6.8.1.5 for
+    whether abilities that already resolved may trigger again.
+  - A card being played stays in hand while an interrupt prompt is open.
+  - CARD-23: the importer must store the rules name.
+  - From M2:
+    - An Encore that cannot be paid is skipped without a prompt. That holds while nothing
+      in a check timing can add stock; abilities that can must revisit it (ABL-11, ABL-12).
+    - Shot's extra damage has no source card in M2 (CR 4.11.1.2).
+    - Backup picks the only defender; card effects with several defenders need a choice.
+    - Encore and Shot already use the standby mechanism of ABL-08, ABL-10, ABL-12 and
+      ABL-16; cite those rows once card abilities exist.
+- **M4:** the hand-limit discard lists every combination of cards. A large hand makes that
+  list huge. Offer a one-card-at-a-time choice or a cap before the AI relies on it.
+- **M5:** keep the seed and generator state out of anything a player can read in a save.
+
 ## Out of scope for v1
 Online PvP, official data/art, full ability coverage, deckbuilder UI, memory-zone mechanics, Neo-Standard format rules, animations/sound, tutorial, replay viewer UI (export + CLI only), localization.
 

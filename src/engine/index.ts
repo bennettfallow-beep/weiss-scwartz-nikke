@@ -9,7 +9,11 @@ export { costOf, levelOf, lookupDef, powerOf, soulOf, validateCatalog } from './
 export { BACK_STAGE, behind, CENTER_STAGE, facing, inFrontOf, isCenter } from './model/stage';
 export { DECK_SIZE, MAX_CLIMAX, MAX_COPIES_PER_NAME, validateDeck } from './rules/deck';
 export { HAND_LIMIT, LEVEL_UP_AT, LOSING_LEVEL } from './rules/ruleActions';
-export { canAfford, canPlayFromHand, meetsColor, meetsLevel } from './rules/play';
+export { allowedInWindow, canAfford, canPlayFromHand, meetsColor, meetsLevel } from './rules/play';
+export { ENCORE_COST } from './rules/autos';
+export { attackOptions, canBackup } from './rules/combat';
+export type { AttackOption } from './rules/combat';
+export { currentLevel, currentPower, currentSoul, playerLevel } from './rules/effects';
 export { masterOf, locate, isPublicZone } from './core/zones';
 export { EngineFault } from './core/fault';
 export {

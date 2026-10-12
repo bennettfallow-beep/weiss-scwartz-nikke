@@ -19,7 +19,7 @@ export const COLORS: readonly Color[] = ['yellow', 'green', 'red', 'blue'];
 export type CardKind = 'character' | 'event' | 'climax';
 export const CARD_KINDS: readonly CardKind[] = ['character', 'event', 'climax'];
 
-/** CR 4.12.2. Resolved in the Trigger Step (M2). */
+/** CR 4.12.2. Carried out in the Trigger Step (CR 7.3). */
 export type TriggerIcon =
   | 'soul'
   | 'return'
@@ -31,6 +31,7 @@ export type TriggerIcon =
   | 'gate'
   | 'standby'
   | 'choice';
+export const TRIGGER_ICONS: readonly TriggerIcon[] = ['soul', 'return', 'pool', 'comeback', 'draw', 'shot', 'treasure', 'gate', 'standby', 'choice'];
 
 /**
  * A card definition. `name` is the rules name (CR 2.1.1): reading aids and
@@ -49,8 +50,14 @@ export interface CardDef {
   readonly soul?: number;
   readonly traits?: readonly string[];
   readonly triggers?: readonly TriggerIcon[];
-  /** Counter icon (CR 2.8.2). */
+  /** Counter icon (CR 2.8.2). On an event: playable in the opponent's Counter Step. */
   readonly counter?: boolean;
+  /**
+   * Backup (CR 10.5), a counter-icon ability used from hand in the opponent's
+   * Counter Step. Its cost is `stock` stock cards and then this card from hand
+   * to the waiting room (the usual printed cost); `level` is the minimum level.
+   */
+  readonly backup?: { readonly power: number; readonly level: number; readonly stock: number };
 }
 
 export type CardCatalog = Readonly<Record<string, CardDef>>;
@@ -129,7 +136,7 @@ export interface CardInstance {
 export type Phase = 'setup' | 'stand' | 'draw' | 'clock' | 'main' | 'climax' | 'attack' | 'end' | 'gameOver';
 export type TurnPhase = Exclude<Phase, 'setup' | 'gameOver'>;
 
-/** Timing words that automatic abilities can key on (abilities arrive in M3). */
+/** Timing words that automatic abilities can key on (card abilities arrive in M3). */
 export type TriggerCondition =
   | 'turnStart'
   | 'standPhaseStart'
@@ -137,10 +144,91 @@ export type TriggerCondition =
   | 'clockPhaseStart'
   | 'mainPhaseStart'
   | 'climaxPhaseStart'
+  | 'attackPhaseStart'
+  | 'attackDeclarationStart'
+  | 'triggerStepStart'
+  | 'counterStepStart'
+  | 'damageStepStart'
+  | 'battleStepStart'
+  | 'attackEnd'
+  | 'encoreStepStart'
   | 'turnEnd';
 
 export type InterruptKind = 'refresh' | 'levelUp';
-export type PlayWindow = 'main' | 'climax';
+export type PlayWindow = 'main' | 'climax' | 'counter';
+
+// --- Combat (CR 7) -----------------------------------------------------------
+
+/** Steps of the Attack Phase. One Attack Sub-Phase runs declaration -> trigger -> (counter) -> damage -> (battle). */
+export type AttackStep = 'declaration' | 'trigger' | 'counter' | 'damage' | 'battle' | 'encore';
+export type AttackType = 'direct' | 'frontal' | 'side';
+export const ATTACK_TYPES: readonly AttackType[] = ['direct', 'frontal', 'side'];
+
+/** A specific card object: a card id plus its object identity (epoch) at the time. */
+export interface CardRef {
+  card: CardId;
+  epoch: number;
+}
+
+/** The current Attack Sub-Phase (CR 7.1.2). Fixed once the attack type is chosen (CR 7.2.1.4.3). */
+export interface AttackState {
+  type: AttackType;
+  /** The attacking character as declared, and the stage position it attacked from. */
+  attacker: CardRef;
+  slot: Slot;
+  /** The character facing the attacker at declaration (frontal or side), and its position. Null for a direct attack. */
+  facing: CardRef | null;
+  facingSlot: Slot | null;
+}
+
+/** The card being trigger-checked (CR 7.3.1.2) and the icons it had when it entered the resolution zone. */
+export interface TriggerCheckState {
+  player: PlayerId;
+  card: CardRef;
+  remaining: TriggerIcon[];
+}
+
+/** A damage process in progress (CR 4.10). */
+export interface DamageState {
+  target: PlayerId;
+  amount: number;
+  source: CardRef | null;
+  /** Cards this process has put in the resolution zone, in order. */
+  cards: CardId[];
+}
+
+/** A power or soul change that lasts until end of turn (CR 6.8.1.4). It applies to one card object only. */
+export interface TurnEffect {
+  card: CardRef;
+  stat: 'power' | 'soul';
+  amount: number;
+}
+
+/** Shot (CR 4.12.2.7): waits for the next damage dealt by this character to be canceled, this turn. */
+export interface ShotWatcher {
+  player: PlayerId;
+  source: CardRef;
+}
+
+/**
+ * An automatic ability in standby (CR 8.7.2), waiting for a check timing.
+ * Encore is the rule-level keyword every character has (CR 10.2.3).
+ */
+export type StandbyAuto =
+  | { id: number; ability: 'encore'; player: PlayerId; card: CardRef; slot: Slot; cost: number }
+  | { id: number; ability: 'shot'; player: PlayerId; source: CardRef };
+
+/** One card's zone change, with the card's new object identity. */
+export interface ZoneChange {
+  card: CardId;
+  epoch: number;
+  from: ZoneRef;
+  to: ZoneRef;
+}
+
+export type ChooseReason = 'return' | 'comeback' | 'gate' | 'standby' | 'choice' | 'encoreStep';
+export type ConfirmReason = 'pool' | 'draw' | 'treasure';
+export type Destination = 'hand' | 'stock';
 
 /** Engine work queue. Serializable so a game can stop at any decision and resume. */
 export type Task =
@@ -160,7 +248,28 @@ export type Task =
   /** CR 8.6.2.4: the card counts as played once its cost is paid. */
   | { t: 'played'; player: PlayerId; card: CardId }
   /** CR 8.6.2.5: the played card resolves. `slot` is the chosen stage position for a character. */
-  | { t: 'resolveCard'; player: PlayerId; card: CardId; slot?: Slot };
+  | { t: 'resolveCard'; player: PlayerId; card: CardId; slot?: Slot }
+  /** Enter an Attack Phase step. `first` marks the turn's first Attack Declaration Step (CR 7.2.1.1). */
+  | { t: 'step'; step: AttackStep; first?: boolean }
+  | { t: 'attackDecision' }
+  | { t: 'triggerCheck' }
+  | { t: 'nextIcon' }
+  | { t: 'icon'; icon: TriggerIcon }
+  | { t: 'triggerToStock' }
+  | { t: 'attackDamage' }
+  | { t: 'battle' }
+  | { t: 'attackEnd' }
+  | { t: 'endSubPhase' }
+  | { t: 'encoreLoop' }
+  | { t: 'encoreEnd' }
+  /** Starts a damage process (CR 4.10). */
+  | { t: 'damage'; target: PlayerId; amount: number; source: CardRef | null }
+  | { t: 'damageReveal' }
+  | { t: 'damageCheck' }
+  /** Plays and resolves one standby automatic ability (CR 8.5.1.2). */
+  | { t: 'auto'; id: number }
+  /** CR 6.8.1.4: "until end of turn" effects stop applying. */
+  | { t: 'expireEffects' };
 
 /** The single decision the game is waiting for. */
 export type Pending =
@@ -169,7 +278,23 @@ export type Pending =
   | { kind: 'play'; player: PlayerId; window: PlayWindow }
   | { kind: 'levelUp'; player: PlayerId; options: CardId[] }
   | { kind: 'interruptOrder'; player: PlayerId; options: InterruptKind[] }
-  | { kind: 'discard'; player: PlayerId; count: number };
+  | { kind: 'discard'; player: PlayerId; count: number }
+  /** Attack Declaration Step: attack with a character, or PASS to end the Attack Phase (CR 7.2.1.3). */
+  | { kind: 'attack'; player: PlayerId }
+  /** The trigger card has several different icons left; pick which to carry out next (CR 7.3.1.2.1). */
+  | { kind: 'iconOrder'; player: PlayerId; icons: TriggerIcon[] }
+  /** Choose one of `options`; PASS declines when `optional`. */
+  | { kind: 'choose'; player: PlayerId; reason: ChooseReason; options: CardId[]; optional: boolean }
+  /** Standby icon, second half: the stage position for the chosen character. */
+  | { kind: 'chooseSlot'; player: PlayerId; card: CardId; options: Slot[] }
+  /** Choice icon, second half: hand or stock for the chosen character. */
+  | { kind: 'chooseDest'; player: PlayerId; card: CardId; options: Destination[] }
+  /** An optional yes/no trigger action: ACCEPT or PASS. */
+  | { kind: 'confirm'; player: PlayerId; reason: ConfirmReason }
+  /** Encore: ACCEPT pays the cost and returns the card to `slot` rested; PASS declines (CR 10.2.2). */
+  | { kind: 'encore'; player: PlayerId; card: CardId; slot: Slot; cost: number }
+  /** Several of this player's automatic abilities are in standby; pick which to play first (CR 8.7.3). */
+  | { kind: 'autoOrder'; player: PlayerId; options: StandbyAuto[] };
 
 export type Action =
   | { type: 'MULLIGAN'; player: PlayerId; discard: CardId[] }
@@ -182,6 +307,14 @@ export type Action =
   | { type: 'LEVEL_UP'; player: PlayerId; card: CardId }
   | { type: 'CHOOSE_INTERRUPT'; player: PlayerId; interrupt: InterruptKind }
   | { type: 'DISCARD'; player: PlayerId; cards: CardId[] }
+  | { type: 'ATTACK'; player: PlayerId; slot: Slot; attack: AttackType }
+  | { type: 'BACKUP'; player: PlayerId; card: CardId }
+  | { type: 'ORDER_ICON'; player: PlayerId; icon: TriggerIcon }
+  | { type: 'CHOOSE_CARD'; player: PlayerId; card: CardId }
+  | { type: 'CHOOSE_SLOT'; player: PlayerId; slot: Slot }
+  | { type: 'CHOOSE_DEST'; player: PlayerId; dest: Destination }
+  | { type: 'ACCEPT'; player: PlayerId }
+  | { type: 'ORDER_AUTO'; player: PlayerId; auto: number }
   /** Owners may reorder their own hand and waiting room at any time (CR 3.3.2, 3.4.2). */
   | { type: 'REORDER'; player: PlayerId; zone: 'hand' | 'waiting'; order: CardId[] }
   /** Any player may concede at any time (CR 1.2.4). */
@@ -209,6 +342,14 @@ export type MoveReason =
   | 'handLimit'
   | 'climaxCleanup'
   | 'swap'
+  | 'triggerCheck'
+  | 'triggerToStock'
+  | 'icon'
+  | 'damage'
+  | 'damageCancel'
+  | 'damageToClock'
+  | 'encoreStep'
+  | 'encore'
   | 'effect';
 
 export type EventBody =
@@ -225,7 +366,19 @@ export type EventBody =
   | { kind: 'orientation'; card: CardId; orientation: Orientation }
   | { kind: 'refresh'; player: PlayerId }
   | { kind: 'ruleAction'; rule: RuleActionKind; cards: CardId[]; players: PlayerId[] }
-  | { kind: 'gameOver'; result: GameResult };
+  | { kind: 'gameOver'; result: GameResult }
+  | { kind: 'step'; step: AttackStep }
+  | { kind: 'attack'; player: PlayerId; card: CardId; slot: Slot; attack: AttackType; facing: CardId | null }
+  | { kind: 'triggerCheck'; player: PlayerId; card: CardId; icons: TriggerIcon[] }
+  | { kind: 'icon'; player: PlayerId; icon: TriggerIcon }
+  | { kind: 'modifier'; card: CardId; stat: 'power' | 'soul'; amount: number }
+  | { kind: 'damage'; target: PlayerId; amount: number; source: CardId | null }
+  | { kind: 'damageCanceled'; target: PlayerId; source: CardId | null; cards: CardId[] }
+  | { kind: 'damageTaken'; target: PlayerId; source: CardId | null; cards: CardId[] }
+  | { kind: 'battle'; attacker: CardId; defender: CardId; reversed: CardId[] }
+  | { kind: 'auto'; player: PlayerId; ability: StandbyAuto['ability']; card: CardId }
+  | { kind: 'backup'; player: PlayerId; card: CardId; target: CardId | null; power: number }
+  | { kind: 'effectsExpired' };
 
 export type GameEvent = { seq: number; turn: number; phase: Phase } & EventBody;
 export type EventKind = GameEvent['kind'];
@@ -246,6 +399,19 @@ export interface GameState {
   pending: Pending | null;
   result: GameResult | null;
   flags: { endCheckResolved: boolean };
+  /** Current Attack Phase step, or null outside the Attack Phase. */
+  step: AttackStep | null;
+  /** Attack Sub-Phases started this turn (CR 7.2.1.3.1.2 limits the starting player's first turn to one). */
+  attacks: number;
+  attack: AttackState | null;
+  triggerCheck: TriggerCheckState | null;
+  damage: DamageState | null;
+  /** "Until end of turn" changes (CR 6.8.1.4). */
+  effects: TurnEffect[];
+  watchers: ShotWatcher[];
+  standby: StandbyAuto[];
+  /** Zone changes not yet checked for trigger conditions; emptied at each check timing. */
+  moved: ZoneChange[];
   /** Monotonic counter for events and stage/climax placement stamps. */
   seq: number;
   log: GameEvent[];

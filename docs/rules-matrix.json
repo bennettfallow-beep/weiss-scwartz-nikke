@@ -3603,9 +3603,9 @@
         "10.5.1"
       ],
       "status": "planned",
-      "milestone": "M3",
+      "milestone": "M2",
       "impl": [],
-      "notes": "Counter Step only occurs for frontal attacks (7.3.1.3), so Backup is unavailable on side and direct attacks. It is used from hand, not from stage; counter-step limits of 7.4.1.2 apply. Where the card goes is set by its printed cost, not by 10.5."
+      "notes": "Counter Step only occurs for frontal attacks (7.3.1.3), so Backup is unavailable on side and direct attacks. It is used from hand, not from stage; counter-step limits of 7.4.1.2 apply. Where the card goes is set by its printed cost, not by 10.5. Built in M2 as a rule-level keyword: card data gives backup {power, level, stock}, and the cost is that many stock, then this card from hand to the waiting room (the usual printed cost)."
     },
     {
       "id": "KW-08",
@@ -3615,9 +3615,9 @@
         "10.5.2"
       ],
       "status": "planned",
-      "milestone": "M3",
+      "milestone": "M2",
       "impl": [],
-      "notes": "Level = number of cards in the player's level zone."
+      "notes": "Level = number of cards in the player's level zone. M2 has exactly one defending character, so the choice is made for the player."
     },
     {
       "id": "KW-09",

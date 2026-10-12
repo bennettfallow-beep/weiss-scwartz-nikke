@@ -3,7 +3,21 @@
 // everyone, the hand from the opponent. Card instance ids are never exposed for
 // hidden cards, since an id could reveal which decklist slot a card came from.
 
-import type { CardId, GameEvent, GameResult, GameState, Orientation, Pending, Phase, PlayerId, ZoneName, ZoneRef } from '../model/types';
+import type {
+  AttackState,
+  AttackStep,
+  CardId,
+  GameEvent,
+  GameResult,
+  GameState,
+  Orientation,
+  Pending,
+  Phase,
+  PlayerId,
+  TurnEffect,
+  ZoneName,
+  ZoneRef,
+} from '../model/types';
 import { deepClone } from '../core/clone';
 import { isPublicZone } from '../core/zones';
 
@@ -36,9 +50,15 @@ export interface GameView {
   viewer: PlayerId;
   turn: number;
   phase: Phase;
+  /** Attack Phase step, or null. */
+  step: AttackStep | null;
   active: PlayerId;
   starting: PlayerId;
   result: GameResult | null;
+  /** The current attack (all public). */
+  attack: AttackState | null;
+  /** Power and soul changes lasting until end of turn (public). */
+  effects: TurnEffect[];
   pending: PendingView | null;
   players: [PlayerView, PlayerView];
   log: GameEvent[];
@@ -107,9 +127,12 @@ export function projectView(state: GameState, viewer: PlayerId): GameView {
     viewer,
     turn: state.turn,
     phase: state.phase,
+    step: state.step,
     active: state.active,
     starting: state.starting,
     result: state.result === null ? null : deepClone(state.result),
+    attack: state.attack === null ? null : deepClone(state.attack),
+    effects: deepClone(state.effects),
     pending: pending === null ? null : pending.player === viewer ? pending : { kind: pending.kind, player: pending.player, redacted: true },
     players: [playerView(state, 0, viewer), playerView(state, 1, viewer)],
     log: projectEvents(state.log, viewer),

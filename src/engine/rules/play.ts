@@ -27,9 +27,15 @@ export function canAfford(s: GameState, player: PlayerId, def: CardDef): boolean
   return costOf(def) <= s.players[player].stock.length;
 }
 
-/** Which card kinds each play timing allows (CR 6.5.1.2, 6.6.1.2.1). */
+/**
+ * Which cards each play timing allows: characters and events in the main phase
+ * (CR 6.5.1.2), climaxes in the climax phase (CR 6.6.1.2.1), and only
+ * counter-icon events in the opponent's Counter Step (CR 7.4.1.2.1).
+ */
 export function allowedInWindow(def: CardDef, window: PlayWindow): boolean {
-  return window === 'main' ? def.kind === 'character' || def.kind === 'event' : def.kind === 'climax';
+  if (window === 'main') return def.kind === 'character' || def.kind === 'event';
+  if (window === 'climax') return def.kind === 'climax';
+  return def.kind === 'event' && def.counter === true;
 }
 
 export function canPlayFromHand(s: GameState, catalog: CardCatalog, player: PlayerId, card: CardId, window: PlayWindow): boolean {

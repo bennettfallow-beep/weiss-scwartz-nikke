@@ -10,19 +10,37 @@ import { other } from '../model/types';
 import type { Action, CardCatalog, CardId, GameState, PlayerId, Slot, Task, TurnPhase } from '../model/types';
 import { EngineFault } from '../core/fault';
 import { defOf, log, moveCard, ownersZone, stageSlot, topOf } from '../core/zones';
+import { payEncore, resolveAuto } from './autos';
+import {
+  attackDamage,
+  attackDecision,
+  battle,
+  declareAttack,
+  encoreEnd,
+  encoreLoop,
+  enterStep,
+  nextIcon,
+  orderIcon,
+  performIcon,
+  sendReversed,
+  triggerCheck,
+  triggerToStock,
+  useBackup,
+} from './combat';
+import { damageCheck, damageReveal, startDamage } from './damage';
+import { expireTurnEffects } from './effects';
 import { payStock } from './play';
+import { queue } from './queue';
 import { checkTiming, endGame, HAND_LIMIT, performInterrupt, resolveLevelUp, runInterrupts } from './ruleActions';
 
-const MAX_STEPS = 200_000;
+export { queue };
 
-/** Puts tasks at the front of the queue, in the given order. */
-export function queue(s: GameState, ...tasks: Task[]): void {
-  s.tasks.unshift(...tasks);
-}
+const MAX_STEPS = 200_000;
 
 /** Phase scripts. Each phase lists its steps in rule order and ends by entering the next phase. */
 export function enterPhase(s: GameState, phase: TurnPhase): void {
   s.phase = phase;
+  s.step = null;
   log(s, { kind: 'phase', phase });
   switch (phase) {
     case 'stand': // CR 6.2
@@ -48,8 +66,10 @@ export function enterPhase(s: GameState, phase: TurnPhase): void {
     case 'climax': // CR 6.6
       queue(s, { t: 'trigger', condition: 'climaxPhaseStart' }, { t: 'check' }, { t: 'playTiming', window: 'climax', checked: false });
       return;
-    case 'attack': // CR 6.7 / Section 7 arrives in M2; until then the phase passes straight through.
-      queue(s, { t: 'phase', phase: 'end' });
+    case 'attack': // CR 6.7, Section 7: steps run from enterStep; the Encore Step leads to the End Phase.
+      s.attacks = 0;
+      s.attack = null;
+      queue(s, { t: 'step', step: 'declaration', first: true });
       return;
     case 'end': // CR 6.8
       s.flags.endCheckResolved = false;
@@ -60,6 +80,7 @@ export function enterPhase(s: GameState, phase: TurnPhase): void {
         { t: 'handLimit' },
         { t: 'climaxCleanup' },
         { t: 'check', mark: 'endPhase' },
+        { t: 'expireEffects' },
         { t: 'endOfTurn' },
       );
       return;
@@ -112,15 +133,18 @@ export function execTask(s: GameState, catalog: CardCatalog, task: Task): void {
       if (s.players[s.active].hand.length === 0) queue(s, { t: 'check' }, { t: 'phase', phase: 'main' });
       else s.pending = { kind: 'clock', player: s.active };
       return;
-    case 'playTiming':
+    case 'playTiming': {
       // CR 8.5.2.1: a check timing always comes right before a play timing.
+      // The Counter Step's play timing belongs to the non-turn player (CR 7.4.1.2).
+      const player = task.window === 'counter' ? other(s.active) : s.active;
       if (!task.checked) {
         queue(s, { t: 'check' }, { t: 'playTiming', window: task.window, checked: true });
       } else {
-        s.pending = { kind: 'play', player: s.active, window: task.window };
-        log(s, { kind: 'playTiming', player: s.active, window: task.window });
+        s.pending = { kind: 'play', player, window: task.window };
+        log(s, { kind: 'playTiming', player, window: task.window });
       }
       return;
+    }
     case 'handLimit': {
       const excess = s.players[s.active].hand.length - HAND_LIMIT;
       if (excess > 0) s.pending = { kind: 'discard', player: s.active, count: excess };
@@ -146,6 +170,58 @@ export function execTask(s: GameState, catalog: CardCatalog, task: Task): void {
     case 'resolveCard':
       resolveCard(s, catalog, task.player, task.card, task.slot);
       return;
+    case 'step':
+      enterStep(s, task.step, task.first === true);
+      return;
+    case 'attackDecision':
+      attackDecision(s, catalog);
+      return;
+    case 'triggerCheck':
+      triggerCheck(s, catalog);
+      return;
+    case 'nextIcon':
+      nextIcon(s);
+      return;
+    case 'icon':
+      performIcon(s, catalog, task.icon);
+      return;
+    case 'triggerToStock':
+      triggerToStock(s);
+      return;
+    case 'attackDamage':
+      attackDamage(s, catalog);
+      return;
+    case 'battle':
+      battle(s, catalog);
+      return;
+    case 'attackEnd': // CR 7.5.1.4 / 7.6.1.5
+      queue(s, { t: 'trigger', condition: 'attackEnd' }, { t: 'check' }, { t: 'endSubPhase' });
+      return;
+    case 'endSubPhase':
+      s.attack = null;
+      queue(s, { t: 'step', step: 'declaration' });
+      return;
+    case 'encoreLoop':
+      encoreLoop(s, catalog);
+      return;
+    case 'encoreEnd':
+      encoreEnd(s, catalog);
+      return;
+    case 'damage':
+      startDamage(s, task.target, task.amount, task.source);
+      return;
+    case 'damageReveal':
+      damageReveal(s);
+      return;
+    case 'damageCheck':
+      damageCheck(s, catalog);
+      return;
+    case 'auto':
+      resolveAuto(s, task.id);
+      return;
+    case 'expireEffects':
+      expireTurnEffects(s);
+      return;
   }
 }
 
@@ -169,7 +245,7 @@ function resolveCard(s: GameState, catalog: CardCatalog, player: PlayerId, card:
 export function run(s: GameState, catalog: CardCatalog): void {
   for (let steps = 0; !s.result && !s.pending; steps++) {
     if (steps > MAX_STEPS) throw new EngineFault('engine did not reach a decision');
-    if (runInterrupts(s)) continue;
+    if (runInterrupts(s, catalog)) continue;
     const task = s.tasks.shift();
     if (!task) throw new EngineFault('engine has no work and no pending decision');
     execTask(s, catalog, task);
@@ -232,7 +308,9 @@ export function perform(s: GameState, catalog: CardCatalog, action: Action): voi
       queue(s, ...playCard(s, catalog, p, action.card, action.slot), { t: 'playTiming', window: 'main', checked: false });
       return;
     case 'PLAY_EVENT':
-      queue(s, ...playCard(s, catalog, p, action.card), { t: 'playTiming', window: 'main', checked: false });
+      // CR 7.4.1.2.2: one action ends the Counter Step's play timing.
+      if (pending?.kind === 'play' && pending.window === 'counter') queue(s, ...playCard(s, catalog, p, action.card), { t: 'check' }, { t: 'step', step: 'damage' });
+      else queue(s, ...playCard(s, catalog, p, action.card), { t: 'playTiming', window: 'main', checked: false });
       return;
     case 'PLAY_CLIMAX':
       // CR 6.6.1.2.2: one action ends the climax play timing.
@@ -243,8 +321,15 @@ export function perform(s: GameState, catalog: CardCatalog, action: Action): voi
       queue(s, { t: 'playTiming', window: 'main', checked: false });
       return;
     case 'PASS':
-      if (pending?.kind === 'play' && pending.window === 'climax') queue(s, { t: 'check' }, { t: 'phase', phase: 'attack' });
-      else queue(s, { t: 'phase', phase: 'climax' });
+      if (pending?.kind === 'play') {
+        if (pending.window === 'main') queue(s, { t: 'phase', phase: 'climax' });
+        else if (pending.window === 'climax') queue(s, { t: 'check' }, { t: 'phase', phase: 'attack' });
+        else queue(s, { t: 'check' }, { t: 'step', step: 'damage' });
+      } else if (pending?.kind === 'attack') {
+        // CR 7.2.1.3.2: end the Attack Phase; go straight to the Encore Step.
+        queue(s, { t: 'step', step: 'encore' });
+      }
+      // Otherwise PASS declines an optional choice and play simply continues.
       return;
     case 'LEVEL_UP':
       if (pending?.kind !== 'levelUp') throw new EngineFault('LEVEL_UP without a level-up prompt');
@@ -255,6 +340,62 @@ export function perform(s: GameState, catalog: CardCatalog, action: Action): voi
       return;
     case 'DISCARD':
       for (const card of action.cards) moveCard(s, card, ownersZone(s, card, 'waiting'), 'handLimit');
+      return;
+    case 'ATTACK':
+      declareAttack(s, catalog, action.slot, action.attack);
+      return;
+    case 'BACKUP':
+      useBackup(s, catalog, p, action.card);
+      queue(s, { t: 'check' }, { t: 'step', step: 'damage' });
+      return;
+    case 'ORDER_ICON':
+      orderIcon(s, action.icon);
+      return;
+    case 'CHOOSE_CARD':
+      chooseCard(s, pending, action.card);
+      return;
+    case 'CHOOSE_SLOT':
+      if (pending?.kind !== 'chooseSlot') throw new EngineFault('CHOOSE_SLOT without a position prompt');
+      // Standby: the character goes in rested; a character already there leaves by rule action (CR 4.12.2.10.1).
+      moveCard(s, pending.card, { player: p, zone: 'stage', slot: action.slot }, 'icon', { orientation: 'rest' });
+      return;
+    case 'CHOOSE_DEST':
+      if (pending?.kind !== 'chooseDest') throw new EngineFault('CHOOSE_DEST without a destination prompt');
+      moveCard(s, pending.card, ownersZone(s, pending.card, action.dest), 'icon');
+      return;
+    case 'ACCEPT':
+      if (pending?.kind === 'encore') payEncore(s, p, pending.card, pending.slot, pending.cost);
+      else if (pending?.kind === 'confirm' && pending.reason === 'draw') drawOne(s, p);
+      else if (pending?.kind === 'confirm') {
+        // Pool, and the second half of Treasure: the deck's top card into stock.
+        const top = topOf(s.players[p], 'deck');
+        if (top !== undefined) moveCard(s, top, { player: p, zone: 'stock' }, 'icon');
+      } else throw new EngineFault('ACCEPT without a yes/no prompt');
+      return;
+    case 'ORDER_AUTO':
+      queue(s, { t: 'auto', id: action.auto });
+      return;
+  }
+}
+
+/** CHOOSE_CARD answers a `choose` prompt; what happens depends on why it was asked. */
+function chooseCard(s: GameState, pending: GameState['pending'], card: CardId): void {
+  if (pending?.kind !== 'choose') throw new EngineFault('CHOOSE_CARD without a choose prompt');
+  const p = pending.player;
+  switch (pending.reason) {
+    case 'return': // CR 4.12.2.3
+    case 'comeback': // CR 4.12.2.5
+    case 'gate': // CR 4.12.2.9
+      moveCard(s, card, ownersZone(s, card, 'hand'), 'icon');
+      return;
+    case 'standby': // CR 4.12.2.10: now pick the position
+      s.pending = { kind: 'chooseSlot', player: p, card, options: [1, 2, 3, 4, 5] };
+      return;
+    case 'choice': // CR 4.12.2.11: now pick hand or stock
+      s.pending = { kind: 'chooseDest', player: p, card, options: ['hand', 'stock'] };
+      return;
+    case 'encoreStep': // CR 7.7.1.2-7.7.1.3
+      sendReversed(s, card);
       return;
   }
 }

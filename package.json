@@ -17,7 +17,7 @@
     "check:assets": "tsx scripts/check-assets.ts",
     "build:web": "expo export --platform web",
     "e2e": "playwright test",
-    "verify": "npm run typecheck && npm run lint && npm test && npm run check:matrix && npm run check:assets && npm run build:web && npm run e2e"
+    "verify": "npm run typecheck && npm run lint && npm test && npm run test:fuzz && npm run check:matrix && npm run check:assets && npm run build:web && npm run e2e"
   },
   "dependencies": {
     "@expo/metro-runtime": "~57.0.16",

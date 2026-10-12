@@ -57,6 +57,20 @@ function tag(e: GameEvent): string {
       return `ruleAction:${e.rule}`;
     case 'gameOver':
       return 'gameOver';
+    case 'step':
+      return `step:${e.step}`;
+    case 'attack':
+    case 'auto':
+    case 'backup':
+    case 'battle':
+    case 'damage':
+    case 'damageCanceled':
+    case 'damageTaken':
+    case 'effectsExpired':
+    case 'icon':
+    case 'modifier':
+    case 'triggerCheck':
+      return e.kind;
   }
 }
 
@@ -996,7 +1010,13 @@ describe('4.5 and 8.5.2 play timing', () => {
         while (j >= 0) {
           const prev = log[j] as GameEvent;
           if (prev.kind === 'checkTiming') break;
-          const allowed = prev.kind === 'ruleAction' || (prev.kind === 'move' && prev.reason === 'ruleAction');
+          // A check timing holds rule actions and, after them, standby automatic abilities (CR 8.5.1.2):
+          // in M2 that is Encore, with its yes/no answer and its cost.
+          const allowed =
+            prev.kind === 'ruleAction' ||
+            prev.kind === 'auto' ||
+            (prev.kind === 'move' && (prev.reason === 'ruleAction' || prev.reason === 'encore' || prev.reason === 'cost')) ||
+            (prev.kind === 'action' && (prev.action.type === 'ACCEPT' || prev.action.type === 'PASS' || prev.action.type === 'ORDER_AUTO'));
           if (!allowed) throw new Error(`seed ${seed}: play timing at log ${i} is preceded by ${tag(prev)} with no check timing in between`);
           j--;
         }
@@ -1062,14 +1082,19 @@ describe('4.5 and 8.5.2 play timing', () => {
         if (pending?.kind !== 'play') return;
         const events = since(before, after);
         const firstPhase = events.find((e) => e.kind === 'phase');
-        if (action.type === 'PASS') {
+        if (action.type === 'PASS' && pending.window === 'counter') {
+          // The Counter Step's play timing ends and the Damage Step follows (M2).
+          expect(events.some((e) => e.kind === 'step' && e.step === 'damage')).toBe(true);
+        } else if (action.type === 'PASS') {
           // Doing nothing: no new play timing in this window; the game moves on to the next phase.
           expect(firstPhase && tag(firstPhase)).toBe(pending.window === 'main' ? 'phase:climax' : 'phase:attack');
           expect(events.some((e) => e.kind === 'playTiming' && e.window === pending.window && e.turn === before.turn)).toBe(false);
           if (pending.window === 'main') mainPasses++;
           else climaxPasses++;
         } else if (pending.window === 'main') {
-          expect(after.pending).toEqual(mainPlay(pending.player));
+          // The play timing comes back after its check timing; an Encore decision may come first inside it.
+          if (after.pending?.kind === 'encore' || after.pending?.kind === 'autoOrder') expect(after.pending.player).toBe(pending.player);
+          else expect(after.pending).toEqual(mainPlay(pending.player));
           expect(firstPhase).toBeUndefined();
           regrants++;
         }

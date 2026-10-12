@@ -5,12 +5,14 @@
 // Check-type rule actions (loss, power <= 0, illegal or extra cards) run only
 // inside a check timing, all at once, repeating until none are due.
 
-import { powerOf } from '../model/cards';
 import { other } from '../model/types';
 import type { CardCatalog, CardId, GameState, InterruptKind, LossReason, PlayerId, Task } from '../model/types';
 import { shuffle } from '../core/rng';
 import { defOf, log, moveCard, ownersZone, topOf } from '../core/zones';
 import { EngineFault } from '../core/fault';
+import { collectTriggers, playStandby } from './autos';
+import { damageDeckOut } from './damage';
+import { currentPower } from './effects';
 
 export const HAND_LIMIT = 7;
 export const LEVEL_UP_AT = 7;
@@ -55,7 +57,14 @@ export function dueInterrupts(s: GameState, player: PlayerId): InterruptKind[] {
  * a player with several chooses the order (CR 9.1.2.1.1.2).
  * Returns true if it did anything.
  */
-export function runInterrupts(s: GameState): boolean {
+export function runInterrupts(s: GameState, catalog: CardCatalog): boolean {
+  // CR 9.2.2.1: out of cards in the middle of a damage process, with no climax revealed: the refresh becomes a loss.
+  const outOfCards = damageDeckOut(s, catalog);
+  if (outOfCards !== null) {
+    log(s, { kind: 'ruleAction', rule: 'loss', cards: [], players: [outOfCards] });
+    endGame(s, [{ player: outOfCards, reason: 'deckOut' }]);
+    return true;
+  }
   for (const player of [s.active, other(s.active)]) {
     const due = dueInterrupts(s, player);
     if (due.length === 0) continue;
@@ -113,7 +122,8 @@ function lossesDue(s: GameState): { player: PlayerId; reason: LossReason }[] {
 /**
  * One pass of a check timing. Performs every check-type rule action that is
  * due right now, simultaneously, and queues another pass if anything happened
- * (CR 8.5.1.1). Automatic abilities join this loop in M3.
+ * (CR 8.5.1.1). With no rule action due, plays one standby automatic ability,
+ * turn player first, then comes back here (CR 8.5.1.2-8.5.1.3).
  */
 export function checkTiming(s: GameState, catalog: CardCatalog, task: Extract<Task, { t: 'check' }>): void {
   if (!task.again) log(s, { kind: 'checkTiming' });
@@ -141,9 +151,9 @@ export function checkTiming(s: GameState, catalog: CardCatalog, task: Extract<Ta
         const keep = newest.length === 1 ? newest[0]?.id : undefined;
         for (const c of characters) if (c.id !== keep) removals.push({ card: c.id, rule: 'extraCards' });
       }
-      // CR 9.5.1: power 0 or less. Continuous power modifiers arrive in M3.
+      // CR 9.5.1: power 0 or less, counting effects on the card.
       for (const c of characters) {
-        if (powerOf(defOf(s, catalog, c.id)) <= 0) removals.push({ card: c.id, rule: 'insufficientPower' });
+        if (currentPower(s, catalog, c.id) <= 0) removals.push({ card: c.id, rule: 'insufficientPower' });
       }
     });
     const climaxes = p.climax.filter((c) => defOf(s, catalog, c.id).kind === 'climax');
@@ -158,7 +168,12 @@ export function checkTiming(s: GameState, catalog: CardCatalog, task: Extract<Ta
     }
   }
 
-  if (removals.length === 0) return;
+  const again: Task = task.mark ? { t: 'check', mark: task.mark, again: true } : { t: 'check', again: true };
+  if (removals.length === 0) {
+    collectTriggers(s, catalog);
+    if (playStandby(s, again) && task.mark === 'endPhase') s.flags.endCheckResolved = true;
+    return;
+  }
 
   const unique = [...new Map(removals.map((r) => [r.card, r])).values()];
   for (const rule of ['illegalCard', 'extraCards', 'insufficientPower'] as const) {
@@ -169,5 +184,5 @@ export function checkTiming(s: GameState, catalog: CardCatalog, task: Extract<Ta
   }
   for (const r of unique) moveCard(s, r.card, ownersZone(s, r.card, 'waiting'), 'ruleAction');
   if (task.mark === 'endPhase') s.flags.endCheckResolved = true;
-  s.tasks.unshift(task.mark ? { t: 'check', mark: task.mark, again: true } : { t: 'check', again: true });
+  s.tasks.unshift(again);
 }

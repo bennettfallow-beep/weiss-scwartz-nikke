@@ -2,7 +2,7 @@
 // illegal input comes back as an error value instead of an exception.
 
 import { lookupDef, validateCatalog } from '../model/cards';
-import { other, SLOTS } from '../model/types';
+import { ATTACK_TYPES, other, SLOTS, TRIGGER_ICONS } from '../model/types';
 import type {
   Action,
   CardCatalog,
@@ -20,6 +20,7 @@ import { canonicalJson, deepClone } from '../core/clone';
 import { hashSeed, nextInt, seedRng, shuffle } from '../core/rng';
 import { log, stageSlot } from '../core/zones';
 import { validateDeck } from '../rules/deck';
+import { attackOptions, canBackup } from '../rules/combat';
 import { perform, run } from '../rules/flow';
 import { canPlayFromHand } from '../rules/play';
 
@@ -66,6 +67,15 @@ export function blankState(seed: string): GameState {
     pending: null,
     result: null,
     flags: { endCheckResolved: false },
+    step: null,
+    attacks: 0,
+    attack: null,
+    triggerCheck: null,
+    damage: null,
+    effects: [],
+    watchers: [],
+    standby: [],
+    moved: [],
     seq: 0,
     log: [],
   };
@@ -178,6 +188,9 @@ export function legalActions(state: GameState, catalog: CardCatalog, player?: Pl
         else if (kind === 'event') actions.push({ type: 'PLAY_EVENT', player: p, card });
         else if (kind === 'climax') actions.push({ type: 'PLAY_CLIMAX', player: p, card });
       }
+      if (pending.window === 'counter') {
+        for (const card of ps.hand) if (canBackup(state, catalog, p, card)) actions.push({ type: 'BACKUP', player: p, card });
+      }
       if (pending.window === 'main') {
         for (const a of SLOTS) {
           for (const b of SLOTS) {
@@ -195,6 +208,30 @@ export function legalActions(state: GameState, catalog: CardCatalog, player?: Pl
       break;
     case 'discard':
       for (const cards of combinations(ps.hand, pending.count)) actions.push({ type: 'DISCARD', player: p, cards });
+      break;
+    case 'attack':
+      actions.push({ type: 'PASS', player: p });
+      for (const o of attackOptions(state, catalog)) actions.push({ type: 'ATTACK', player: p, slot: o.slot, attack: o.attack });
+      break;
+    case 'iconOrder':
+      for (const icon of pending.icons) actions.push({ type: 'ORDER_ICON', player: p, icon });
+      break;
+    case 'choose':
+      if (pending.optional) actions.push({ type: 'PASS', player: p });
+      for (const card of pending.options) actions.push({ type: 'CHOOSE_CARD', player: p, card });
+      break;
+    case 'chooseSlot':
+      for (const slot of pending.options) actions.push({ type: 'CHOOSE_SLOT', player: p, slot });
+      break;
+    case 'chooseDest':
+      for (const dest of pending.options) actions.push({ type: 'CHOOSE_DEST', player: p, dest });
+      break;
+    case 'confirm':
+    case 'encore':
+      actions.push({ type: 'ACCEPT', player: p }, { type: 'PASS', player: p });
+      break;
+    case 'autoOrder':
+      for (const a of pending.options) actions.push({ type: 'ORDER_AUTO', player: p, auto: a.id });
       break;
   }
   return actions.map((a) => [actionKey(a), a] as const).sort(([x], [y]) => (x < y ? -1 : x > y ? 1 : 0)).map(([, a]) => a);
@@ -223,6 +260,7 @@ export function normalizeAction(raw: unknown): Checked {
   switch (r.type) {
     case 'PASS':
     case 'CONCEDE':
+    case 'ACCEPT':
       return { ok: true, action: { type: r.type, player } };
     case 'MULLIGAN':
       return isStringArray(r.discard) ? { ok: true, action: { type: 'MULLIGAN', player, discard: [...r.discard] } } : bad('BAD_ACTION', 'discard must be a list of card ids');
@@ -237,12 +275,29 @@ export function normalizeAction(raw: unknown): Checked {
     }
     case 'PLAY_EVENT':
     case 'PLAY_CLIMAX':
-    case 'LEVEL_UP': {
+    case 'LEVEL_UP':
+    case 'BACKUP':
+    case 'CHOOSE_CARD': {
       const c = card();
       return isString(c) ? { ok: true, action: { type: r.type, player, card: c } } : c;
     }
     case 'SWAP':
       return isSlot(r.a) && isSlot(r.b) ? { ok: true, action: { type: 'SWAP', player, a: r.a, b: r.b } } : bad('BAD_SLOT', 'a and b must be slots 1-5');
+    case 'ATTACK':
+      if (!isSlot(r.slot)) return bad('BAD_SLOT', 'slot must be 1-5');
+      return ATTACK_TYPES.includes(r.attack as never)
+        ? { ok: true, action: { type: 'ATTACK', player, slot: r.slot, attack: r.attack as (typeof ATTACK_TYPES)[number] } }
+        : bad('BAD_ACTION', 'attack must be direct, frontal or side');
+    case 'ORDER_ICON':
+      return TRIGGER_ICONS.includes(r.icon as never)
+        ? { ok: true, action: { type: 'ORDER_ICON', player, icon: r.icon as (typeof TRIGGER_ICONS)[number] } }
+        : bad('BAD_ACTION', 'icon must be a trigger icon');
+    case 'CHOOSE_SLOT':
+      return isSlot(r.slot) ? { ok: true, action: { type: 'CHOOSE_SLOT', player, slot: r.slot } } : bad('BAD_SLOT', 'slot must be 1-5');
+    case 'CHOOSE_DEST':
+      return r.dest === 'hand' || r.dest === 'stock' ? { ok: true, action: { type: 'CHOOSE_DEST', player, dest: r.dest } } : bad('BAD_ACTION', 'dest must be hand or stock');
+    case 'ORDER_AUTO':
+      return Number.isSafeInteger(r.auto) ? { ok: true, action: { type: 'ORDER_AUTO', player, auto: r.auto as number } } : bad('BAD_ACTION', 'auto must be an ability id');
     case 'CHOOSE_INTERRUPT':
       return r.interrupt === 'refresh' || r.interrupt === 'levelUp'
         ? { ok: true, action: { type: 'CHOOSE_INTERRUPT', player, interrupt: r.interrupt } }
