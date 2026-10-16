@@ -1,14 +1,17 @@
-// Automatic abilities in standby (CR 8.7) for the two rule-level abilities
-// combat needs: the default Encore every character has (CR 10.2.3) and the
-// Shot icon's damage-cancel watch (CR 4.12.2.7). Card abilities join in M3.
+// Automatic abilities in standby (CR 8.7): the default Encore every character
+// has (CR 10.2.3), the Shot icon's damage-cancel watch (CR 4.12.2.7), and the
+// cards' own automatic abilities (rules/triggers.ts puts those in standby).
 
 import { other } from '../model/types';
 import type { CardCatalog, CardId, GameState, PlayerId, Slot, StandbyAuto, Task } from '../model/types';
+import type { AutomaticAbility } from '../model/abilities';
 import { deepClone } from '../core/clone';
 import { EngineFault } from '../core/fault';
 import { defOf, locate, log, moveCard } from '../core/zones';
 import { nextId } from './damage';
 import { sameObject } from './effects';
+import { canPayCost } from './costs';
+import { automaticOps, openFrame } from './frame';
 import { payStock } from './play';
 import { queue } from './queue';
 
@@ -30,53 +33,88 @@ export function collectTriggers(s: GameState, catalog: CardCatalog): void {
 }
 
 /**
- * Whether a standby ability can be played now. An Encore whose card already
- * left the waiting room can only fail (CR 8.7.7), and one whose cost cannot be
- * paid cannot be played (CR 8.6.2.3.2, 8.7.3.2). Nothing inside an M2 check
- * timing adds stock, so an unpayable Encore stays unpayable; M3 abilities that
- * can add stock must revisit this (ABL-11, ABL-12).
+ * Whether a standby ability can be played right now (CR 8.7.3.2). An Encore
+ * needs its card still in the waiting room and enough stock; a card ability
+ * with an optional cost needs that cost to be payable. A card ability whose
+ * card has moved can still be played; what it can no longer do just fails
+ * (CR 8.7.7).
  */
-function playable(s: GameState, a: StandbyAuto): boolean {
-  if (a.ability === 'shot') return true;
-  return inWaitingRoom(s, a) && s.players[a.player].stock.length >= a.cost;
+function playable(s: GameState, catalog: CardCatalog, a: StandbyAuto): boolean {
+  switch (a.ability) {
+    case 'shot':
+      return true;
+    case 'encore':
+      return inWaitingRoom(s, a) && s.players[a.player].stock.length >= a.cost;
+    case 'card': {
+      const ability = cardAbility(s, catalog, a);
+      return ability.cost === undefined || canPayCost(s, catalog, a.player, a.source, ability.cost);
+    }
+  }
+}
+
+function cardAbility(s: GameState, catalog: CardCatalog, a: Extract<StandbyAuto, { ability: 'card' }>): AutomaticAbility {
+  const ability = defOf(s, catalog, a.source.card).abilities?.[a.index];
+  if (ability?.kind !== 'automatic') throw new EngineFault(`standby ${a.id} is not an automatic ability`);
+  return ability;
 }
 
 /**
  * CR 8.5.1.2-8.5.1.3: the turn player plays one of their standby abilities
- * (choosing which if there are several), then the rule actions are checked
- * again; only then the non-turn player. Abilities that cannot be played are
- * used up without a prompt (CR 8.7.3.2). Returns true if one was started.
+ * (choosing which if several can be played), then the rule actions are checked
+ * again; only then the non-turn player. Returns true if one was started.
  * `again` is the check pass to come back to afterwards.
+ *
+ * Only playable abilities are offered. One that cannot be played now stays in
+ * standby, since another ability may make it playable (an Encore waiting for
+ * stock). Once none of a player's abilities can be played, the rest are used
+ * up: choosing one would only use it up unplayed (CR 8.7.3.2), and every cost
+ * here is optional, so no outcome is lost by skipping that choice.
  */
-export function playStandby(s: GameState, again: Task): boolean {
+export function playStandby(s: GameState, catalog: CardCatalog, again: Task): boolean {
   for (const player of [s.active, other(s.active)] as const) {
-    s.standby = s.standby.filter((a) => a.player !== player || playable(s, a));
     const mine = s.standby.filter((a) => a.player === player);
-    const only = mine[0];
-    if (!only) continue;
+    if (mine.length === 0) continue;
+    const ready = mine.filter((a) => playable(s, catalog, a));
+    const only = ready[0];
+    if (!only) {
+      for (const a of mine) if (a.ability === 'card') log(s, { kind: 'abilityLapsed', player, card: a.source.card, index: a.index });
+      s.standby = s.standby.filter((a) => a.player !== player);
+      continue;
+    }
     queue(s, again);
-    if (mine.length === 1) queue(s, { t: 'auto', id: only.id });
-    else s.pending = { kind: 'autoOrder', player, options: deepClone(mine) };
+    if (ready.length === 1) queue(s, { t: 'auto', id: only.id });
+    else s.pending = { kind: 'autoOrder', player, options: deepClone(ready) };
     return true;
   }
   return false;
 }
 
 /** Plays one standby ability; its standby instance is used up either way (CR 8.7.3, 8.7.3.2). */
-export function resolveAuto(s: GameState, id: number): void {
+export function resolveAuto(s: GameState, catalog: CardCatalog, id: number): void {
   const i = s.standby.findIndex((a) => a.id === id);
   const a: StandbyAuto | undefined = s.standby[i];
   if (!a) throw new EngineFault(`no standby ability ${id}`);
   s.standby.splice(i, 1);
-  if (a.ability === 'shot') {
-    // "Deal one damage to your opponent."
-    log(s, { kind: 'auto', player: a.player, ability: 'shot', card: a.source.card });
-    queue(s, { t: 'damage', target: other(a.player), amount: 1, source: null });
-    return;
+  switch (a.ability) {
+    case 'shot':
+      // "Deal one damage to your opponent."
+      log(s, { kind: 'auto', player: a.player, ability: 'shot', card: a.source.card });
+      queue(s, { t: 'damage', target: other(a.player), amount: 1, source: null });
+      return;
+    case 'encore':
+      if (playable(s, catalog, a)) s.pending = { kind: 'encore', player: a.player, card: a.card.card, slot: a.slot, cost: a.cost };
+      return;
+    case 'card': {
+      if (!playable(s, catalog, a)) {
+        log(s, { kind: 'abilityLapsed', player: a.player, card: a.source.card, index: a.index });
+        return;
+      }
+      const inst = s.cards[a.source.card];
+      openFrame(s, { kind: 'automatic', master: a.player, source: a.source, def: inst?.def ?? '', index: a.index, ops: automaticOps(cardAbility(s, catalog, a)) });
+      queue(s, { t: 'frame' });
+      return;
+    }
   }
-  // Encore: see `playable` for when it is skipped.
-  if (!playable(s, a)) return;
-  s.pending = { kind: 'encore', player: a.player, card: a.card.card, slot: a.slot, cost: a.cost };
 }
 
 function inWaitingRoom(s: GameState, a: Extract<StandbyAuto, { ability: 'encore' }>): boolean {

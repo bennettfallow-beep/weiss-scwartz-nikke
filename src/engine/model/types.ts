@@ -3,6 +3,7 @@
 // the LAST element is the top card (deck top, newest waiting-room card, ...).
 
 import type { RngState } from '../core/rng';
+import type { Ability, LookTake, Step, TriggerKind, StepKind } from './abilities';
 
 export type PlayerId = 0 | 1;
 export const PLAYERS: readonly PlayerId[] = [0, 1];
@@ -58,6 +59,10 @@ export interface CardDef {
    * to the waiting room (the usual printed cost); `level` is the minimum level.
    */
   readonly backup?: { readonly power: number; readonly level: number; readonly stock: number };
+  /** Abilities of a character or climax (CR 8.1). */
+  readonly abilities?: readonly Ability[];
+  /** What an event card does when it resolves (CR 8.6.2.5.2). */
+  readonly effect?: readonly Step[];
 }
 
 export type CardCatalog = Readonly<Record<string, CardDef>>;
@@ -197,11 +202,16 @@ export interface DamageState {
   cards: CardId[];
 }
 
-/** A power or soul change that lasts until end of turn (CR 6.8.1.4). It applies to one card object only. */
+/**
+ * A power or soul change from a one-shot effect. It applies to one card object
+ * only (CR 8.9.2) and lasts until end of turn (CR 6.8.1.4), or, with `until:
+ * 'game'`, for as long as the card stays where it is (CR 8.2.1.2).
+ */
 export interface TurnEffect {
   card: CardRef;
   stat: 'power' | 'soul';
   amount: number;
+  until?: 'game';
 }
 
 /** Shot (CR 4.12.2.7): waits for the next damage dealt by this character to be canceled, this turn. */
@@ -216,7 +226,61 @@ export interface ShotWatcher {
  */
 export type StandbyAuto =
   | { id: number; ability: 'encore'; player: PlayerId; card: CardRef; slot: Slot; cost: number }
-  | { id: number; ability: 'shot'; player: PlayerId; source: CardRef };
+  | { id: number; ability: 'shot'; player: PlayerId; source: CardRef }
+  /** A card's own automatic ability: `index` into its definition's abilities. */
+  | { id: number; ability: 'card'; player: PlayerId; source: CardRef; index: number; on: TriggerKind };
+
+// --- Abilities in progress (M3) -------------------------------------------------
+
+/** One unit of work in an ability being resolved. */
+export type FrameOp =
+  | { k: 'step'; step: Step; forced?: true }
+  /** Automatic ability with an optional cost: ask whether to pay. */
+  | { k: 'offerCost' }
+  /** Choose the cards a discard cost will put into the waiting room. */
+  | { k: 'pickCost' }
+  | { k: 'payCost' }
+  /** CR 8.6.2.4: the ability counts as played once its cost is paid. */
+  | { k: 'played' }
+  /** "Up to N": before each card the player may stop (CR 3.2.3.1). */
+  | { k: 'drawMore'; player: PlayerId; left: number }
+  | { k: 'lookMore'; left: number }
+  | { k: 'lookTake'; take: LookTake }
+  | { k: 'lookRest'; rest: 'top' | 'bottom' | 'waiting' };
+
+/** What the open prompt of a frame is for. */
+export type FrameWait =
+  | { for: 'target'; as: string }
+  | { for: 'costCards' }
+  | { for: 'move'; to: 'hand' | 'stock' | 'waiting'; reason: MoveReason }
+  | { for: 'order'; where: 'top' | 'bottom' }
+  | { for: 'payCost' }
+  | { for: 'may'; step: Extract<Step, { do: 'may' }> }
+  | { for: 'drawMore'; player: PlayerId; left: number }
+  | { for: 'lookMore'; left: number };
+
+/** The ability or event effect being resolved. Only one resolves at a time. */
+export interface AbilityFrame {
+  kind: 'event' | 'activated' | 'automatic';
+  /** CR 4.3.3-4.3.5: whoever "you" means in the text. */
+  master: PlayerId;
+  /** The card with the ability (for an event, the event card itself). */
+  source: CardRef;
+  def: string;
+  /** Index into the definition's abilities, or null for an event's effect. */
+  index: number | null;
+  ops: FrameOp[];
+  /** Cards picked by `choose` steps, by name. */
+  chosen: { as: string; cards: CardRef[] }[];
+  /** Cards chosen to pay a discard cost. */
+  costCards: CardId[];
+  /** Cards the master is looking at (CR 4.8); only they see them. */
+  look: { player: PlayerId; cards: CardRef[] } | null;
+  wait: FrameWait | null;
+}
+
+export type PickPurpose = 'target' | 'costDiscard' | 'discard' | 'salvage' | 'lookTake' | 'orderTop' | 'orderBottom';
+export type OptionalPurpose = 'payCost' | 'may' | 'drawMore' | 'lookMore';
 
 /** One card's zone change, with the card's new object identity. */
 export interface ZoneChange {
@@ -269,7 +333,15 @@ export type Task =
   /** Plays and resolves one standby automatic ability (CR 8.5.1.2). */
   | { t: 'auto'; id: number }
   /** CR 6.8.1.4: "until end of turn" effects stop applying. */
-  | { t: 'expireEffects' };
+  | { t: 'expireEffects' }
+  /** Runs the next op of the ability being resolved. */
+  | { t: 'frame' }
+  /** CR 8.6.2.5.2: the resolved event goes to its owner's waiting room. */
+  | { t: 'eventDone'; card: CardRef }
+  /** Moves one card for an effect, if it is still the same object. */
+  | { t: 'fxMove'; card: CardRef; to: 'hand' | 'stock' | 'waiting'; reason: MoveReason }
+  /** Moves the top card of a player's deck or clock for an effect. */
+  | { t: 'fxTop'; player: PlayerId; from: 'deck' | 'clock'; to: 'stock' | 'waiting' };
 
 /** The single decision the game is waiting for. */
 export type Pending =
@@ -294,7 +366,14 @@ export type Pending =
   /** Encore: ACCEPT pays the cost and returns the card to `slot` rested; PASS declines (CR 10.2.2). */
   | { kind: 'encore'; player: PlayerId; card: CardId; slot: Slot; cost: number }
   /** Several of this player's automatic abilities are in standby; pick which to play first (CR 8.7.3). */
-  | { kind: 'autoOrder'; player: PlayerId; options: StandbyAuto[] };
+  | { kind: 'autoOrder'; player: PlayerId; options: StandbyAuto[] }
+  /**
+   * An ability asks for cards, one CHOOSE_CARD at a time. PASS ends the choice
+   * once at least `min` are picked. `card` is the card whose ability asks.
+   */
+  | { kind: 'pick'; player: PlayerId; purpose: PickPurpose; card: CardId; options: CardId[]; picked: CardId[]; min: number; max: number }
+  /** An ability asks a yes/no question: ACCEPT or PASS. */
+  | { kind: 'optional'; player: PlayerId; purpose: OptionalPurpose; card: CardId };
 
 export type Action =
   | { type: 'MULLIGAN'; player: PlayerId; discard: CardId[] }
@@ -315,6 +394,8 @@ export type Action =
   | { type: 'CHOOSE_DEST'; player: PlayerId; dest: Destination }
   | { type: 'ACCEPT'; player: PlayerId }
   | { type: 'ORDER_AUTO'; player: PlayerId; auto: number }
+  /** Use an activated ability: `ability` indexes the card definition's abilities. */
+  | { type: 'ACTIVATE'; player: PlayerId; card: CardId; ability: number }
   /** Owners may reorder their own hand and waiting room at any time (CR 3.3.2, 3.4.2). */
   | { type: 'REORDER'; player: PlayerId; zone: 'hand' | 'waiting'; order: CardId[] }
   /** Any player may concede at any time (CR 1.2.4). */
@@ -378,7 +459,20 @@ export type EventBody =
   | { kind: 'battle'; attacker: CardId; defender: CardId; reversed: CardId[] }
   | { kind: 'auto'; player: PlayerId; ability: StandbyAuto['ability']; card: CardId }
   | { kind: 'backup'; player: PlayerId; card: CardId; target: CardId | null; power: number }
-  | { kind: 'effectsExpired' };
+  | { kind: 'effectsExpired' }
+  /** An ability or event effect was played (CR 8.6.2.4). */
+  | { kind: 'ability'; player: PlayerId; card: CardId; index: number | null; category: AbilityFrame['kind'] }
+  /** A standby automatic ability could not be played and was used up (CR 8.7.3.2). */
+  | { kind: 'abilityLapsed'; player: PlayerId; card: CardId; index: number }
+  | { kind: 'effect'; player: PlayerId; card: CardId; op: StepKind }
+  | { kind: 'optional'; player: PlayerId; card: CardId; purpose: OptionalPurpose; accepted: boolean }
+  /** Characters picked by a choose step (stage cards, so public). */
+  | { kind: 'chosen'; player: PlayerId; card: CardId; cards: CardId[] }
+  /** The player looks at these deck cards; only they see which (CR 4.8). */
+  | { kind: 'look'; player: PlayerId; cards: CardId[] }
+  | { kind: 'lookEnd'; player: PlayerId }
+  /** Looked-at cards were put back on top or at the bottom in a chosen order. */
+  | { kind: 'deckArranged'; player: PlayerId; top: number; bottom: number };
 
 export type GameEvent = { seq: number; turn: number; phase: Phase } & EventBody;
 export type EventKind = GameEvent['kind'];
@@ -412,6 +506,8 @@ export interface GameState {
   standby: StandbyAuto[];
   /** Zone changes not yet checked for trigger conditions; emptied at each check timing. */
   moved: ZoneChange[];
+  /** The ability or event effect being resolved, if any. */
+  resolving: AbilityFrame | null;
   /** Monotonic counter for events and stage/climax placement stamps. */
   seq: number;
   log: GameEvent[];
@@ -426,4 +522,6 @@ export interface GameSetup {
 export interface EngineError {
   readonly code: string;
   readonly message: string;
+  /** Where in the input the problem is, e.g. "abilities.0.effect.1.count". */
+  readonly path?: string;
 }

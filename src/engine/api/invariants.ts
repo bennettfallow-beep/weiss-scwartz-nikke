@@ -31,6 +31,8 @@ export function checkInvariants(s: GameState, catalog: CardCatalog): string[] {
   // At ordinary decision points the rule actions and standby abilities have already run.
   const settled = s.pending !== null && (s.pending.kind === 'play' || s.pending.kind === 'clock' || s.pending.kind === 'discard' || s.pending.kind === 'attack');
   if (settled) {
+    if (s.resolving !== null) v.push('an ability is still resolving at a decision point');
+    if (s.moved.length > 0) v.push(`${s.moved.length} zone changes were never checked for triggers`);
     if (s.damage !== null) v.push('a damage process is still open at a decision point');
     if (s.triggerCheck !== null) v.push('a trigger check is still open at a decision point');
     if (s.standby.length > 0) v.push(`${s.standby.length} standby abilities were not played`);
@@ -52,5 +54,22 @@ export function checkInvariants(s: GameState, catalog: CardCatalog): string[] {
   }
 
   if (s.pending && s.pending.player !== 0 && s.pending.player !== 1) v.push('pending decision has no valid player');
+
+  // Ability prompts belong to an ability being resolved, and a pick stays within its bounds.
+  const pending = s.pending;
+  if ((pending?.kind === 'pick' || pending?.kind === 'optional') && s.resolving === null) v.push(`${pending.kind} prompt with no ability resolving`);
+  if (pending?.kind === 'pick') {
+    if (!(pending.min >= 0 && pending.min <= pending.max)) v.push(`pick bounds ${pending.min}-${pending.max}`);
+    if (pending.picked.length >= pending.max) v.push('pick already has its maximum');
+    if (pending.options.length === 0) v.push('pick with no options');
+    if (pending.options.some((c) => pending.picked.includes(c))) v.push('pick offers an already picked card');
+  }
+  for (const a of s.standby) {
+    if (!s.cards[a.ability === 'encore' ? a.card.card : a.source.card]) v.push(`standby ${a.id} refers to an unknown card`);
+    if (a.ability === 'card') {
+      const ability = lookupDef(catalog, s.cards[a.source.card]?.def ?? '')?.abilities?.[a.index];
+      if (ability?.kind !== 'automatic') v.push(`standby ${a.id} is not an automatic ability`);
+    }
+  }
   return v;
 }

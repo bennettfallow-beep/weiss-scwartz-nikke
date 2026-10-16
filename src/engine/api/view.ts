@@ -20,6 +20,7 @@ import type {
 } from '../model/types';
 import { deepClone } from '../core/clone';
 import { isPublicZone } from '../core/zones';
+import { lookedInDeck } from '../rules/frame';
 
 export const HIDDEN = '?';
 
@@ -57,8 +58,12 @@ export interface GameView {
   result: GameResult | null;
   /** The current attack (all public). */
   attack: AttackState | null;
-  /** Power and soul changes lasting until end of turn (public). */
+  /** Power and soul changes from one-shot effects (public). */
   effects: TurnEffect[];
+  /** The ability being resolved (public), or null. */
+  resolving: { kind: 'event' | 'activated' | 'automatic'; master: PlayerId; card: CardId; def: string; index: number | null } | null;
+  /** Deck cards a player is looking at (CR 4.8). Only the looker gets `cards`; everyone sees how many. */
+  look: { player: PlayerId; count: number; cards: VisibleCard[] | null } | null;
   pending: PendingView | null;
   players: [PlayerView, PlayerView];
   log: GameEvent[];
@@ -105,6 +110,10 @@ function playerView(s: GameState, owner: PlayerId, viewer: PlayerId): PlayerView
  */
 function redactEvent(e: GameEvent, viewer: PlayerId): GameEvent {
   if (e.kind === 'move' && !canSee(viewer, e.to)) return { ...e, card: HIDDEN };
+  // Looked-at cards are seen by the looker only (CR 4.8).
+  if (e.kind === 'look' && e.player !== viewer) return { ...e, cards: e.cards.map(() => HIDDEN) };
+  // A card picked from a hidden zone (a deck or hand) must not be named to the other player.
+  if (e.kind === 'action' && e.action.type === 'CHOOSE_CARD' && e.action.player !== viewer) return { ...e, action: { ...e.action, card: HIDDEN } };
   if (e.kind === 'action' && e.action.type === 'REORDER' && e.action.zone === 'hand' && e.action.player !== viewer) {
     return { ...e, action: { ...e.action, order: [] } };
   }
@@ -120,6 +129,18 @@ export function projectEvents(events: readonly GameEvent[], viewer: PlayerId): G
   return events.map((e) => redactEvent(e, viewer));
 }
 
+function resolvingView(state: GameState): GameView['resolving'] {
+  const f = state.resolving;
+  return f === null ? null : { kind: f.kind, master: f.master, card: f.source.card, def: f.def, index: f.index };
+}
+
+function lookView(state: GameState, viewer: PlayerId): GameView['look'] {
+  const f = state.resolving;
+  if (!f?.look) return null;
+  const cards = lookedInDeck(state, f);
+  return { player: f.look.player, count: cards.length, cards: viewer === f.look.player ? cards.map((id) => ({ id, def: state.cards[id]?.def ?? HIDDEN })) : null };
+}
+
 /** The game as one player may see it. Returns fresh objects; changing them cannot affect the state. */
 export function projectView(state: GameState, viewer: PlayerId): GameView {
   const pending = state.pending === null ? null : deepClone(state.pending);
@@ -133,6 +154,8 @@ export function projectView(state: GameState, viewer: PlayerId): GameView {
     result: state.result === null ? null : deepClone(state.result),
     attack: state.attack === null ? null : deepClone(state.attack),
     effects: deepClone(state.effects),
+    resolving: resolvingView(state),
+    look: lookView(state, viewer),
     pending: pending === null ? null : pending.player === viewer ? pending : { kind: pending.kind, player: pending.player, redacted: true },
     players: [playerView(state, 0, viewer), playerView(state, 1, viewer)],
     log: projectEvents(state.log, viewer),

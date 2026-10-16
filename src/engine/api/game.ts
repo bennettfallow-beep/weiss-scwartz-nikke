@@ -22,6 +22,7 @@ import { log, stageSlot } from '../core/zones';
 import { validateDeck } from '../rules/deck';
 import { attackOptions, canBackup } from '../rules/combat';
 import { perform, run } from '../rules/flow';
+import { activatable } from '../rules/frame';
 import { canPlayFromHand } from '../rules/play';
 
 export type CreateResult = { ok: true; state: GameState } | { ok: false; errors: (EngineError & { player?: PlayerId })[] };
@@ -76,6 +77,7 @@ export function blankState(seed: string): GameState {
     watchers: [],
     standby: [],
     moved: [],
+    resolving: null,
     seq: 0,
     log: [],
   };
@@ -191,6 +193,7 @@ export function legalActions(state: GameState, catalog: CardCatalog, player?: Pl
       if (pending.window === 'counter') {
         for (const card of ps.hand) if (canBackup(state, catalog, p, card)) actions.push({ type: 'BACKUP', player: p, card });
       }
+      for (const a of activatable(state, catalog, p, pending.window)) actions.push({ type: 'ACTIVATE', player: p, card: a.card, ability: a.ability });
       if (pending.window === 'main') {
         for (const a of SLOTS) {
           for (const b of SLOTS) {
@@ -232,6 +235,13 @@ export function legalActions(state: GameState, catalog: CardCatalog, player?: Pl
       break;
     case 'autoOrder':
       for (const a of pending.options) actions.push({ type: 'ORDER_AUTO', player: p, auto: a.id });
+      break;
+    case 'pick':
+      if (pending.picked.length >= pending.min) actions.push({ type: 'PASS', player: p });
+      for (const card of pending.options) actions.push({ type: 'CHOOSE_CARD', player: p, card });
+      break;
+    case 'optional':
+      actions.push({ type: 'ACCEPT', player: p }, { type: 'PASS', player: p });
       break;
   }
   return actions.map((a) => [actionKey(a), a] as const).sort(([x], [y]) => (x < y ? -1 : x > y ? 1 : 0)).map(([, a]) => a);
@@ -298,6 +308,13 @@ export function normalizeAction(raw: unknown): Checked {
       return r.dest === 'hand' || r.dest === 'stock' ? { ok: true, action: { type: 'CHOOSE_DEST', player, dest: r.dest } } : bad('BAD_ACTION', 'dest must be hand or stock');
     case 'ORDER_AUTO':
       return Number.isSafeInteger(r.auto) ? { ok: true, action: { type: 'ORDER_AUTO', player, auto: r.auto as number } } : bad('BAD_ACTION', 'auto must be an ability id');
+    case 'ACTIVATE': {
+      const c = card();
+      if (!isString(c)) return c;
+      return Number.isSafeInteger(r.ability) && (r.ability as number) >= 0
+        ? { ok: true, action: { type: 'ACTIVATE', player, card: c, ability: r.ability as number } }
+        : bad('BAD_ACTION', 'ability must be a whole number >= 0');
+    }
     case 'CHOOSE_INTERRUPT':
       return r.interrupt === 'refresh' || r.interrupt === 'levelUp'
         ? { ok: true, action: { type: 'CHOOSE_INTERRUPT', player, interrupt: r.interrupt } }

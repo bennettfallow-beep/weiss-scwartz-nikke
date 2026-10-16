@@ -70,6 +70,14 @@ function tag(e: GameEvent): string {
     case 'icon':
     case 'modifier':
     case 'triggerCheck':
+    case 'ability':
+    case 'abilityLapsed':
+    case 'effect':
+    case 'optional':
+    case 'chosen':
+    case 'look':
+    case 'lookEnd':
+    case 'deckArranged':
       return e.kind;
   }
 }

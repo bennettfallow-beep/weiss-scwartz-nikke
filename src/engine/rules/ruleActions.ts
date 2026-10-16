@@ -37,6 +37,7 @@ export function endGame(s: GameState, losers: readonly { player: PlayerId; reaso
   s.phase = 'gameOver';
   s.pending = null;
   s.tasks = [];
+  s.resolving = null;
   log(s, { kind: 'gameOver', result: s.result });
 }
 
@@ -171,7 +172,7 @@ export function checkTiming(s: GameState, catalog: CardCatalog, task: Extract<Ta
   const again: Task = task.mark ? { t: 'check', mark: task.mark, again: true } : { t: 'check', again: true };
   if (removals.length === 0) {
     collectTriggers(s, catalog);
-    if (playStandby(s, again) && task.mark === 'endPhase') s.flags.endCheckResolved = true;
+    if (playStandby(s, catalog, again) && task.mark === 'endPhase') s.flags.endCheckResolved = true;
     return;
   }
 

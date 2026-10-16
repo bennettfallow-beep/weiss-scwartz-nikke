@@ -1,5 +1,6 @@
 // Card information accessors and catalog validation.
 
+import { checkCardAbilities } from './abilityCheck';
 import { CARD_KINDS, COLORS, TRIGGER_ICONS } from './types';
 import type { CardCatalog, CardDef, EngineError } from './types';
 
@@ -77,6 +78,15 @@ export function validateCatalog(catalog: CardCatalog): EngineError[] {
       errors.push({ code: 'CATALOG_TRIGGER', message: `${at}: triggers must be a list of trigger icons (${TRIGGER_ICONS.join(', ')})` });
     }
     if (def.counter !== undefined && typeof def.counter !== 'boolean') errors.push({ code: 'CATALOG_FIELD', message: `${at}: counter must be true or false` });
+    // CR 2.5.1: only characters have traits.
+    const traits: unknown = def.traits;
+    if (traits !== undefined) {
+      if (def.kind !== 'character') errors.push({ code: 'CATALOG_FIELD', message: `${at}: only characters have traits` });
+      if (!Array.isArray(traits) || traits.length > 8 || !traits.every((t) => typeof t === 'string' && t.trim() !== '' && t.length <= 40)) {
+        errors.push({ code: 'CATALOG_FIELD', message: `${at}: traits must be a list of up to 8 names` });
+      }
+    }
+    errors.push(...checkCardAbilities(def, at));
     if (def.backup !== undefined) {
       const b = def.backup as Partial<Record<'power' | 'level' | 'stock', unknown>> | null;
       if (def.kind !== 'character') errors.push({ code: 'CATALOG_FIELD', message: `${at}: only characters have Backup` });

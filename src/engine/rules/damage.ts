@@ -17,6 +17,7 @@ export function nextId(s: GameState): number {
  */
 export function startDamage(s: GameState, target: PlayerId, amount: number, source: CardRef | null): void {
   if (amount <= 0) return;
+  if (s.damage) throw new EngineFault('a damage process is already under way');
   s.damage = { target, amount, source, cards: [] };
   log(s, { kind: 'damage', target, amount, source: source?.card ?? null });
   queue(s, { t: 'damageReveal' });

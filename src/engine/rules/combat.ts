@@ -1,15 +1,15 @@
 // The Attack Phase (CR 7): attack declaration, trigger, counter, damage,
 // battle and encore steps, and the trigger icon actions (CR 4.12).
 
-import { levelOf } from '../model/cards';
 import { CENTER_STAGE, facing } from '../model/stage';
 import { other, SLOTS } from '../model/types';
 import type { AttackStep, AttackType, CardCatalog, CardId, GameState, Orientation, PlayerId, Slot, Task, TriggerIcon } from '../model/types';
 import { EngineFault } from '../core/fault';
 import { defOf, locate, log, moveCard, ownersZone, stageSlot, topOf } from '../core/zones';
-import { addTurnEffect, currentPower, currentSoul, playerLevel, refOf, sameObject, stillAt } from './effects';
+import { addTurnEffect, currentLevel, currentPower, currentSoul, playerLevel, refOf, sameObject, stillAt } from './effects';
 import { payStock } from './play';
 import { queue } from './queue';
+import { fireAttack, fireReversed } from './triggers';
 
 /** Step scripts, in rule order. Each ends by queuing what comes next. */
 export function enterStep(s: GameState, step: AttackStep, first: boolean): void {
@@ -116,10 +116,11 @@ export function declareAttack(s: GameState, catalog: CardCatalog, slot: Slot, ty
   log(s, { kind: 'attack', player, card: attacker.id, slot, attack: type, facing: facingCard });
   if (type === 'direct') addTurnEffect(s, attacker.id, 'soul', 1);
   if (type === 'side' && facingCard !== null) {
-    const x = levelOf(defOf(s, catalog, facingCard));
+    const x = currentLevel(s, catalog, facingCard);
     if (x > 0) addTurnEffect(s, attacker.id, 'soul', -x);
   }
   setOrientation(s, attacker.id, 'rest');
+  fireAttack(s, catalog, attacker.id);
   queue(s, { t: 'check' }, { t: 'step', step: 'trigger' });
 }
 
@@ -230,7 +231,7 @@ export function performIcon(s: GameState, catalog: CardCatalog, icon: TriggerIco
       return;
     case 'standby': {
       const max = playerLevel(s, p) + 1;
-      choose('standby', characters(me.waiting).filter((id) => levelOf(defOf(s, catalog, id)) <= max));
+      choose('standby', characters(me.waiting).filter((id) => currentLevel(s, catalog, id) <= max));
       return;
     }
     case 'choice':
@@ -293,6 +294,7 @@ export function battle(s: GameState, catalog: CardCatalog): void {
   const reversed = pa < pd ? [attacker] : pd < pa ? [defender] : [attacker, defender];
   log(s, { kind: 'battle', attacker, defender, reversed });
   for (const c of reversed) setOrientation(s, c, 'reverse');
+  for (const c of reversed) fireReversed(s, catalog, c);
 }
 
 // --- Encore Step (CR 7.7) -------------------------------------------------------------------

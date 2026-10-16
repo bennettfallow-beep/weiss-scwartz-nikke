@@ -28,10 +28,12 @@ import {
   useBackup,
 } from './combat';
 import { damageCheck, damageReveal, startDamage } from './damage';
-import { expireTurnEffects } from './effects';
+import { expireTurnEffects, refOf } from './effects';
+import { activate, answerOptional, answerPick, eventDone, eventOps, frameTask, fxMove, fxTop, openFrame } from './frame';
 import { payStock } from './play';
 import { queue } from './queue';
 import { checkTiming, endGame, HAND_LIMIT, performInterrupt, resolveLevelUp, runInterrupts } from './ruleActions';
+import { firePlayed } from './triggers';
 
 export { queue };
 
@@ -217,27 +219,47 @@ export function execTask(s: GameState, catalog: CardCatalog, task: Task): void {
       damageCheck(s, catalog);
       return;
     case 'auto':
-      resolveAuto(s, task.id);
+      resolveAuto(s, catalog, task.id);
       return;
     case 'expireEffects':
       expireTurnEffects(s);
+      return;
+    case 'frame':
+      frameTask(s, catalog);
+      return;
+    case 'eventDone':
+      eventDone(s, task.card);
+      return;
+    case 'fxMove':
+      fxMove(s, task.card, task.to, task.reason);
+      return;
+    case 'fxTop':
+      fxTop(s, task.player, task.from, task.to);
       return;
   }
 }
 
 /** CR 8.6.2.5.1-8.6.2.5.3: put the played card where its type goes. */
 function resolveCard(s: GameState, catalog: CardCatalog, player: PlayerId, card: CardId, slot: Slot | undefined): void {
-  const kind = defOf(s, catalog, card).kind;
-  if (kind === 'character') {
+  const def = defOf(s, catalog, card);
+  if (def.kind === 'character') {
     if (slot === undefined) throw new EngineFault('a character needs a stage position');
     // A character already there is removed later by rule action (CR 9.6.2).
     moveCard(s, card, { player, zone: 'stage', slot }, 'play');
-  } else if (kind === 'event') {
+    firePlayed(s, catalog, card);
+  } else if (def.kind === 'event') {
     moveCard(s, card, { player, zone: 'resolution' }, 'play');
-    // Event effects are resolved here from M3 on.
-    moveCard(s, card, ownersZone(s, card, 'waiting'), 'eventResolved');
+    if (def.effect && def.effect.length > 0) {
+      // The effect resolves step by step; then the card goes to the waiting room (CR 8.6.2.5.2).
+      const ref = refOf(s, card);
+      openFrame(s, { kind: 'event', master: player, source: ref, def: def.id, index: null, ops: eventOps(def.effect) });
+      queue(s, { t: 'frame' }, { t: 'eventDone', card: ref });
+    } else {
+      moveCard(s, card, ownersZone(s, card, 'waiting'), 'eventResolved');
+    }
   } else {
     moveCard(s, card, { player, zone: 'climax' }, 'play');
+    firePlayed(s, catalog, card);
   }
 }
 
@@ -321,7 +343,9 @@ export function perform(s: GameState, catalog: CardCatalog, action: Action): voi
       queue(s, { t: 'playTiming', window: 'main', checked: false });
       return;
     case 'PASS':
-      if (pending?.kind === 'play') {
+      if (pending?.kind === 'pick') answerPick(s, catalog, pending, null);
+      else if (pending?.kind === 'optional') answerOptional(s, catalog, false);
+      else if (pending?.kind === 'play') {
         if (pending.window === 'main') queue(s, { t: 'phase', phase: 'climax' });
         else if (pending.window === 'climax') queue(s, { t: 'check' }, { t: 'phase', phase: 'attack' });
         else queue(s, { t: 'check' }, { t: 'step', step: 'damage' });
@@ -352,7 +376,8 @@ export function perform(s: GameState, catalog: CardCatalog, action: Action): voi
       orderIcon(s, action.icon);
       return;
     case 'CHOOSE_CARD':
-      chooseCard(s, pending, action.card);
+      if (pending?.kind === 'pick') answerPick(s, catalog, pending, action.card);
+      else chooseCard(s, pending, action.card);
       return;
     case 'CHOOSE_SLOT':
       if (pending?.kind !== 'chooseSlot') throw new EngineFault('CHOOSE_SLOT without a position prompt');
@@ -364,7 +389,8 @@ export function perform(s: GameState, catalog: CardCatalog, action: Action): voi
       moveCard(s, pending.card, ownersZone(s, pending.card, action.dest), 'icon');
       return;
     case 'ACCEPT':
-      if (pending?.kind === 'encore') payEncore(s, p, pending.card, pending.slot, pending.cost);
+      if (pending?.kind === 'optional') answerOptional(s, catalog, true);
+      else if (pending?.kind === 'encore') payEncore(s, p, pending.card, pending.slot, pending.cost);
       else if (pending?.kind === 'confirm' && pending.reason === 'draw') drawOne(s, p);
       else if (pending?.kind === 'confirm') {
         // Pool, and the second half of Treasure: the deck's top card into stock.
@@ -374,6 +400,12 @@ export function perform(s: GameState, catalog: CardCatalog, action: Action): voi
       return;
     case 'ORDER_AUTO':
       queue(s, { t: 'auto', id: action.auto });
+      return;
+    case 'ACTIVATE':
+      activate(s, catalog, p, action.card, action.ability);
+      // Main phase: another play timing follows (CR 8.5.2.2). Counter Step: one action only (CR 7.4.1.2.2).
+      if (pending?.kind === 'play' && pending.window === 'counter') queue(s, { t: 'frame' }, { t: 'check' }, { t: 'step', step: 'damage' });
+      else queue(s, { t: 'frame' }, { t: 'playTiming', window: 'main', checked: false });
       return;
   }
 }
