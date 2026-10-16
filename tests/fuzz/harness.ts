@@ -62,6 +62,9 @@ function tally(c: Coverage, events: readonly GameEvent[], before: GameState): vo
     if (e.kind === 'refresh' && inDamage) bump(c, 'refresh:duringDamage');
     if (e.kind === 'move' && e.reason === 'levelUp' && e.to.zone === 'level' && inDamage) bump(c, 'levelUp:duringDamage');
     if (e.kind === 'playTiming') bump(c, `playTiming:${e.window}`);
+    if (e.kind === 'effect') bump(c, `op:${e.op}`);
+    if (e.kind === 'ability') bump(c, `ability:${e.category}`);
+    if (e.kind === 'optional') bump(c, `optional:${e.purpose}:${e.accepted ? 'yes' : 'no'}`);
     if (e.kind === 'action') bump(c, `action:${e.action.type}`);
     if (e.kind === 'gameOver') bump(c, e.result.kind === 'draw' ? 'result:draw' : `result:${e.result.reason}`);
   }
@@ -73,8 +76,11 @@ function hiddenInfoProblems(state: GameState, events: readonly GameEvent[]): str
   for (const viewer of [0, 1] as const) {
     for (const e of projectEvents(events, viewer)) {
       if (e.kind === 'move' && !canSee(viewer, e.to) && e.card !== HIDDEN) out.push(`viewer ${viewer} sees ${e.card} moving into ${e.to.zone}`);
+      if (e.kind === 'look' && e.player !== viewer && e.cards.some((c) => c !== HIDDEN)) out.push(`viewer ${viewer} sees cards the opponent looks at`);
+      if (e.kind === 'action' && e.action.type === 'CHOOSE_CARD' && e.action.player !== viewer && e.action.card !== HIDDEN) out.push(`viewer ${viewer} sees the opponent's pick`);
     }
     const view = projectView({ ...state, log: [] }, viewer);
+    if (view.look && view.look.player !== viewer && view.look.cards !== null) out.push(`viewer ${viewer} sees the opponent's looked-at cards`);
     if (view.players[other(viewer)].hand !== null) out.push(`viewer ${viewer} sees the opponent's hand`);
     if (view.pending && view.pending.player !== viewer && !('redacted' in view.pending)) out.push(`viewer ${viewer} sees the opponent's decision`);
   }
@@ -132,7 +138,8 @@ export function playGame(seed: string, pairing: [number, number], coverage: Cove
       violations.push(`action ${i}: legal ${action.type} rejected: ${result.error.code}`);
       break;
     }
-    if (i % ROUND_TRIP_EVERY === 0 && !result.state.result) {
+    // Also round-trip in the middle of an ability, where the most state is in flight.
+    if ((i % ROUND_TRIP_EVERY === 0 || result.state.resolving !== null) && !result.state.result) {
       // A JSON copy must play on exactly like the original.
       const copy = JSON.parse(JSON.stringify(result.state)) as GameState;
       const next = legalActions(result.state, catalog)[0];
@@ -190,6 +197,20 @@ export function fuzzFile(first: number): void {
       'action:CHOOSE_SLOT',
       'action:CHOOSE_DEST',
       'refresh:duringDamage',
+      // Card abilities (M3): every step of the language and every way into it.
+      ...['choose', 'draw', 'discard', 'stockFromDeck', 'heal', 'power', 'soul', 'damageOpp', 'salvage', 'lookTop', 'sendToWaiting', 'returnToHand', 'may', 'if'].map((o) => `op:${o}`),
+      'ability:activated',
+      'ability:automatic',
+      'action:ACTIVATE',
+      'event:look',
+      'event:deckArranged',
+      'event:chosen',
+      'optional:payCost:yes',
+      'optional:payCost:no',
+      'optional:may:yes',
+      'optional:may:no',
+      'optional:drawMore:yes',
+      'optional:lookMore:yes',
     ];
     const rare = ['action:ORDER_AUTO', 'levelUp:duringDamage'];
     const must = [...always, ...(total >= 100 ? withVolume : []), ...(total >= 600 ? rare : [])];

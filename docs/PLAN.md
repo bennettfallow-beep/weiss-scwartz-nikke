@@ -127,20 +127,22 @@ Things a milestone found but left for a later one, so they are not lost.
 - **M2 (from M1 review):**
   - Build REF-03 (out of cards in the middle of damage).
   - Re-cite ZONE-31 (stock) and ZONE-41 (resolution zone order) with real combat paths.
-- **M3:**
-  - END-05: restarting the End Phase meets "at the end of turn" again; check CR 6.8.1.5 for
-    whether abilities that already resolved may trigger again.
-  - A card being played stays in hand while an interrupt prompt is open.
+- **M3a (done):** unplayable Encores now wait in standby instead of being dropped (ABL-11,
+  ABL-12). The standby rows ABL-08, ABL-10, ABL-12 and ABL-16 are cited with card
+  abilities, Encore and Shot.
+- **M3b:**
   - CARD-23: the importer must store the rules name.
-  - From M2:
-    - An Encore that cannot be paid is skipped without a prompt. That holds while nothing
-      in a check timing can add stock; abilities that can must revisit it (ABL-11, ABL-12).
-    - Shot's extra damage has no source card in M2 (CR 4.11.1.2).
-    - Backup picks the only defender; card effects with several defenders need a choice.
-    - Encore and Shot already use the standby mechanism of ABL-08, ABL-10, ABL-12 and
-      ABL-16; cite those rows once card abilities exist.
+  - CONC-15 and CLIMAX-04: the text aliases (stand/rest/reverse icons, "CX phase").
+- **Later (no v1 ability needs them):**
+  - END-05: restarting the End Phase meets "at the end of turn" again; check CR 6.8.1.5 for
+    whether abilities that already resolved may trigger again. v1 has no turn-end trigger.
+  - A card being played stays in hand while an interrupt prompt is open.
+  - Shot's extra damage has no source card (CR 4.11.1.2).
+  - Backup picks the only defender; effects with several defenders would need a choice.
+  - Play requirements read printed level, cost and color; v1 has no effect that changes them.
 - **M4:** the hand-limit discard lists every combination of cards. A large hand makes that
-  list huge. Offer a one-card-at-a-time choice or a cap before the AI relies on it.
+  list huge. Switch it to the one-card-at-a-time `pick` prompt abilities already use before
+  the AI relies on it.
 - **M5:** keep the seed and generator state out of anything a player can read in a save.
 
 ## Out of scope for v1

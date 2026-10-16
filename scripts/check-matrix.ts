@@ -29,7 +29,7 @@ const PRIVATE_TEXT = join(ROOT, 'docs/_private/cr-v2.10.txt');
 const TEST_DIRS = ['tests', 'e2e'];
 const TEST_EXCLUDE = ['tests/fuzz'];
 
-const MILESTONES = ['M1', 'M2', 'M3'] as const;
+const MILESTONES = ['M1', 'M2', 'M3', 'M3b'] as const;
 
 const Row = z
   .object({
@@ -38,7 +38,7 @@ const Row = z
     statement: z.string().min(10),
     sections: z.array(z.string().regex(/^\d{1,2}(\.\d{1,2})+$/)).min(1),
     status: z.enum(['planned', 'verified', 'deferred', 'out']),
-    milestone: z.enum(['M1', 'M2', 'M3', 'none']),
+    milestone: z.enum(['M1', 'M2', 'M3', 'M3b', 'none']),
     impl: z.array(z.string().regex(/^[\w./-]+#\w+$/)),
     notes: z.string(),
   })

@@ -3,8 +3,8 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 
-import { actionKey, applyAction, checkInvariants, createGame, legalActions, projectView, validate } from '../../src/engine';
-import type { Action, GameState } from '../../src/engine';
+import { actionKey, applyAction, checkInvariants, createGame, legalActions, projectView, validate, validateCatalog } from '../../src/engine';
+import type { Action, CardCatalog, CardDef, GameState } from '../../src/engine';
 import { act, cardIn, makeState } from '../../src/engine/testkit';
 import { catalog, legalDeck } from '../helpers/catalog';
 
@@ -24,6 +24,33 @@ function sampleStates(): GameState[] {
   const discard = makeState(catalog, { start: 'end', players: [{ hand: Array<string>(9).fill('Y0'), deck: ['Y0'] }, { deck: ['R0'] }] });
   const levelUp = makeState(catalog, { start: 'main', players: [{ clock: Array<string>(7).fill('Y0'), deck: ['Y0'] }, { deck: ['R0'] }] });
   return [mulligan, main, clock, discard, levelUp, ...combatStates()];
+}
+
+
+/** Ability cards (original, synthetic) for the ability prompts. */
+const abilityDefs: CardDef[] = [
+  { id: 'AB-DRAW', name: 'Relay Courier', kind: 'character', color: 'yellow', level: 0, cost: 0, power: 2000, soul: 1, abilities: [{ kind: 'automatic', trigger: { on: 'play' }, effect: [{ do: 'draw', count: 1 }, { do: 'discard', count: 1 }] }] },
+  {
+    id: 'AB-ACT',
+    name: 'Field Medic',
+    kind: 'character',
+    color: 'yellow',
+    level: 0,
+    cost: 0,
+    power: 2500,
+    soul: 1,
+    abilities: [{ kind: 'activated', timing: 'main', cost: [{ pay: 'stock', count: 1 }], effect: [{ do: 'may', steps: [{ do: 'heal', count: 1 }], else: [{ do: 'draw', count: 1, upTo: true }] }] }],
+  },
+];
+const abilityCatalog: CardCatalog = { ...catalog, ...Object.fromEntries(abilityDefs.map((d) => [d.id, d])) };
+
+/** Ability decisions: ACTIVATE offered, a pick, and a yes/no. */
+function abilityStates(): GameState[] {
+  const cat = abilityCatalog;
+  const main = makeState(cat, { start: 'main', players: [{ hand: ['AB-DRAW', 'Y0', 'Y1'], deck: ['Y0', 'Y0', 'Y0'], clock: ['Y0'], stock: ['Y0', 'Y0'], stage: { 1: 'AB-ACT' } }, { deck: ['R0'] }] });
+  const pick = act(main, cat, { type: 'PLAY_CHARACTER', player: 0, card: cardIn(main, 0, 'hand', 'AB-DRAW'), slot: 2 });
+  const yesNo = act(main, cat, { type: 'ACTIVATE', player: 0, card: cardIn(main, 0, 'stage', 'AB-ACT'), ability: 0 });
+  return [main, pick, yesNo];
 }
 
 /** Combat decisions: the attack prompt, the counter window, an optional choice, a yes/no, and Encore. */
@@ -66,6 +93,7 @@ const anyAction = fc.oneof(
       'CHOOSE_DEST',
       'ACCEPT',
       'ORDER_AUTO',
+      'ACTIVATE',
       'NOPE',
     ),
     player: fc.oneof(fc.constantFrom(0, 1), fc.anything()),
@@ -82,6 +110,7 @@ const anyAction = fc.oneof(
     icon: fc.oneof(fc.constantFrom('soul', 'pool', 'draw', 'nope'), fc.anything()),
     dest: fc.oneof(fc.constantFrom('hand', 'stock', 'deck'), fc.anything()),
     auto: fc.oneof(fc.integer({ min: -2, max: 400 }), fc.anything()),
+    ability: fc.oneof(fc.integer({ min: -1, max: 3 }), fc.anything()),
   }),
 );
 
@@ -95,6 +124,42 @@ describe('untrusted input', () => {
         const r = applyAction(s, catalog, raw as Action);
         expect(r.ok).toBe(v.ok);
         if (r.ok) expect(checkInvariants(r.state, catalog)).toEqual([]);
+      }),
+      { numRuns: 3000 },
+    );
+  });
+
+  it('the same holds at ability decisions (ACTIVATE offered, a pick, a yes/no)', () => {
+    const abilitySamples = abilityStates();
+    expect(abilitySamples.map((st) => st.pending?.kind)).toEqual(['play', 'pick', 'optional']);
+    expect(legalActions(abilitySamples[0] as GameState, abilityCatalog).some((a) => a.type === 'ACTIVATE')).toBe(true);
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: abilitySamples.length - 1 }), anyAction, (i, raw) => {
+        const s = abilitySamples[i] as GameState;
+        const v = validate(s, abilityCatalog, raw as Action);
+        const r = applyAction(s, abilityCatalog, raw as Action);
+        expect(r.ok).toBe(v.ok);
+        if (r.ok) expect(checkInvariants(r.state, abilityCatalog)).toEqual([]);
+      }),
+      { numRuns: 1500 },
+    );
+  });
+
+  it('validateCatalog never throws on arbitrary ability data, and names a code and path for every problem', () => {
+    const json = fc.letrec((tie) => ({
+      value: fc.oneof({ depthSize: 'small' }, fc.constantFrom('do', 'kind', 'trigger', 'play', 'this', 'you', 'draw', 'stock'), fc.integer({ min: -3, max: 30 }), fc.boolean(), fc.constant(null), tie('arr'), tie('obj')),
+      arr: fc.array(tie('value'), { maxLength: 4 }),
+      obj: fc.dictionary(fc.constantFrom('kind', 'do', 'count', 'as', 'what', 'side', 'trigger', 'on', 'effect', 'cost', 'pay', 'target', 'ref', 'steps', 'then', 'when', 'if', 'min', 'amount', 'modifiers', 'stat', 'timing'), tie('value'), { maxKeys: 5 }),
+    })).value;
+    fc.assert(
+      fc.property(fc.constantFrom('character', 'event', 'climax'), json, json, (kind, abilities, effect) => {
+        const base = kind === 'character' ? catalog.Y0 : kind === 'event' ? catalog.YE0 : catalog.YX;
+        const def = { ...base, abilities, effect } as unknown as CardDef;
+        const errors = validateCatalog({ X: { ...def, id: 'X' } });
+        for (const e of errors) {
+          expect(typeof e.code).toBe('string');
+          if (e.code.startsWith('ABILITY_')) expect(typeof e.path).toBe('string');
+        }
       }),
       { numRuns: 3000 },
     );

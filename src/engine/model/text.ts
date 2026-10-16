@@ -16,7 +16,7 @@ function levelText(level: CardFilter['level']): string {
   if (!level) return '';
   const { min, max } = level;
   if (min !== undefined && max !== undefined) return min === max ? `level ${min}` : `level ${min} to ${max}`;
-  if (max !== undefined) return `level ${max} or lower`;
+  if (max !== undefined) return max === 0 ? 'level 0' : `level ${max} or lower`;
   return `level ${min ?? 0} or higher`;
 }
 

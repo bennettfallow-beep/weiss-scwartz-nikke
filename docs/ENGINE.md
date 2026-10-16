@@ -66,18 +66,74 @@ up (CR 9.1.2.1). That is how a refresh can happen between the two cards of "draw
   Step's play timing belongs to the non-turn player, who gets one action at most. It is
   always offered, even with nothing playable, so its presence leaks nothing.
 
+## Abilities (M3)
+
+Card abilities are data in the card definition, never code, so imported card sets are safe to
+load. The language is small and closed; everything outside it is in `docs/KNOWN_GAPS.md`.
+
+- **Where they live.** `CardDef.abilities` (characters and climaxes) and `CardDef.effect`
+  (events). Types are in `src/engine/model/abilities.ts`.
+- **Three kinds** (CR 8.1):
+  - `activated`: used in the main phase or the opponent's counter step, from the stage. It always
+    has a cost.
+  - `automatic`: triggered when this card is played, attacks or becomes reversed, or when a
+    climax is played. It may carry an optional "you may pay" cost.
+  - `continuous`: power or soul modifiers, optionally only while conditions hold.
+- **Effect steps:** `choose`, `draw`, `discard`, `stockFromDeck`, `heal`, `power`, `soul`,
+  `damageOpp`, `salvage`, `lookTop`, `sendToWaiting`, `returnToHand`, `may`, `if`.
+  - Steps after a `choose` refer to its picks by name.
+  - "You" means the ability's master.
+- **Validation.** `validateCatalog` checks ability data. Each problem gets a stable code
+  (`ABILITY_*`) and a path (e.g. `abilities.0.effect.1.count`). The checker never throws.
+- **Card text.** `cardText(def)` renders the language as deterministic English.
+
+How they run:
+
+- **One at a time.** The ability being resolved is a frame in `s.resolving`. A `{ t: 'frame' }`
+  task runs one op of it. Each card move is its own task, so a refresh or level up can still cut
+  in, and a JSON copy of the state can resume anywhere.
+- **Costs.** Checked in full before anything is paid (CR 8.4.2.2). Paid in the order written,
+  in one step (CR 8.4.2.1). Stock is taken from the top.
+- **Automatic abilities.** Put into standby where the event happens (`rules/triggers.ts`), and
+  played in the next check timing: turn player first, choosing the order if several can be played.
+  - An ability whose card has moved still resolves; what it can no longer do fails (CR 8.7.7).
+  - An ability that cannot be played right now (an Encore short of stock) waits in standby in case
+    another ability changes that. Once none of a player's abilities can be played, they are used up.
+    Every v1 cost is optional, so this loses no outcome (CR 8.7.3.2).
+- **Continuous abilities.** Computed whenever power or soul is read, from the stage characters
+  and climax-area climaxes whose conditions hold. A card entering the stage is affected at once
+  (CR 8.9.3).
+  - One-shot "+X until end of turn" changes stay with the card objects they hit (CR 8.9.2).
+  - Duration `game` survives end of turn.
+- **Choices.**
+  - A `pick` prompt asks for cards one CHOOSE_CARD at a time. PASS ends it once the minimum is met.
+  - A fixed number must be picked as far as possible (CR 8.6.3.1). "Up to" allows none.
+  - A filtered pick from a hidden zone (hand, deck) may find nothing (CR 8.6.3.1.4, owner decision
+    2026-10-16).
+  - An `optional` prompt (ACCEPT / PASS) asks "you may", "pay the cost?" and "look at / draw the
+    next card?".
+  - "You may A; if you do B; if not C": C also runs when A was impossible (CR 8.6.4).
+- **Looking at the deck** (`lookTop`). Only the looker sees the cards: `projectView` shows them to
+  that player only, and `look` events and the other player's CHOOSE_CARD answers are redacted.
+  The rest go back on top or to the bottom in a chosen order, or to the waiting room.
+
+Not in v1: costs or effects that change card level, cost or color. The play requirements still
+read printed values.
+
 ## API (`src/engine/index.ts`)
 
 | Function | Does |
 |---|---|
 | `createGame(setup, catalog)` | Validates decks, shuffles, picks the starting player at random, deals 5, stops at the first mulligan |
-| `legalActions(state, catalog)` | Every legal action for the player being waited on, sorted. Never includes `CONCEDE` or `REORDER` |
+| `legalActions(state, catalog)` | Every legal action for the player being waited on, sorted. Never includes `CONCEDE` or `REORDER`. Includes `ACTIVATE` for usable activated abilities |
 | `validate(state, catalog, action)` | `{ ok }` or `{ ok: false, error: { code, message } }` |
 | `applyAction(state, catalog, action)` | Validates, applies, runs to the next decision. Returns `{ ok, state, events }`. Never mutates its input. Accepts untrusted input: anything malformed is an error value |
 | `normalizeAction(raw)` | Rebuilds an action from untrusted input, keeping only the fields its type defines |
 | `projectView(state, viewer)` | What one player may see: hidden zones as counts only, redacted log, fresh objects |
 | `projectEvents(events, viewer)` | Redacts events for one player. **The `events` from `applyAction` are unredacted (they include the opponent's draws); always pass them through this before showing them** |
 | `checkInvariants(state, catalog)` | List of broken invariants (empty is good) |
+| `cardText(def)` / `validateCatalog(catalog)` | Card text from the ability language / catalog problems with codes and paths |
+| `currentPower` / `currentSoul` | A card's power and soul now, with every effect and continuous ability applied |
 | `replay(setup, catalog, actions)` / `stateHash(state)` | Determinism |
 
 `CONCEDE` is accepted for either player at any time. `REORDER` lets an owner reorder

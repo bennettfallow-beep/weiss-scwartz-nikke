@@ -63,10 +63,10 @@
       "sections": [
         "1.3.1"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Only testable once card abilities exist (M3), but M1 rule checks (hand limit, play restrictions, costs, etc.) should be built so effects can override them."
+      "notes": "Only testable once card abilities exist (M3), but M1 rule checks (hand limit, play restrictions, costs, etc.) should be built so effects can override them. Deferred in M3: the v1 ability language has no effects that change or override a rule."
     },
     {
       "id": "GEN-03",
@@ -131,10 +131,10 @@
       "sections": [
         "1.3.3"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Prohibition effects must be checked before any action an effect attempts."
+      "notes": "Prohibition effects must be checked before any action an effect attempts. Deferred in M3: the v1 ability language has no prohibition effects."
     },
     {
       "id": "GEN-08",
@@ -157,10 +157,10 @@
       "sections": [
         "1.3.5"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "No M1 rule asks a player to choose a number; numeric choices arrive with card effects in M3. Validate all numeric choices as non-negative integers by default."
+      "notes": "No M1 rule asks a player to choose a number; numeric choices arrive with card effects in M3. Validate all numeric choices as non-negative integers by default. Deferred in M3: the v1 ability language has no effect that asks a player for a number."
     },
     {
       "id": "WIN-01",
@@ -260,10 +260,10 @@
       "sections": [
         "1.2.4.1"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Concede handling must bypass all effect hooks. The 'replace a loss with a concession' clause concerns replacement effects, which are deferred in v1."
+      "notes": "Concede handling must bypass all effect hooks. The 'replace a loss with a concession' clause concerns replacement effects, which are deferred in v1. Deferred in M3: the v1 ability language has no effect that concedes, wins or loses, or interferes with conceding."
     },
     {
       "id": "WIN-08",
@@ -272,10 +272,10 @@
       "sections": [
         "1.2.5"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Unlike losing conditions (WIN-02), no rule-action pass is needed."
+      "notes": "Unlike losing conditions (WIN-02), no rule-action pass is needed. Deferred in M3: the v1 ability language has no effect that makes a player win or lose."
     },
     {
       "id": "CARD-01",
@@ -614,10 +614,10 @@
       "sections": [
         "2.19.2"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Matters for effects comparing names/traits; e.g., two cards with no traits do not 'share' a trait."
+      "notes": "Matters for effects comparing names/traits; e.g., two cards with no traits do not 'share' a trait. Deferred in M3: v1 filters compare card information only against fixed values, never two cards against each other."
     },
     {
       "id": "CARD-23",
@@ -628,7 +628,7 @@
         "2.1.1.2"
       ],
       "status": "planned",
-      "milestone": "M3",
+      "milestone": "M3b",
       "impl": [],
       "notes": "CARD-01 relies on CardDef.name already being the rules name; the importer is what guarantees it."
     },
@@ -1404,7 +1404,7 @@
       "status": "planned",
       "milestone": "M3",
       "impl": [],
-      "notes": "For abilities granted by an effect, track the granting effect's master as well as the card's master."
+      "notes": "For abilities granted by an effect, track the granting effect's master as well as the card's master. The CR says the master is the card's master \"or\" the creating effect's master; reading \"instead\" for created abilities is an interpretation (none exist in v1)."
     },
     {
       "id": "CONC-10",
@@ -1495,7 +1495,7 @@
         "4.6.1.3.1"
       ],
       "status": "planned",
-      "milestone": "M3",
+      "milestone": "M3b",
       "impl": [],
       "notes": "Needed when parsing card text and costs in M3."
     },
@@ -1524,7 +1524,7 @@
       "status": "planned",
       "milestone": "M3",
       "impl": [],
-      "notes": "No zone change. The CR contrasts looking ('confirms') with revealing ('displays', CONC-18) but does not spell out who else may see looked-at cards. This section does not say how the 'up to' count is chosen."
+      "notes": "No zone change. The CR contrasts looking ('confirms') with revealing ('displays', CONC-18) but does not spell out who else may see looked-at cards. This section does not say how the 'up to' count is chosen. The \"up to N\" mechanism is CR 3.2.3.1 (ZONE-09). Looking is private to the looker (inferred from \"confirm\" here versus \"display\" in 4.9)."
     },
     {
       "id": "CONC-18",
@@ -1533,10 +1533,10 @@
       "sections": [
         "4.9.1"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "No zone change; the revealed cards' information is displayed, unlike looking (CONC-17)."
+      "notes": "No zone change; the revealed cards' information is displayed, unlike looking (CONC-17). Deferred in M3: the v1 ability language has no reveal effect (looking is supported: CONC-17)."
     },
     {
       "id": "DMG-01",
@@ -1612,10 +1612,10 @@
       "sections": [
         "4.10.3"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Tag zone moves and reveals with whether they came from a Damage Process so that effect queries can include or exclude them."
+      "notes": "Tag zone moves and reveals with whether they came from a Damage Process so that effect queries can include or exclude them. Deferred in M3: the v1 ability language has no effect that refers to cards moved or revealed by an effect. Applies to references to moved or revealed cards, not to counts of what is in a zone."
     },
     {
       "id": "DMG-06",
@@ -1781,10 +1781,10 @@
       "sections": [
         "4.12.2.7.2"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Self-damage only comes from effects, so this case can only be tested once M3 lands."
+      "notes": "Self-damage only comes from effects, so this case can only be tested once M3 lands. Deferred in M3: the v1 ability language has no self-damage from the attacking character's own ability."
     },
     {
       "id": "TRG-10",
@@ -1793,10 +1793,10 @@
       "sections": [
         "4.12.2.7.1"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Bind Shot to the next damage event, not to Damage Step damage. Damage before the Damage Step only comes from abilities, so this can only be tested once M3 lands."
+      "notes": "Bind Shot to the next damage event, not to Damage Step damage. Damage before the Damage Step only comes from abilities, so this can only be tested once M3 lands. Deferred in M3: the v1 ability language has no way for the attacker to deal damage after its trigger check and before the Damage Step (\"when this attacks\" abilities resolve before the Trigger Step)."
     },
     {
       "id": "TRG-11",
@@ -1805,10 +1805,10 @@
       "sections": [
         "4.12.2.7.3"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Damage to several players at once only comes from effects, so this can only be tested once M3 lands."
+      "notes": "Damage to several players at once only comes from effects, so this can only be tested once M3 lands. Deferred in M3: the v1 ability language has no damage to several players at once. When added, Shot must settle the simultaneous damage as one event, not one damage process at a time."
     },
     {
       "id": "TRG-12",
@@ -1946,10 +1946,10 @@
       "sections": [
         "5.1.2.4"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "The M1 validator should leave room for per-card overrides; until continuous abilities exist, apply the defaults."
+      "notes": "The M1 validator should leave room for per-card overrides; until continuous abilities exist, apply the defaults. Deferred in M3: the v1 ability language has no deck-construction abilities."
     },
     {
       "id": "SETUP-01",
@@ -2291,7 +2291,7 @@
         "6.6.2"
       ],
       "status": "planned",
-      "milestone": "M3",
+      "milestone": "M3b",
       "impl": [],
       "notes": "An alias to normalize when parsing card ability text."
     },
@@ -2680,10 +2680,10 @@
       "sections": [
         "7.3.1.2.3.1"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Each trigger check must be linked to the attacker it was made for."
+      "notes": "Each trigger check must be linked to the attacker it was made for. Deferred in M3: the v1 ability language has no effect that refers to trigger checks."
     },
     {
       "id": "TSTEP-06",
@@ -2956,10 +2956,10 @@
       "sections": [
         "8.1.1.1.2"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "The triggered ability then waits in standby until the next check timing (ABL-10)."
+      "notes": "The triggered ability then waits in standby until the next check timing (ABL-10). Deferred in M3: the v1 ability language has no \"when (player) uses an activated ability\" triggers."
     },
     {
       "id": "ABL-03",
@@ -2973,7 +2973,7 @@
       "status": "planned",
       "milestone": "M3",
       "impl": [],
-      "notes": "Paying an automatic ability's cost is optional; declining it is handled by ABL-12."
+      "notes": "Paying an automatic ability's cost is optional; declining it is handled by ABL-12. The ability enters standby when its condition is met and is played at the next check timing (ABL-10). In v1 conditions on automatic abilities are checked at resolution, in an \"if\" step."
     },
     {
       "id": "ABL-04",
@@ -3092,7 +3092,7 @@
       "status": "planned",
       "milestone": "M3",
       "impl": [],
-      "notes": "The only exception is Turn Usage Restriction (10.17.4, KW-21), which is deferred."
+      "notes": "The only exception is Turn Usage Restriction (10.17.4, KW-21), which is deferred. CR 8.5.1.2 already lets the player pick any of their standby abilities. Abilities that cannot be played now wait in standby (an Encore can be paid after a stock-adding ability); once none of a player's can be played they are used up, which loses no outcome because every v1 cost is optional."
     },
     {
       "id": "ABL-12",
@@ -3119,10 +3119,10 @@
         "8.7.4.1.2",
         "8.7.4.1.3"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Snapshot card information at move time and attach it to the standby instance (e.g. a character going stage to waiting room reports its on-stage power and traits)."
+      "notes": "Snapshot card information at move time and attach it to the standby instance (e.g. a character going stage to waiting room reports its on-stage power and traits). Deferred in M3: the v1 ability language has no zone-change trigger that reads the moved card's information."
     },
     {
       "id": "ABL-14",
@@ -3132,10 +3132,10 @@
         "8.7.5",
         "8.7.5.1"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Remove the delayed trigger after its first firing by default."
+      "notes": "Remove the delayed trigger after its first firing by default. Deferred in M3: the v1 ability language has no timed (delayed) triggers created by effects. Shot is the rule-level case and fires once by construction."
     },
     {
       "id": "ABL-15",
@@ -3145,10 +3145,10 @@
         "8.7.6",
         "8.7.6.1"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Do not re-queue while the instance is pending. State triggers can repeat indefinitely; infinite-loop handling (11.1) is deferred."
+      "notes": "Do not re-queue while the instance is pending. State triggers can repeat indefinitely; infinite-loop handling (11.1) is deferred. Deferred in M3: the v1 ability language has no state triggers."
     },
     {
       "id": "ABL-16",
@@ -3172,10 +3172,10 @@
         "8.9.1.2",
         "8.9.1.3"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "CR example: a conditional '+500 if power is 3000 or less' on a 3000 character yields 3500 and is not then switched off by the boosted value. The CR does not list which effect types fall in each layer; classify per effect type."
+      "notes": "CR example: a conditional '+500 if power is 3000 or less' on a 3000 character yields 3500 and is not then switched off by the boosted value. The CR does not list which effect types fall in each layer; classify per effect type. Deferred in M3: every v1 modifier adds to power or soul; none grants abilities or traits or depends on the value it changes, so layer order never shows."
     },
     {
       "id": "ABL-18",
@@ -3184,10 +3184,10 @@
       "sections": [
         "8.9.1.4"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "CR example: one Assist grants a trait and another grants Encore to characters with that trait; the front character gets the Encore whatever the placement order."
+      "notes": "CR example: one Assist grants a trait and another grants Encore to characters with that trait; the front character gets the Encore whatever the placement order. Deferred in M3: no v1 effect changes what another effect applies to (no trait or ability grants)."
     },
     {
       "id": "ABL-19",
@@ -3198,10 +3198,10 @@
         "8.9.1.5.1",
         "8.9.1.5.2"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "CR example: Assist +500 followed by an event setting power to 0 until end of turn gives 0. Whether swapping stage positions resets a character's timestamp is not explicit; the text keys it to arrival from another zone."
+      "notes": "CR example: Assist +500 followed by an event setting power to 0 until end of turn gives 0. Whether swapping stage positions resets a character's timestamp is not explicit; the text keys it to arrival from another zone. Deferred in M3: every v1 modifier adds, and addition gives the same result in any order. Needs a decision on whether a stage-position swap resets the timestamp once set-value effects exist."
     },
     {
       "id": "ABL-20",
@@ -3213,7 +3213,7 @@
       "status": "planned",
       "milestone": "M3",
       "impl": [],
-      "notes": "Lock the affected set at play time. CR example: after an event gives your characters +1000 until end of turn, a character played afterward keeps its printed power. A character that leaves and returns also loses the effect."
+      "notes": "Lock the affected set at play time. CR example: after an event gives your characters +1000 until end of turn, a character played afterward keeps its printed power. A character that leaves and returns also loses the effect. Cards that arrive during the same resolution are excluded too."
     },
     {
       "id": "ABL-21",
@@ -3234,10 +3234,10 @@
       "sections": [
         "8.9.3.1"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Apply zone modifiers before evaluating entry triggers."
+      "notes": "Apply zone modifiers before evaluating entry triggers. Deferred in M3: the v1 ability language has no entry trigger that reads the entering card's information."
     },
     {
       "id": "ABL-23",
@@ -3267,10 +3267,10 @@
       "sections": [
         "8.11.1"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Keep a last-known-information snapshot for cards leaving a zone mid-effect."
+      "notes": "Keep a last-known-information snapshot for cards leaving a zone mid-effect. Deferred in M3: the v1 ability language has no effect that moves a card and then refers to it."
     },
     {
       "id": "ABL-25",
@@ -3279,10 +3279,10 @@
       "sections": [
         "8.11.2"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Store the battle-opponent pairing in the trigger context instead of re-deriving it from current positions."
+      "notes": "Store the battle-opponent pairing in the trigger context instead of re-deriving it from current positions. Deferred in M3: the v1 ability language has no battle-opponent references."
     },
     {
       "id": "ABL-26",
@@ -3319,10 +3319,10 @@
         "9.2.3",
         "9.3.3"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": "Card play costs (stock) cannot empty the deck or fill the clock, so this only bites with ability costs. The CR states only the prohibition; presumably the interrupt runs once payment ends if its condition still holds."
+      "notes": "Card play costs (stock) cannot empty the deck or fill the clock, so this only bites with ability costs. The CR states only the prohibition; presumably the interrupt runs once payment ends if its condition still holds. Deferred in M3: no v1 cost moves cards from the deck or into the clock, and every cost is paid inside one engine step anyway."
     },
     {
       "id": "COST-03",
@@ -3346,7 +3346,7 @@
       "status": "planned",
       "milestone": "M3",
       "impl": [],
-      "notes": "Used by default Encore [3] (KW-03). Fewer than X stock means the payment is impossible (COST-03). 8.4.3 does not say which stock cards are taken."
+      "notes": "Used by default Encore [3] (KW-03). Fewer than X stock means the payment is impossible (COST-03). 8.4.3 does not say which stock cards are taken. Stock cards leave from the top (CR 3.10.2, ZONE-31)."
     },
     {
       "id": "PLAY-01",
@@ -3524,7 +3524,7 @@
       "status": "planned",
       "milestone": "M3",
       "impl": [],
-      "notes": "Fail-to-find for searches. The printed v2.10 sentence literally says the player is 'not allowed to choose' such cards, which contradicts the sentence before it if read literally; confirm the interpretation before implementing."
+      "notes": "Fail-to-find for searches. The printed v2.10 sentence literally says the player is 'not allowed to choose' such cards, which contradicts the sentence before it if read literally; confirm the interpretation before implementing. Owner decision 2026-10-16: a filtered choice among unrevealed cards in a hidden zone (hand, deck) may find nothing even when a match is there. An unfiltered choice is forced (the rule needs a condition on card information)."
     },
     {
       "id": "PLAY-13",
@@ -3826,10 +3826,10 @@
       "sections": [
         "10.2.4"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": ""
+      "notes": "Deferred in M3: the v1 ability language has no \"when this card's Encore is used\" triggers."
     },
     {
       "id": "KW-05",
@@ -3903,10 +3903,10 @@
       "sections": [
         "10.5.3"
       ],
-      "status": "planned",
-      "milestone": "M3",
+      "status": "deferred",
+      "milestone": "none",
       "impl": [],
-      "notes": ""
+      "notes": "Deferred in M3: the v1 ability language has no \"when you use Backup\" triggers."
     },
     {
       "id": "KW-10",
