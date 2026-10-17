@@ -5,7 +5,8 @@ You asked for a Weiss Schwarz game app. Decisions you made:
 - Scope: playable 2-player rules engine, enforced and tested.
 - Platform: native mobile, React Native + Expo, TypeScript.
 - Play: hot-seat (2 humans, one device) + simple AI. No server.
-- Cards: original synthetic placeholder cards + JSON schema/importer for your own data. No Bushiroad art or text.
+- Cards: original synthetic placeholder cards + JSON schema/importer for your own data. No Bushiroad art or text in the repository.
+- 2026-10-17 (M3b): you want to play the real Nikke set (English edition, from your own boxes) for personal use. Your personal card file lives in `local-cards/` (gitignored) or on your phone; card pictures are links the app downloads on the phone; nothing official is committed.
 - Rules source: you upload the official Comprehensive Rules PDF.
 - Location: a **separate new repo** (you create it; I attach it with `add_repo`).
 
@@ -60,7 +61,7 @@ Out of scope for v1, with sections noted for later: markers (3.7), memory (3.12)
 3. Fuzz: 2000 seeded games across all deck pairings, 0 invariant violations, 0 soft-locks, 0 non-terminating games, replay hash identical at every step.
 4. Heuristic AI beats random bot in at least 80% of 500 seat-swapped games (threshold fixed now).
 5. Hot-seat e2e proves no opponent hand/deck content in the DOM during the handoff screen.
-6. Both placeholder decks are legal (50 cards, max 4 copies/name, max 8 climax) and together use every engine primitive (coverage script enforces it).
+6. The three SYN decks are legal (50 cards, max 4 copies/name, max 8 climax) and together use every ability-language feature (`npm run check:cards` enforces it).
 7. Importer rejects at least 20 bad-input classes with `path` + `code`.
 8. Native behavior: marked UNVERIFIED until you report the device checklist.
 
@@ -85,11 +86,12 @@ Purity enforced three ways: `tsconfig.engine.json` (no DOM/RN/node types), ESLin
 - Abilities: small **declarative DSL** (data, not per-card functions). Reasons: serializable, importer can't run user code, statically validated, AI can introspect. Closed v1 set: triggers `play/attack/reversed/climaxPlayed`; timings `main/counter`; continuous power/soul; effects draw, discard, stockFromDeck, power, soul, damageOpp, salvage, lookTop, sendToWaiting, returnToHand, heal; costs stock/discard/selfToWaiting; conditions level/climax/count; keyword Backup (CR 10.5) and default Encore [3] (CR 10.2). Trigger icons are rules, not DSL: all 10 from CR 4.12.2. Everything else is deferred and listed in `docs/KNOWN_GAPS.md` and the in-app Help.
 
 ## Cards and importer
-- Versioned JSON schema (`schemaVersion: 1`) generated from zod; drift test. No art field.
+- Versioned JSON schema (`schemaVersion: 1`) generated from zod (`schema/card-set.v1.json`); drift test. Optional `art: { url }` per card, a link only, for personal card files; see docs/CARDS.md.
 - `importCardSet(text)` collects up to ~200 issues `{severity, code, path, message}`. Lenient mode (default): unsupported ability becomes a visible "not implemented" vanilla card; strict mode rejects. `parseDecklist` ("4 SYN-EMB-003") included.
-- Placeholder set `SYN`: two original 50-card decks (red/yellow, blue/green), CC0, exercising every primitive. IP rules: original names and text, card text generated from DSL, no official PDF/art committed (PDF in gitignored `docs/_private/`), neutral display title + "unofficial" disclaimer.
+- Placeholder set `SYN` (`src/cards/sets/`): 39 original cards in three 50-card decks (yellow, red, blue), no pictures, exercising every ability feature; the fuzz tests play them. IP rules: original names and text, card text generated from DSL, no official PDF/art committed (PDF in gitignored `docs/_private/`), neutral display title + "unofficial" disclaimer.
 
-## Card art and theme (added 2026-10-10)
+## Card art and theme (added 2026-10-10; superseded 2026-10-17)
+Superseded for card pictures: you chose the real card art for personal use (see Decisions). The repository still holds no official images or links; SYN cards have no picture. The rest of this section stands for app branding.
 Decision: "Nikke theme" = a sci-fi squad *mood* with **entirely original** art and characters. No official Nikke or Bushiroad images are pulled, bundled, traced or committed (publisher artwork, not ours to redistribute).
 - **Allowed:** original characters, names, factions and palette; generic sci-fi / armored-squad visual mood; original SVG illustrations I generate (geometric/procedural silhouettes, patterns, emblems) as `SYN` set art; CC0 assets only if you point me at a specific one and its license is verified from the source's own page.
 - **Not allowed:** any actual Nikke character, name, logo, screenshot, or likeness; "Nikke" or "Weiss Schwarz" in the app title, bundle id, store listing or repo description (neutral display title stays); tracing or "redrawing" official cards.
@@ -130,9 +132,9 @@ Things a milestone found but left for a later one, so they are not lost.
 - **M3a (done):** unplayable Encores now wait in standby instead of being dropped (ABL-11,
   ABL-12). The standby rows ABL-08, ABL-10, ABL-12 and ABL-16 are cited with card
   abilities, Encore and Shot.
-- **M3b:**
-  - CARD-23: the importer must store the rules name.
-  - CONC-15 and CLIMAX-04: the text aliases (stand/rest/reverse icons, "CX phase").
+- **M3b (Part A done):** CARD-23, CONC-15 and CLIMAX-04 verified in the card layer. Part B (your
+  Nikke card file and the ability survey) waits for littleakiba.com network access.
+- **M3c (to decide after the survey):** which missing ability features to add for the Nikke set.
 - **Later (no v1 ability needs them):**
   - END-05: restarting the End Phase meets "at the end of turn" again; check CR 6.8.1.5 for
     whether abilities that already resolved may trigger again. v1 has no turn-end trigger.
@@ -143,10 +145,15 @@ Things a milestone found but left for a later one, so they are not lost.
 - **M4:** the hand-limit discard lists every combination of cards. A large hand makes that
   list huge. Switch it to the one-card-at-a-time `pick` prompt abilities already use before
   the AI relies on it.
-- **M5:** keep the seed and generator state out of anything a player can read in a save.
+- **M5:**
+  - Keep the seed and generator state out of anything a player can read in a save.
+  - A save must record which card catalog it was made with (e.g. a hash): lenient imports
+    can leave abilities out, which shifts ability numbers in saved actions.
+  - Card pictures: download on the device from the card file's links; check the image host
+    allows it.
 
 ## Out of scope for v1
-Online PvP, official data/art, full ability coverage, deckbuilder UI, memory-zone mechanics, Neo-Standard format rules, animations/sound, tutorial, replay viewer UI (export + CLI only), localization.
+Online PvP, official data/art in the repository or the app download, full ability coverage, deckbuilder UI, memory-zone mechanics, Neo-Standard format rules, animations/sound, tutorial, replay viewer UI (export + CLI only), localization.
 
 ## Challenge
 - **Assumptions:** (1) the rules PDF is complete enough to build from: yes for the base game (Sec 1-9 read in full); it does not define individual cards, so card behavior rests on our DSL; (2) Expo web export + Playwright works in this container: unproven until M0 spike; (3) Chromium on react-native-web proxies a phone: it does not (safe areas, gestures, WebKit).

@@ -1,0 +1,47 @@
+{
+  "yellow": [
+    "4 SYN/Y01-001  Amber Cadet",
+    "4 SYN/Y01-002  Amber Lookout",
+    "4 SYN/Y01-003  Amber Runner",
+    "4 SYN/Y01-004  Amber Warden",
+    "4 SYN/Y01-005  Amber Medic",
+    "4 SYN/Y01-006  Amber Sentry",
+    "4 SYN/Y01-007  Amber Vanguard",
+    "4 SYN/Y01-008  Amber Lancer",
+    "4 SYN/Y01-009  Amber Marshal",
+    "4 SYN/Y01-010  Amber Parry",
+    "2 SYN/Y01-011  Amber Flare",
+    "4 SYN/Y01-012  Amber Surge",
+    "4 SYN/Y01-013  Amber Rally"
+  ],
+  "red": [
+    "4 SYN/R01-001  Crimson Cadet",
+    "4 SYN/R01-002  Crimson Lookout",
+    "4 SYN/R01-003  Crimson Runner",
+    "4 SYN/R01-004  Crimson Warden",
+    "4 SYN/R01-005  Crimson Medic",
+    "4 SYN/R01-006  Crimson Sentry",
+    "4 SYN/R01-007  Crimson Vanguard",
+    "4 SYN/R01-008  Crimson Lancer",
+    "4 SYN/R01-009  Crimson Marshal",
+    "4 SYN/R01-010  Crimson Parry",
+    "2 SYN/R01-011  Crimson Flare",
+    "4 SYN/R01-012  Crimson Surge",
+    "4 SYN/R01-013  Crimson Rally"
+  ],
+  "blue": [
+    "4 SYN/B01-001  Cobalt Cadet",
+    "4 SYN/B01-002  Cobalt Lookout",
+    "4 SYN/B01-003  Cobalt Runner",
+    "4 SYN/B01-004  Cobalt Warden",
+    "4 SYN/B01-005  Cobalt Medic",
+    "4 SYN/B01-006  Cobalt Sentry",
+    "4 SYN/B01-007  Cobalt Vanguard",
+    "4 SYN/B01-008  Cobalt Lancer",
+    "4 SYN/B01-009  Cobalt Marshal",
+    "4 SYN/B01-010  Cobalt Parry",
+    "2 SYN/B01-011  Cobalt Flare",
+    "4 SYN/B01-012  Cobalt Surge",
+    "4 SYN/B01-013  Cobalt Rally"
+  ]
+}

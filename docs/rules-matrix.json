@@ -658,10 +658,14 @@
         "2.1.1.1",
         "2.1.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3b",
-      "impl": [],
-      "notes": "CARD-01 relies on CardDef.name already being the rules name; the importer is what guarantees it."
+      "impl": [
+        "src/cards/text.ts#normalizeName",
+        "src/cards/text.ts#nameProblem",
+        "src/cards/importer.ts#importCardSetData"
+      ],
+      "notes": "CARD-01 relies on CardDef.name already being the rules name; the importer is what guarantees it. The importer cannot see print styling in plain data, so the guarantee is structural: a card file keeps the printed form (reading aids, struck-through parts) in printedName, which never reaches the engine; name is the rules name, stored in one normal form (NFC, single spaces), and leftover strike marks, ruby markup or line breaks in it are rejected (IMPORT_NAME). Names from third-party data are only as correct as the source."
     },
     {
       "id": "ZONE-01",
@@ -1578,10 +1582,12 @@
         "4.6.1.2.1",
         "4.6.1.3.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3b",
-      "impl": [],
-      "notes": "Needed when parsing card text and costs in M3."
+      "impl": [
+        "src/cards/text.ts#normalizeCardText"
+      ],
+      "notes": "Needed when parsing card text and costs in M3. Scope: printed text lines (display and the ability survey). Abilities themselves are structured data and the renderer writes words, so no icon reaches the engine. Canonical tokens: [STAND] [REST] [REVERSE], also in 【】; after a form of 'be'/'become' they read as the state (rested, reversed)."
     },
     {
       "id": "CONC-16",
@@ -2391,10 +2397,12 @@
       "sections": [
         "6.6.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3b",
-      "impl": [],
-      "notes": "An alias to normalize when parsing card ability text."
+      "impl": [
+        "src/cards/text.ts#normalizeCardText"
+      ],
+      "notes": "An alias to normalize when parsing card ability text. Scope: printed text lines. Only the phrase 'CX phase' is rewritten (keeping its capitalization); a bare 'CX' (CX combo, CX area) is left alone."
     },
     {
       "id": "ATK-01",

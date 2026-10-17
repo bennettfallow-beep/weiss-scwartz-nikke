@@ -15,6 +15,7 @@ npm run lint               # ESLint, including the purity rules
 npm test                   # Vitest unit + rule tests
 npm run test:fuzz          # seeded random-game fuzz (from M2)
 npm run check:matrix       # rules traceability + gate for finished milestones; -- --write regenerates docs
+npm run check:cards        # SYN set legal and covers every ability feature; no official card data in git
 npm run check:assets       # every file in assets/ has a license entry
 npm run build:web          # expo export --platform web -> dist/
 npm run e2e                # Playwright against dist/ (Chromium, phone viewports)
@@ -49,8 +50,11 @@ instead of Expo's API, which this cloud container cannot reach.
 
 - Bushiroad's rules PDF and its extracted text live only in `docs/_private/` (gitignored).
   Never commit them or long excerpts.
-- No official card names, text or art. No Nikke or other franchise characters, names,
-  logos or likenesses. All card art is original. "Nikke theme" means mood only.
+- The repository holds no official card names, text, art or art links, and no Nikke or other
+  franchise characters, names, logos or likenesses. Repository card art is original.
+- The owner's personal card files for official sets (personal use only) live in `local-cards/`
+  (gitignored) or on the device. Their card pictures are links the app downloads on the device;
+  image files are never committed. `npm run check:cards` fails if official card data is tracked.
 - Every file in `assets/` needs an entry in `assets/LICENSES.json`.
 - App name, bundle id and store text stay neutral. No "Weiss Schwarz" or "Nikke".
 
@@ -59,4 +63,5 @@ instead of Expo's API, which this cloud container cannot reach.
 - Milestones M0-M6 are in `docs/PLAN.md`. Each ends with a stop and a report (done / next /
   decision needed), then waits for the owner's go.
 - No "done" without a passing `npm run verify` and its output shown.
-- Synthetic data only. The owner does not write code; explain changes in plain language.
+- The repository holds synthetic data only (see IP rules for personal card files). The owner does
+  not write code; explain changes in plain language.

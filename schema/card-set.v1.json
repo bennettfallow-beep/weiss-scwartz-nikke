@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "number",
+      "const": 1
+    },
+    "set": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{2,8}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "edition": {
+          "type": "string",
+          "enum": [
+            "en",
+            "jp"
+          ]
+        }
+      },
+      "required": [
+        "code",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "cards": {
+      "minItems": 1,
+      "maxItems": 2000,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string",
+            "maxLength": 32,
+            "pattern": "^[A-Z0-9]+(?:[/-][A-Z0-9]+)*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "printedName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "character",
+              "event",
+              "climax"
+            ]
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "yellow",
+              "green",
+              "red",
+              "blue"
+            ]
+          },
+          "level": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3
+          },
+          "cost": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20
+          },
+          "power": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "soul": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10
+          },
+          "traits": {
+            "maxItems": 8,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40
+            }
+          },
+          "triggers": {
+            "maxItems": 2,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "soul",
+                "return",
+                "pool",
+                "comeback",
+                "draw",
+                "shot",
+                "treasure",
+                "gate",
+                "standby",
+                "choice"
+              ]
+            }
+          },
+          "counter": {
+            "type": "boolean"
+          },
+          "backup": {
+            "type": "object",
+            "properties": {
+              "power": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000
+              },
+              "level": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 3
+              },
+              "stock": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 20
+              }
+            },
+            "required": [
+              "power",
+              "level",
+              "stock"
+            ],
+            "additionalProperties": false
+          },
+          "abilities": {
+            "type": "array",
+            "items": {}
+          },
+          "effect": {
+            "type": "array",
+            "items": {}
+          },
+          "text": {
+            "maxItems": 12,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 600
+            }
+          },
+          "unimplemented": {
+            "maxItems": 12,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 600
+            }
+          },
+          "rarity": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9+]{1,8}$"
+          },
+          "art": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "maxLength": 500,
+                "pattern": "^https:\\/\\/[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)+(?::\\d{1,5})?(?:\\/[^\\s\"'<>\\\\]*)?$"
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "number",
+          "name",
+          "kind",
+          "color"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "set",
+    "cards"
+  ],
+  "additionalProperties": false
+}

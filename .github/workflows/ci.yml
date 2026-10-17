@@ -17,7 +17,7 @@ env:
 
 jobs:
   static:
-    name: typecheck, lint, unit tests, matrix, assets
+    name: typecheck, lint, unit tests, matrix, cards, assets
     runs-on: ubuntu-24.04  # pinned: Playwright 1.56.1 must support the runner OS
     timeout-minutes: 15
     steps:
@@ -31,6 +31,7 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run check:matrix
+      - run: npm run check:cards
       - run: npm run check:assets
 
   fuzz:

@@ -3,7 +3,7 @@
 
 Source: Weiss Schwarz (English Edition) Comprehensive Rules v2.10. Statements are paraphrases, not rule text.
 
-Rows: 271 · verified 205 · planned 3 · deferred 59 · out 4
+Rows: 271 · verified 208 · planned 0 · deferred 59 · out 4
 
 ## GEN: Player count and golden rules (CR 1.1, 1.3)
 
@@ -58,7 +58,7 @@ Rows: 271 · verified 205 · planned 3 · deferred 59 · out 4
 | CARD-20 | Title name and Weiss/Schwarz side affiliation (shown by a white, black, or white-to-black gradient side frame) have no rules meaning in themselves, although effects may refer to them. | §2.13.1, §2.13.2, §2.18.1, §2.18.1.1, §2.18.1.2, §2.18.1.3, §2.18.2 | out | none | 0 |
 | CARD-21 | When a rule or effect checks information a card does not have, missing numeric information counts as 0 and missing non-numeric information counts as nonexistent. | §2.19.1 | verified | M1 | 2 |
 | CARD-22 | When two non-numeric values are compared and at least one of them is missing, they are never treated as identical. | §2.19.2 | deferred | none | 0 |
-| CARD-23 | Imported card data must store the rules name: reading-aid characters printed above the name and struck-through or painted-over parts are dropped before the name is used anywhere. | §2.1.1.1, §2.1.1.2 | planned | M3b | 0 |
+| CARD-23 | Imported card data must store the rules name: reading-aid characters printed above the name and struck-through or painted-over parts are dropped before the name is used anywhere. | §2.1.1.1, §2.1.1.2 | verified | M3b | 2 |
 
 ## ZONE: Zones of the game (CR 3)
 
@@ -124,7 +124,7 @@ Rows: 271 · verified 205 · planned 3 · deferred 59 · out 4
 | CONC-12 | At a play timing the player either performs one action that is legal at that moment or chooses to do nothing; after a chosen action resolves, that same player gets another play timing unless something specifies otherwise. | §4.5.3, §4.5.3.1 | verified | M1 | 3 |
 | CONC-13 | When the player with a play timing chooses to do nothing, the game moves forward instead of granting another play timing. | §4.5.3.2 | verified | M1 | 2 |
 | CONC-14 | Each character on the stage is in exactly one of three orientations: stand (upright from its controller's view), rest (sideways) or reverse (upside down), and standing, resting or reversing a card switches it into that orientation. | §4.6.1, §4.6.1.1, §4.6.1.2, §4.6.1.3 | verified | M1 | 3 |
-| CONC-15 | In card text, the stand, rest and reverse icons carry the same meaning as the corresponding words. | §4.6.1.1.1, §4.6.1.2.1, §4.6.1.3.1 | planned | M3b | 0 |
+| CONC-15 | In card text, the stand, rest and reverse icons carry the same meaning as the corresponding words. | §4.6.1.1.1, §4.6.1.2.1, §4.6.1.3.1 | verified | M3b | 2 |
 | CONC-16 | An instruction to draw N cards moves cards into the drawing player's hand from the top of that player's own deck, taking the top card each time. | §4.7.1 | verified | M1 | 3 |
 | CONC-17 | An instruction to look at the top N cards of the deck, or at up to N cards from the top, lets the player check those cards' information while the cards stay in the deck. | §4.8.1 | verified | M3 | 4 |
 | CONC-18 | An instruction to reveal the top N cards of the deck, or up to N cards from the top, shows those cards' information openly while the cards stay in the deck. | §4.9.1 | deferred | none | 0 |
@@ -227,7 +227,7 @@ Rows: 271 · verified 205 · planned 3 · deferred 59 · out 4
 | CLIMAX-01 | The Climax Phase opens with the 'at the beginning of climax phase' trigger condition and a check timing. After its play timing, another check timing is fully resolved and play moves to the Attack Phase. | §6.6.1.1, §6.6.1.3 | verified | M1 | 2 |
 | CLIMAX-02 | In the Climax Phase the turn player gets a play timing, preceded by its check timing, in which the only cards they may play are climax cards from their own hand; a played climax goes into their climax area. | §6.6.1, §6.6.1.2, §6.6.1.2.1 | verified | M1 | 2 |
 | CLIMAX-03 | The Climax Phase play timing can be used only once: after the turn player takes any action in it they get no further play timing, so at most one climax can be played in this phase. | §6.6.1.2.2 | verified | M1 | 1 |
-| CLIMAX-04 | Card text that refers to the 'CX phase' means the Climax Phase. | §6.6.2 | planned | M3b | 0 |
+| CLIMAX-04 | Card text that refers to the 'CX phase' means the Climax Phase. | §6.6.2 | verified | M3b | 1 |
 
 ## ATK: Attack phase and attack declaration (CR 6.7, 7.1-7.2)
 

@@ -23,7 +23,7 @@ const FRAMEWORK_IMPORTS = [
 
 export default defineConfig(
   {
-    ignores: ['node_modules/', 'dist/', '.expo/', 'coverage/', 'e2e/artifacts/', 'docs/_private/', 'assets/'],
+    ignores: ['node_modules/', 'dist/', '.expo/', 'coverage/', 'e2e/artifacts/', 'docs/_private/', 'assets/', 'local-cards/'],
   },
   js.configs.recommended,
   tseslint.configs.recommendedTypeChecked,

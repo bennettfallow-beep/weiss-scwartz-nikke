@@ -1,0 +1,1304 @@
+{
+  "schemaVersion": 1,
+  "set": {
+    "code": "SYN",
+    "name": "Synthetic test set (original cards)"
+  },
+  "cards": [
+    {
+      "number": "SYN/B01-001",
+      "name": "Cobalt Cadet",
+      "kind": "character",
+      "color": "blue",
+      "level": 0,
+      "cost": 0,
+      "power": 2500,
+      "soul": 1,
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "play"
+          },
+          "effect": [
+            {
+              "do": "if",
+              "when": [
+                {
+                  "if": "count",
+                  "what": {
+                    "side": "you",
+                    "zone": "waiting",
+                    "kind": "character"
+                  },
+                  "min": 3
+                }
+              ],
+              "then": [
+                {
+                  "do": "salvage",
+                  "count": 1,
+                  "upTo": true,
+                  "filter": {
+                    "name": "Cobalt Runner"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/B01-002",
+      "name": "Cobalt Lookout",
+      "kind": "character",
+      "color": "blue",
+      "level": 0,
+      "cost": 0,
+      "power": 3000,
+      "soul": 1,
+      "triggers": [
+        "pool"
+      ],
+      "abilities": [
+        {
+          "kind": "activated",
+          "timing": "main",
+          "cost": [
+            {
+              "pay": "discard",
+              "count": 1,
+              "filter": {
+                "kind": "character"
+              }
+            }
+          ],
+          "effect": [
+            {
+              "do": "draw",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/B01-003",
+      "name": "Cobalt Runner",
+      "kind": "character",
+      "color": "blue",
+      "level": 0,
+      "cost": 0,
+      "power": 1500,
+      "soul": 1
+    },
+    {
+      "number": "SYN/B01-004",
+      "name": "Cobalt Warden",
+      "kind": "character",
+      "color": "blue",
+      "level": 1,
+      "cost": 0,
+      "power": 5000,
+      "soul": 1,
+      "triggers": [
+        "soul"
+      ],
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "attack"
+          },
+          "effect": [
+            {
+              "do": "choose",
+              "as": "foe",
+              "count": 1,
+              "upTo": true,
+              "what": {
+                "side": "opponent",
+                "level": {
+                  "max": 1
+                }
+              }
+            },
+            {
+              "do": "power",
+              "amount": -1000,
+              "target": {
+                "ref": "foe"
+              }
+            },
+            {
+              "do": "soul",
+              "amount": 1,
+              "target": {
+                "all": {
+                  "side": "you",
+                  "role": "attacker"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/B01-005",
+      "name": "Cobalt Medic",
+      "kind": "character",
+      "color": "blue",
+      "level": 1,
+      "cost": 1,
+      "power": 4000,
+      "soul": 1,
+      "backup": {
+        "power": 2000,
+        "level": 1,
+        "stock": 1
+      },
+      "abilities": [
+        {
+          "kind": "continuous",
+          "when": [
+            {
+              "if": "count",
+              "what": {
+                "side": "you",
+                "zone": "level"
+              },
+              "min": 1
+            }
+          ],
+          "modifiers": [
+            {
+              "stat": "power",
+              "amount": 500,
+              "target": "this"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/B01-006",
+      "name": "Cobalt Sentry",
+      "kind": "character",
+      "color": "blue",
+      "level": 1,
+      "cost": 1,
+      "power": 6000,
+      "soul": 1,
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "climaxPlayed",
+            "name": "Cobalt Surge"
+          },
+          "effect": [
+            {
+              "do": "soul",
+              "amount": 1,
+              "target": "this"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/B01-007",
+      "name": "Cobalt Vanguard",
+      "kind": "character",
+      "color": "blue",
+      "level": 2,
+      "cost": 1,
+      "power": 7500,
+      "soul": 1,
+      "triggers": [
+        "comeback"
+      ],
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "play"
+          },
+          "effect": [
+            {
+              "do": "may",
+              "steps": [
+                {
+                  "do": "heal",
+                  "count": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/B01-008",
+      "name": "Cobalt Lancer",
+      "kind": "character",
+      "color": "blue",
+      "level": 2,
+      "cost": 2,
+      "power": 9000,
+      "soul": 2,
+      "abilities": [
+        {
+          "kind": "activated",
+          "timing": "main",
+          "cost": [
+            {
+              "pay": "stock",
+              "count": 2
+            }
+          ],
+          "effect": [
+            {
+              "do": "choose",
+              "as": "foe",
+              "count": 1,
+              "what": {
+                "side": "opponent",
+                "level": {
+                  "max": 2
+                }
+              }
+            },
+            {
+              "do": "returnToHand",
+              "target": {
+                "ref": "foe"
+              }
+            }
+          ],
+          "when": [
+            {
+              "if": "count",
+              "what": {
+                "side": "you",
+                "zone": "stock"
+              },
+              "min": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/B01-009",
+      "name": "Cobalt Marshal",
+      "kind": "character",
+      "color": "blue",
+      "level": 3,
+      "cost": 2,
+      "power": 10500,
+      "soul": 2,
+      "triggers": [
+        "soul"
+      ],
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "play"
+          },
+          "effect": [
+            {
+              "do": "damageOpp",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "kind": "continuous",
+          "modifiers": [
+            {
+              "stat": "power",
+              "amount": 1000,
+              "target": {
+                "side": "you",
+                "other": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/B01-010",
+      "name": "Cobalt Parry",
+      "kind": "event",
+      "color": "blue",
+      "level": 0,
+      "cost": 0,
+      "counter": true,
+      "effect": [
+        {
+          "do": "choose",
+          "as": "d",
+          "count": 1,
+          "what": {
+            "side": "you",
+            "role": "defender"
+          }
+        },
+        {
+          "do": "power",
+          "amount": 2500,
+          "target": {
+            "ref": "d"
+          }
+        }
+      ]
+    },
+    {
+      "number": "SYN/B01-011",
+      "name": "Cobalt Flare",
+      "kind": "event",
+      "color": "blue",
+      "level": 1,
+      "cost": 1,
+      "effect": [
+        {
+          "do": "lookTop",
+          "count": 5,
+          "take": {
+            "count": 1,
+            "filter": {
+              "kind": "climax"
+            },
+            "to": "hand"
+          },
+          "rest": "top"
+        }
+      ]
+    },
+    {
+      "number": "SYN/B01-012",
+      "name": "Cobalt Surge",
+      "kind": "climax",
+      "color": "blue",
+      "triggers": [
+        "soul",
+        "soul"
+      ],
+      "abilities": [
+        {
+          "kind": "continuous",
+          "modifiers": [
+            {
+              "stat": "power",
+              "amount": 500,
+              "target": {
+                "side": "you"
+              }
+            }
+          ],
+          "when": [
+            {
+              "if": "count",
+              "what": {
+                "side": "opponent",
+                "zone": "climax"
+              },
+              "max": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/B01-013",
+      "name": "Cobalt Rally",
+      "kind": "climax",
+      "color": "blue",
+      "triggers": [
+        "standby",
+        "standby"
+      ],
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "play"
+          },
+          "effect": [
+            {
+              "do": "lookTop",
+              "count": 1,
+              "take": {
+                "count": 1,
+                "to": "waiting"
+              },
+              "rest": "top"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/R01-001",
+      "name": "Crimson Cadet",
+      "kind": "character",
+      "color": "red",
+      "level": 0,
+      "cost": 0,
+      "power": 2500,
+      "soul": 1,
+      "traits": [
+        "Crimson Squad"
+      ],
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "reversed"
+          },
+          "effect": [
+            {
+              "do": "draw",
+              "count": 1,
+              "player": "opponent"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/R01-002",
+      "name": "Crimson Lookout",
+      "kind": "character",
+      "color": "red",
+      "level": 0,
+      "cost": 0,
+      "power": 3000,
+      "soul": 1,
+      "traits": [
+        "Crimson Squad"
+      ],
+      "triggers": [
+        "gate"
+      ],
+      "abilities": [
+        {
+          "kind": "activated",
+          "timing": "main",
+          "cost": [
+            {
+              "pay": "selfToWaiting"
+            }
+          ],
+          "effect": [
+            {
+              "do": "choose",
+              "as": "a",
+              "count": 1,
+              "upTo": true,
+              "what": {
+                "side": "you",
+                "other": true
+              }
+            },
+            {
+              "do": "soul",
+              "amount": 1,
+              "target": {
+                "ref": "a"
+              },
+              "duration": "game"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/R01-003",
+      "name": "Crimson Runner",
+      "kind": "character",
+      "color": "red",
+      "level": 0,
+      "cost": 0,
+      "power": 1500,
+      "soul": 1,
+      "traits": [
+        "Crimson Squad"
+      ],
+      "abilities": [
+        {
+          "kind": "continuous",
+          "when": [
+            {
+              "if": "count",
+              "what": {
+                "side": "you",
+                "trait": "Crimson Squad",
+                "zone": "stage"
+              },
+              "min": 2
+            }
+          ],
+          "modifiers": [
+            {
+              "stat": "power",
+              "amount": 1000,
+              "target": "this"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/R01-004",
+      "name": "Crimson Warden",
+      "kind": "character",
+      "color": "red",
+      "level": 1,
+      "cost": 0,
+      "power": 5000,
+      "soul": 1,
+      "triggers": [
+        "soul"
+      ],
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "play"
+          },
+          "effect": [
+            {
+              "do": "lookTop",
+              "count": 2,
+              "upTo": true,
+              "take": {
+                "count": 1,
+                "upTo": true,
+                "to": "stock"
+              },
+              "rest": "waiting"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/R01-005",
+      "name": "Crimson Medic",
+      "kind": "character",
+      "color": "red",
+      "level": 1,
+      "cost": 1,
+      "power": 4000,
+      "soul": 1,
+      "backup": {
+        "power": 2000,
+        "level": 1,
+        "stock": 1
+      },
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "attack"
+          },
+          "cost": [
+            {
+              "pay": "stock",
+              "count": 1
+            }
+          ],
+          "effect": [
+            {
+              "do": "choose",
+              "as": "foe",
+              "count": 1,
+              "what": {
+                "side": "opponent",
+                "level": {
+                  "max": 0
+                }
+              }
+            },
+            {
+              "do": "sendToWaiting",
+              "target": {
+                "ref": "foe"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/R01-006",
+      "name": "Crimson Sentry",
+      "kind": "character",
+      "color": "red",
+      "level": 1,
+      "cost": 1,
+      "power": 6000,
+      "soul": 1,
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "play"
+          },
+          "effect": [
+            {
+              "do": "salvage",
+              "count": 1,
+              "filter": {
+                "kind": "climax"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/R01-007",
+      "name": "Crimson Vanguard",
+      "kind": "character",
+      "color": "red",
+      "level": 2,
+      "cost": 1,
+      "power": 7500,
+      "soul": 1,
+      "triggers": [
+        "standby"
+      ],
+      "abilities": [
+        {
+          "kind": "continuous",
+          "when": [
+            {
+              "if": "count",
+              "what": {
+                "side": "opponent",
+                "zone": "clock"
+              },
+              "min": 4
+            }
+          ],
+          "modifiers": [
+            {
+              "stat": "power",
+              "amount": 1500,
+              "target": "this"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/R01-008",
+      "name": "Crimson Lancer",
+      "kind": "character",
+      "color": "red",
+      "level": 2,
+      "cost": 2,
+      "power": 9000,
+      "soul": 2,
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "reversed"
+          },
+          "effect": [
+            {
+              "do": "discard",
+              "count": 1,
+              "player": "opponent"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/R01-009",
+      "name": "Crimson Marshal",
+      "kind": "character",
+      "color": "red",
+      "level": 3,
+      "cost": 2,
+      "power": 10500,
+      "soul": 2,
+      "triggers": [
+        "choice"
+      ],
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "play"
+          },
+          "effect": [
+            {
+              "do": "lookTop",
+              "count": 4,
+              "take": {
+                "count": 2,
+                "upTo": true,
+                "filter": {
+                  "kind": "character",
+                  "color": "red"
+                },
+                "to": "hand"
+              },
+              "rest": "bottom"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/R01-010",
+      "name": "Crimson Parry",
+      "kind": "event",
+      "color": "red",
+      "level": 0,
+      "cost": 0,
+      "counter": true,
+      "effect": [
+        {
+          "do": "power",
+          "amount": 3000,
+          "target": {
+            "all": {
+              "side": "you",
+              "role": "defender"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "number": "SYN/R01-011",
+      "name": "Crimson Flare",
+      "kind": "event",
+      "color": "red",
+      "level": 1,
+      "cost": 1,
+      "effect": [
+        {
+          "do": "draw",
+          "count": 2
+        },
+        {
+          "do": "discard",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "number": "SYN/R01-012",
+      "name": "Crimson Surge",
+      "kind": "climax",
+      "color": "red",
+      "triggers": [
+        "soul",
+        "pool"
+      ],
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "play"
+          },
+          "effect": [
+            {
+              "do": "stockFromDeck",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/R01-013",
+      "name": "Crimson Rally",
+      "kind": "climax",
+      "color": "red",
+      "triggers": [
+        "soul",
+        "draw"
+      ],
+      "abilities": [
+        {
+          "kind": "continuous",
+          "modifiers": [
+            {
+              "stat": "soul",
+              "amount": 1,
+              "target": {
+                "side": "you"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/Y01-001",
+      "name": "Amber Cadet",
+      "kind": "character",
+      "color": "yellow",
+      "level": 0,
+      "cost": 0,
+      "power": 2500,
+      "soul": 1,
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "play"
+          },
+          "effect": [
+            {
+              "do": "draw",
+              "count": 1
+            },
+            {
+              "do": "discard",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/Y01-002",
+      "name": "Amber Lookout",
+      "kind": "character",
+      "color": "yellow",
+      "level": 0,
+      "cost": 0,
+      "power": 3000,
+      "soul": 1,
+      "triggers": [
+        "comeback"
+      ],
+      "abilities": [
+        {
+          "kind": "activated",
+          "timing": "main",
+          "cost": [
+            {
+              "pay": "stock",
+              "count": 1
+            },
+            {
+              "pay": "rest"
+            }
+          ],
+          "effect": [
+            {
+              "do": "choose",
+              "as": "ally",
+              "count": 1,
+              "what": {
+                "side": "you",
+                "other": true
+              }
+            },
+            {
+              "do": "power",
+              "amount": 1000,
+              "target": {
+                "ref": "ally"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/Y01-003",
+      "name": "Amber Runner",
+      "kind": "character",
+      "color": "yellow",
+      "level": 0,
+      "cost": 0,
+      "power": 1500,
+      "soul": 1,
+      "abilities": [
+        {
+          "kind": "continuous",
+          "modifiers": [
+            {
+              "stat": "power",
+              "amount": 500,
+              "target": {
+                "side": "you",
+                "other": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/Y01-004",
+      "name": "Amber Warden",
+      "kind": "character",
+      "color": "yellow",
+      "level": 1,
+      "cost": 0,
+      "power": 5000,
+      "soul": 1,
+      "triggers": [
+        "soul"
+      ],
+      "abilities": [
+        {
+          "kind": "continuous",
+          "when": [
+            {
+              "if": "turn",
+              "side": "you"
+            },
+            {
+              "if": "climax"
+            }
+          ],
+          "modifiers": [
+            {
+              "stat": "power",
+              "amount": 1000,
+              "target": "this"
+            },
+            {
+              "stat": "soul",
+              "amount": 1,
+              "target": "this"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/Y01-005",
+      "name": "Amber Medic",
+      "kind": "character",
+      "color": "yellow",
+      "level": 1,
+      "cost": 1,
+      "power": 4000,
+      "soul": 1,
+      "backup": {
+        "power": 2000,
+        "level": 1,
+        "stock": 1
+      },
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "reversed"
+          },
+          "cost": [
+            {
+              "pay": "discard",
+              "count": 1
+            }
+          ],
+          "effect": [
+            {
+              "do": "salvage",
+              "count": 1,
+              "upTo": true,
+              "filter": {
+                "kind": "character"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/Y01-006",
+      "name": "Amber Sentry",
+      "kind": "character",
+      "color": "yellow",
+      "level": 1,
+      "cost": 1,
+      "power": 6000,
+      "soul": 1,
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "attack"
+          },
+          "effect": [
+            {
+              "do": "lookTop",
+              "count": 3,
+              "take": {
+                "count": 1,
+                "upTo": true,
+                "filter": {
+                  "kind": "character"
+                },
+                "to": "hand"
+              },
+              "rest": "top"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/Y01-007",
+      "name": "Amber Vanguard",
+      "kind": "character",
+      "color": "yellow",
+      "level": 2,
+      "cost": 1,
+      "power": 7500,
+      "soul": 1,
+      "triggers": [
+        "draw"
+      ],
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "climaxPlayed"
+          },
+          "effect": [
+            {
+              "do": "damageOpp",
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/Y01-008",
+      "name": "Amber Lancer",
+      "kind": "character",
+      "color": "yellow",
+      "level": 2,
+      "cost": 2,
+      "power": 9000,
+      "soul": 2,
+      "abilities": [
+        {
+          "kind": "activated",
+          "timing": "counter",
+          "cost": [
+            {
+              "pay": "stock",
+              "count": 1
+            }
+          ],
+          "effect": [
+            {
+              "do": "power",
+              "amount": 1500,
+              "target": {
+                "all": {
+                  "side": "you",
+                  "role": "defender"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/Y01-009",
+      "name": "Amber Marshal",
+      "kind": "character",
+      "color": "yellow",
+      "level": 3,
+      "cost": 2,
+      "power": 10500,
+      "soul": 2,
+      "triggers": [
+        "treasure"
+      ],
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "play"
+          },
+          "effect": [
+            {
+              "do": "if",
+              "when": [
+                {
+                  "if": "level",
+                  "min": 2
+                }
+              ],
+              "then": [
+                {
+                  "do": "may",
+                  "steps": [
+                    {
+                      "do": "discard",
+                      "count": 1,
+                      "filter": {
+                        "kind": "climax"
+                      }
+                    }
+                  ],
+                  "then": [
+                    {
+                      "do": "heal",
+                      "count": 1
+                    }
+                  ],
+                  "else": [
+                    {
+                      "do": "stockFromDeck",
+                      "count": 1
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/Y01-010",
+      "name": "Amber Parry",
+      "kind": "event",
+      "color": "yellow",
+      "level": 0,
+      "cost": 0,
+      "counter": true,
+      "effect": [
+        {
+          "do": "choose",
+          "as": "d",
+          "count": 1,
+          "what": {
+            "side": "you",
+            "role": "defender"
+          }
+        },
+        {
+          "do": "power",
+          "amount": 2000,
+          "target": {
+            "ref": "d"
+          }
+        }
+      ]
+    },
+    {
+      "number": "SYN/Y01-011",
+      "name": "Amber Flare",
+      "kind": "event",
+      "color": "yellow",
+      "level": 1,
+      "cost": 1,
+      "effect": [
+        {
+          "do": "choose",
+          "as": "foe",
+          "count": 1,
+          "what": {
+            "side": "opponent",
+            "level": {
+              "max": 1
+            }
+          }
+        },
+        {
+          "do": "returnToHand",
+          "target": {
+            "ref": "foe"
+          }
+        }
+      ]
+    },
+    {
+      "number": "SYN/Y01-012",
+      "name": "Amber Surge",
+      "kind": "climax",
+      "color": "yellow",
+      "triggers": [
+        "soul",
+        "shot"
+      ],
+      "abilities": [
+        {
+          "kind": "continuous",
+          "modifiers": [
+            {
+              "stat": "power",
+              "amount": 1000,
+              "target": {
+                "side": "you"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "SYN/Y01-013",
+      "name": "Amber Rally",
+      "kind": "climax",
+      "color": "yellow",
+      "triggers": [
+        "soul",
+        "return"
+      ],
+      "abilities": [
+        {
+          "kind": "automatic",
+          "trigger": {
+            "on": "play"
+          },
+          "effect": [
+            {
+              "do": "if",
+              "when": [
+                {
+                  "if": "count",
+                  "what": {
+                    "side": "you",
+                    "zone": "hand"
+                  },
+                  "max": 3
+                }
+              ],
+              "then": [
+                {
+                  "do": "draw",
+                  "count": 1,
+                  "upTo": true
+                }
+              ],
+              "else": [
+                {
+                  "do": "discard",
+                  "count": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -66,11 +66,12 @@ describe('architecture: layer purity', () => {
     expect(files.some((f) => layerOf(f) === 'engine')).toBe(true);
   });
 
-  // .js/.tsx/.d.ts files would escape tsconfig.engine.json and parts of lint.
-  it('pure layers contain only plain .ts source files', () => {
-    const offenders = PURE_LAYERS.flatMap((layer) =>
-      listFiles(join(SRC, layer), (name) => !/\.ts$/.test(name) || /\.d\.ts$/.test(name)),
-    ).map((f) => relative(ROOT, f));
+  // .js/.tsx/.d.ts files would escape tsconfig.engine.json and parts of lint. The one exception is card
+  // data: JSON files under src/cards/sets/ (data only, no code).
+  it('pure layers contain only plain .ts source files, plus card data in src/cards/sets/', () => {
+    const offenders = PURE_LAYERS.flatMap((layer) => listFiles(join(SRC, layer), (name) => !/\.ts$/.test(name) || /\.d\.ts$/.test(name)))
+      .map((f) => relative(ROOT, f).split('\\').join('/'))
+      .filter((f) => !/^src\/cards\/sets\/[^/]+\.json$/.test(f));
     expect(offenders).toEqual([]);
   });
 
