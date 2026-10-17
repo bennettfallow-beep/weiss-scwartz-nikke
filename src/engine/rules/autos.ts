@@ -46,8 +46,9 @@ function playable(s: GameState, catalog: CardCatalog, a: StandbyAuto): boolean {
     case 'encore':
       return inWaitingRoom(s, a) && s.players[a.player].stock.length >= a.cost;
     case 'card': {
+      // Judged on what both players can see, so whether it is offered says nothing about the hand.
       const ability = cardAbility(s, catalog, a);
-      return ability.cost === undefined || canPayCost(s, catalog, a.player, a.source, ability.cost);
+      return ability.cost === undefined || canPayCost(s, catalog, a.player, a.source, ability.cost, true);
     }
   }
 }
@@ -110,7 +111,8 @@ export function resolveAuto(s: GameState, catalog: CardCatalog, id: number): voi
         return;
       }
       const inst = s.cards[a.source.card];
-      openFrame(s, { kind: 'automatic', master: a.player, source: a.source, def: inst?.def ?? '', index: a.index, ops: automaticOps(cardAbility(s, catalog, a)) });
+      const ability = cardAbility(s, catalog, a);
+      openFrame(s, { kind: 'automatic', master: a.player, source: a.source, def: inst?.def ?? '', index: a.index, ops: automaticOps(ability), ...(ability.cost ? { cost: ability.cost } : {}) });
       queue(s, { t: 'frame' });
       return;
     }

@@ -313,9 +313,16 @@
       "sections": [
         "2.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/select.ts#matchesFilter",
+        "src/engine/rules/select.ts#holds",
+        "src/engine/rules/triggers.ts#firePlayed",
+        "src/engine/model/abilities.ts#CardFilter",
+        "src/engine/model/text.ts#conditionText",
+        "src/engine/model/text.ts#cardText"
+      ],
       "notes": "Exact-match comparison against the canonical name. Partial-name matching is CARD-04 (deferred)."
     },
     {
@@ -378,9 +385,15 @@
       "sections": [
         "2.3.2.1.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/select.ts#selectStage",
+        "src/engine/rules/select.ts#stageCharacters",
+        "src/engine/rules/select.ts#countCards",
+        "src/engine/model/abilities.ts#Selector",
+        "src/engine/model/text.ts#conditionText"
+      ],
       "notes": "Default zone scope for effect targeting and counting."
     },
     {
@@ -391,9 +404,14 @@
         "2.3.2.3.2",
         "2.3.2.3.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/select.ts#holds",
+        "src/engine/rules/select.ts#countCards",
+        "src/engine/model/abilities.ts#CountSpec",
+        "src/engine/model/text.ts#conditionText"
+      ],
       "notes": "Default zone scope for effect targeting and counting."
     },
     {
@@ -421,9 +439,14 @@
         "2.5.2",
         "2.5.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/model/cards.ts#validateCatalog",
+        "src/engine/rules/select.ts#matchesFilter",
+        "src/engine/rules/select.ts#continuousBonus",
+        "src/engine/model/text.ts#cardText"
+      ],
       "notes": "Store traits as a list on character cards; used for effect filters."
     },
     {
@@ -567,9 +590,17 @@
         "2.12.2.2",
         "2.12.2.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/select.ts#workingMaster",
+        "src/engine/rules/select.ts#continuousBonus",
+        "src/engine/rules/triggers.ts#firePlayed",
+        "src/engine/rules/frame.ts#activatable",
+        "src/engine/rules/combat.ts#canBackup",
+        "src/engine/rules/combat.ts#useBackup",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "Ability registration must be zone-aware. Example of the exception: Backup is used from hand during the counter step."
     },
     {
@@ -770,9 +801,15 @@
         "3.2.3.1",
         "3.2.3.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/rules/frame.ts#runOp",
+        "src/engine/rules/frame.ts#answerOptional",
+        "src/engine/rules/frame.ts#nextUnlooked",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "Requires a stop/continue decision before each card, including before the first."
     },
     {
@@ -799,9 +836,14 @@
       "sections": [
         "3.2.3.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/rules/frame.ts#runOp",
+        "src/engine/rules/frame.ts#nextUnlooked",
+        "src/engine/rules/flow.ts#drawOne"
+      ],
       "notes": "CR example: 'look at the top 5' with 3 cards in deck looks at those 3 and stops; the deck never empties, so no refresh occurs."
     },
     {
@@ -1293,9 +1335,18 @@
         "4.1.1",
         "4.1.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/model/abilities.ts#ABILITY_KINDS",
+        "src/engine/model/abilities.ts#Ability",
+        "src/engine/model/abilityCheck.ts#checkCardAbilities",
+        "src/engine/rules/combat.ts#performIcon",
+        "src/engine/rules/damage.ts#settleShots",
+        "src/engine/rules/autos.ts#resolveAuto",
+        "src/engine/rules/frame.ts#activate",
+        "src/engine/rules/select.ts#continuousBonus"
+      ],
       "notes": "Ability kind drives timing and resolution rules detailed in Section 8. Abilities can be created by effects, not only printed."
     },
     {
@@ -1306,9 +1357,16 @@
         "4.1.2",
         "4.1.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/model/abilities.ts#Step",
+        "src/engine/model/abilities.ts#DURATIONS",
+        "src/engine/model/abilityCheck.ts#checkCardAbilities",
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/rules/effects.ts#addTurnEffect",
+        "src/engine/rules/effects.ts#expireTurnEffects"
+      ],
       "notes": "The third category (replacement effects) is tracked separately as deferred (CONC-03)."
     },
     {
@@ -1376,9 +1434,18 @@
       "sections": [
         "4.3.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#openFrame",
+        "src/engine/rules/frame.ts#activate",
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/rules/triggers.ts#firePlayed",
+        "src/engine/rules/autos.ts#resolveAuto",
+        "src/engine/rules/select.ts#continuousBonus",
+        "src/engine/rules/select.ts#selectStage",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Store a master on every effect instance, copied from its generating ability."
     },
     {
@@ -1388,9 +1455,18 @@
       "sections": [
         "4.3.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#activate",
+        "src/engine/rules/frame.ts#activatable",
+        "src/engine/rules/frame.ts#openFrame",
+        "src/engine/rules/select.ts#sidePlayer",
+        "src/engine/rules/select.ts#workingMaster",
+        "src/engine/rules/costs.ts#discardOptions",
+        "src/engine/rules/costs.ts#payCost",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": ""
     },
     {
@@ -1401,9 +1477,17 @@
         "4.3.5",
         "4.3.6"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/triggers.ts#standBy",
+        "src/engine/rules/triggers.ts#firePlayed",
+        "src/engine/rules/select.ts#workingMaster",
+        "src/engine/rules/select.ts#continuousBonus",
+        "src/engine/rules/select.ts#selectStage",
+        "src/engine/rules/autos.ts#resolveAuto",
+        "src/engine/rules/frame.ts#performer"
+      ],
       "notes": "For abilities granted by an effect, track the granting effect's master as well as the card's master. The CR says the master is the card's master \"or\" the creating effect's master; reading \"instead\" for created abilities is an interpretation (none exist in v1)."
     },
     {
@@ -1521,9 +1605,16 @@
       "sections": [
         "4.8.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/rules/frame.ts#lookedInDeck",
+        "src/engine/rules/frame.ts#arrange",
+        "src/engine/api/view.ts#lookView",
+        "src/engine/api/view.ts#redactEvent",
+        "src/engine/api/view.ts#projectView"
+      ],
       "notes": "No zone change. The CR contrasts looking ('confirms') with revealing ('displays', CONC-18) but does not spell out who else may see looked-at cards. This section does not say how the 'up to' count is chosen. The \"up to N\" mechanism is CR 3.2.3.1 (ZONE-09). Looking is private to the looker (inferred from \"confirm\" here versus \"display\" in 4.9)."
     },
     {
@@ -1643,9 +1734,14 @@
         "4.11.1.2",
         "4.11.1.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/rules/damage.ts#startDamage",
+        "src/engine/rules/damage.ts#finishDamage",
+        "src/engine/rules/damage.ts#settleShots"
+      ],
       "notes": "So damage from the attacking character's own ability counts as dealt by that character, which matters for the Shot edge case in 4.12.2.7.1."
     },
     {
@@ -2202,9 +2298,14 @@
       "sections": [
         "6.5.1.2.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#activatable",
+        "src/engine/rules/frame.ts#activate",
+        "src/engine/api/game.ts#legalActions",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": ""
     },
     {
@@ -2944,9 +3045,20 @@
         "8.1.1.1.1",
         "8.1.1.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/model/abilities.ts#ABILITY_KINDS",
+        "src/engine/model/abilities.ts#ActivatedAbility",
+        "src/engine/rules/frame.ts#activatable",
+        "src/engine/rules/frame.ts#activate",
+        "src/engine/rules/frame.ts#activatedOps",
+        "src/engine/rules/costs.ts#canPayCost",
+        "src/engine/rules/costs.ts#payCost",
+        "src/engine/api/game.ts#legalActions",
+        "src/engine/rules/flow.ts#perform",
+        "src/engine/model/text.ts#abilityText"
+      ],
       "notes": "Model category as an enum on each ability. Play timing is defined in 8.5.2. The Ability Category Icons are only the printed markers for these categories."
     },
     {
@@ -2970,9 +3082,23 @@
         "8.1.1.2.1",
         "8.1.1.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/triggers.ts#firePlayed",
+        "src/engine/rules/triggers.ts#fireAttack",
+        "src/engine/rules/triggers.ts#fireReversed",
+        "src/engine/rules/triggers.ts#standBy",
+        "src/engine/rules/combat.ts#declareAttack",
+        "src/engine/rules/combat.ts#battle",
+        "src/engine/rules/flow.ts#resolveCard",
+        "src/engine/rules/autos.ts#resolveAuto",
+        "src/engine/rules/frame.ts#automaticOps",
+        "src/engine/rules/frame.ts#answerOptional",
+        "src/engine/rules/frame.ts#activatable",
+        "src/engine/rules/ruleActions.ts#checkTiming",
+        "src/engine/model/abilityCheck.ts#ability"
+      ],
       "notes": "Paying an automatic ability's cost is optional; declining it is handled by ABL-12. The ability enters standby when its condition is met and is played at the next check timing (ABL-10). In v1 conditions on automatic abilities are checked at resolution, in an \"if\" step."
     },
     {
@@ -2984,9 +3110,17 @@
         "8.1.1.3.1",
         "8.6.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/select.ts#continuousBonus",
+        "src/engine/rules/effects.ts#currentPower",
+        "src/engine/rules/triggers.ts#firePlayed",
+        "src/engine/rules/autos.ts#playStandby",
+        "src/engine/rules/autos.ts#resolveAuto",
+        "src/engine/rules/frame.ts#activate",
+        "src/engine/rules/flow.ts#resolveCard"
+      ],
       "notes": "Continuous abilities are evaluated as standing modifiers, not queued."
     },
     {
@@ -3000,9 +3134,16 @@
         "8.2.1.3",
         "8.8.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/rules/frame.ts#fxTop",
+        "src/engine/rules/effects.ts#addTurnEffect",
+        "src/engine/rules/effects.ts#expireTurnEffects",
+        "src/engine/rules/effects.ts#currentPower",
+        "src/engine/model/text.ts#abilityText"
+      ],
       "notes": "Drawing a card or sending a character to the waiting room is one-shot; '+X power' or '+1 soul until end of turn' is continuous. Replacement effects themselves are deferred."
     },
     {
@@ -3014,9 +3155,14 @@
         "8.3.2",
         "8.3.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/select.ts#holds",
+        "src/engine/rules/select.ts#countCards",
+        "src/engine/rules/select.ts#continuousBonus",
+        "src/engine/rules/frame.ts#runStep"
+      ],
       "notes": "This is the mechanism behind 'insofar as' wording such as Assist (10.3.2). The inactive part still counts as an ability for effects that look for its presence."
     },
     {
@@ -3044,9 +3190,13 @@
         "8.5.1.3",
         "8.7.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/ruleActions.ts#checkTiming",
+        "src/engine/rules/autos.ts#playStandby",
+        "src/engine/rules/autos.ts#collectTriggers"
+      ],
       "notes": "One ability per pass, restarting from rule actions each time; a new turn-player trigger created by a non-turn-player ability resolves before the non-turn player's next one."
     },
     {
@@ -3076,9 +3226,15 @@
         "8.7.2",
         "8.7.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/triggers.ts#standBy",
+        "src/engine/rules/triggers.ts#firePlayed",
+        "src/engine/rules/autos.ts#collectTriggers",
+        "src/engine/rules/autos.ts#playStandby",
+        "src/engine/rules/ruleActions.ts#checkTiming"
+      ],
       "notes": "Track standby as a multiset of instances, each carrying its trigger context (source card, moved-card snapshot, battle opponent, etc.)."
     },
     {
@@ -3089,9 +3245,14 @@
         "8.7.3",
         "8.7.3.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/autos.ts#playStandby",
+        "src/engine/rules/autos.ts#playable",
+        "src/engine/rules/autos.ts#resolveAuto",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "The only exception is Turn Usage Restriction (10.17.4, KW-21), which is deferred. CR 8.5.1.2 already lets the player pick any of their standby abilities. Abilities that cannot be played now wait in standby (an Encore can be paid after a stock-adding ability); once none of a player's can be played they are used up, which loses no outcome because every v1 cost is optional."
     },
     {
@@ -3103,9 +3264,15 @@
         "8.7.3.2",
         "8.7.3.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/autos.ts#resolveAuto",
+        "src/engine/rules/autos.ts#playStandby",
+        "src/engine/rules/autos.ts#playable",
+        "src/engine/rules/frame.ts#answerOptional",
+        "src/engine/rules/flow.ts#perform"
+      ],
       "notes": "Declining Encore's cost consumes the instance."
     },
     {
@@ -3157,9 +3324,14 @@
       "sections": [
         "8.7.7"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/autos.ts#playable",
+        "src/engine/rules/frame.ts#resolveTargets",
+        "src/engine/rules/frame.ts#fxMove",
+        "src/engine/rules/costs.ts#canPayCost"
+      ],
       "notes": "Do not drop the standby instance when the source moves; resolve and let impossible parts fail."
     },
     {
@@ -3210,9 +3382,15 @@
       "sections": [
         "8.9.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/rules/frame.ts#resolveTargets",
+        "src/engine/rules/effects.ts#addTurnEffect",
+        "src/engine/rules/effects.ts#refOf",
+        "src/engine/core/zones.ts#moveCard"
+      ],
       "notes": "Lock the affected set at play time. CR example: after an event gives your characters +1000 until end of turn, a character played afterward keeps its printed power. A character that leaves and returns also loses the effect. Cards that arrive during the same resolution are excluded too."
     },
     {
@@ -3222,9 +3400,13 @@
       "sections": [
         "8.9.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/select.ts#continuousBonus",
+        "src/engine/rules/effects.ts#currentPower",
+        "src/engine/rules/effects.ts#currentSoul"
+      ],
       "notes": ""
     },
     {
@@ -3305,9 +3487,14 @@
         "8.4.2",
         "8.4.2.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/costs.ts#payCost",
+        "src/engine/rules/frame.ts#activatedOps",
+        "src/engine/rules/frame.ts#automaticOps",
+        "src/engine/rules/frame.ts#runOp"
+      ],
       "notes": ""
     },
     {
@@ -3331,9 +3518,14 @@
       "sections": [
         "8.4.2.2"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/costs.ts#canPayCost",
+        "src/engine/rules/frame.ts#activatable",
+        "src/engine/rules/costs.ts#payCost",
+        "src/engine/rules/autos.ts#playStandby"
+      ],
       "notes": "Validate the whole cost before executing any part. Card play costs are covered by PLAY-04."
     },
     {
@@ -3343,9 +3535,14 @@
       "sections": [
         "8.4.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/play.ts#payStock",
+        "src/engine/rules/costs.ts#payCost",
+        "src/engine/rules/costs.ts#canPayCost",
+        "src/engine/rules/autos.ts#payEncore"
+      ],
       "notes": "Used by default Encore [3] (KW-03). Fewer than X stock means the payment is impossible (COST-03). 8.4.3 does not say which stock cards are taken. Stock cards leave from the top (CR 3.10.2, ZONE-31)."
     },
     {
@@ -3483,9 +3680,15 @@
       "sections": [
         "8.6.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/rules/frame.ts#frameTask",
+        "src/engine/rules/frame.ts#activatedOps",
+        "src/engine/rules/frame.ts#eventOps",
+        "src/engine/rules/select.ts#selectStage"
+      ],
       "notes": "Do not lock targets at play time; evaluate legality when the 'choose' step executes."
     },
     {
@@ -3497,9 +3700,15 @@
         "8.6.3.1.2",
         "8.6.3.1.3"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/rules/frame.ts#pick",
+        "src/engine/rules/frame.ts#answerPick",
+        "src/engine/rules/frame.ts#resolveTargets",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": "Exception for unrevealed cards in hidden zones: PLAY-12."
     },
     {
@@ -3509,9 +3718,15 @@
       "sections": [
         "8.6.3.1.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/rules/frame.ts#runOp",
+        "src/engine/rules/frame.ts#pick",
+        "src/engine/rules/frame.ts#answerPick",
+        "src/engine/api/game.ts#legalActions"
+      ],
       "notes": ""
     },
     {
@@ -3521,9 +3736,13 @@
       "sections": [
         "8.6.3.1.4"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/rules/frame.ts#runOp",
+        "src/engine/rules/select.ts#matchesFilter"
+      ],
       "notes": "Fail-to-find for searches. The printed v2.10 sentence literally says the player is 'not allowed to choose' such cards, which contradicts the sentence before it if read literally; confirm the interpretation before implementing. Owner decision 2026-10-16: a filtered choice among unrevealed cards in a hidden zone (hand, deck) may find nothing even when a match is there. An unfiltered choice is forced (the rule needs a condition on card information)."
     },
     {
@@ -3534,9 +3753,14 @@
         "8.6.4",
         "8.6.4.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#answerOptional",
+        "src/engine/rules/frame.ts#canDo",
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/model/text.ts#clause"
+      ],
       "notes": ""
     },
     {
@@ -3546,9 +3770,14 @@
       "sections": [
         "8.6.5"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#performer",
+        "src/engine/rules/frame.ts#runStep",
+        "src/engine/rules/autos.ts#resolveAuto",
+        "src/engine/rules/flow.ts#resolveCard"
+      ],
       "notes": ""
     },
     {
@@ -3559,9 +3788,18 @@
         "8.6.6",
         "8.6.6.1"
       ],
-      "status": "planned",
+      "status": "verified",
       "milestone": "M3",
-      "impl": [],
+      "impl": [
+        "src/engine/rules/frame.ts#lookedInDeck",
+        "src/engine/rules/frame.ts#lookRest",
+        "src/engine/rules/frame.ts#arrange",
+        "src/engine/rules/frame.ts#endLook",
+        "src/engine/rules/frame.ts#closeFrame",
+        "src/engine/rules/frame.ts#fxMove",
+        "src/engine/rules/ruleActions.ts#refresh",
+        "src/engine/api/view.ts#lookView"
+      ],
       "notes": "Track reveal/look visibility per card and clear it at the end of the effect's resolution."
     },
     {

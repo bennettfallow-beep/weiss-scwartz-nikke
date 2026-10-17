@@ -3,7 +3,7 @@
 // the LAST element is the top card (deck top, newest waiting-room card, ...).
 
 import type { RngState } from '../core/rng';
-import type { Ability, LookTake, Step, TriggerKind, StepKind } from './abilities';
+import type { Ability, CostPart, LookTake, Step, TriggerKind, StepKind } from './abilities';
 
 export type PlayerId = 0 | 1;
 export const PLAYERS: readonly PlayerId[] = [0, 1];
@@ -269,6 +269,8 @@ export interface AbilityFrame {
   def: string;
   /** Index into the definition's abilities, or null for an event's effect. */
   index: number | null;
+  /** The ability's cost, copied from the card when the frame opened. */
+  cost: CostPart[];
   ops: FrameOp[];
   /** Cards picked by `choose` steps, by name. */
   chosen: { as: string; cards: CardRef[] }[];

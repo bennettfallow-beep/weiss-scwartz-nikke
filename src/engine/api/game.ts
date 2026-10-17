@@ -22,7 +22,7 @@ import { log, stageSlot } from '../core/zones';
 import { validateDeck } from '../rules/deck';
 import { attackOptions, canBackup } from '../rules/combat';
 import { perform, run } from '../rules/flow';
-import { activatable } from '../rules/frame';
+import { activatable, canAccept } from '../rules/frame';
 import { canPlayFromHand } from '../rules/play';
 
 export type CreateResult = { ok: true; state: GameState } | { ok: false; errors: (EngineError & { player?: PlayerId })[] };
@@ -241,7 +241,8 @@ export function legalActions(state: GameState, catalog: CardCatalog, player?: Pl
       for (const card of pending.options) actions.push({ type: 'CHOOSE_CARD', player: p, card });
       break;
     case 'optional':
-      actions.push({ type: 'ACCEPT', player: p }, { type: 'PASS', player: p });
+      if (canAccept(state, catalog)) actions.push({ type: 'ACCEPT', player: p });
+      actions.push({ type: 'PASS', player: p });
       break;
   }
   return actions.map((a) => [actionKey(a), a] as const).sort(([x], [y]) => (x < y ? -1 : x > y ? 1 : 0)).map(([, a]) => a);

@@ -84,7 +84,11 @@ load. The language is small and closed; everything outside it is in `docs/KNOWN_
   - Steps after a `choose` refer to its picks by name.
   - "You" means the ability's master.
 - **Validation.** `validateCatalog` checks ability data. Each problem gets a stable code
-  (`ABILITY_*`) and a path (e.g. `abilities.0.effect.1.count`). The checker never throws.
+  (`ABILITY_*`) and a path (e.g. `abilities.0.effect.1.count`). The checker never throws. It also
+  enforces rules the engine relies on:
+  - a choose name is used once per ability;
+  - a cost rests the card at most once, and putting the card into the waiting room is the
+    last part of a cost.
 - **Card text.** `cardText(def)` renders the language as deterministic English.
 
 How they run:
@@ -105,6 +109,8 @@ How they run:
   (CR 8.9.3).
   - One-shot "+X until end of turn" changes stay with the card objects they hit (CR 8.9.2).
   - Duration `game` survives end of turn.
+- **Activated abilities in the main phase.** Every activated ability is usable there, counter-icon
+  ones included (CR 2.8.2.1). The opponent's Counter Step allows only counter-icon ones.
 - **Choices.**
   - A `pick` prompt asks for cards one CHOOSE_CARD at a time. PASS ends it once the minimum is met.
   - A fixed number must be picked as far as possible (CR 8.6.3.1). "Up to" allows none.
@@ -112,7 +118,15 @@ How they run:
     2026-10-16).
   - An `optional` prompt (ACCEPT / PASS) asks "you may", "pay the cost?" and "look at / draw the
     next card?".
-  - "You may A; if you do B; if not C": C also runs when A was impossible (CR 8.6.4).
+  - "You may A; if you do B; if not C": C also runs when A was impossible. A counts as done only
+    if it can be done in full: the whole stated number of cards (CR 8.6.4 leaves partial actions
+    open; this is the engine's single reading).
+- **Prompts never reveal hidden cards.** Whether a prompt appears depends only on what both players
+  can see:
+  - A filtered pick from the hand or from looked-at cards is asked whenever there are such cards,
+    even if none qualify. The player then just ends it.
+  - An automatic ability's "pay the cost?" is asked whenever the cost could be paid as far as the
+    opponent can tell. ACCEPT is offered only when it really can.
 - **Looking at the deck** (`lookTop`). Only the looker sees the cards: `projectView` shows them to
   that player only, and `look` events and the other player's CHOOSE_CARD answers are redacted.
   The rest go back on top or to the bottom in a chosen order, or to the waiting room.

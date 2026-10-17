@@ -11,6 +11,7 @@
 import { other } from '../model/types';
 import type { AbilityFrame, CardCatalog, CardId, CardRef, FrameOp, GameState, MoveReason, PickPurpose, PlayerId, Task } from '../model/types';
 import type { Ability, CostPart, Step, Target } from '../model/abilities';
+import { deepClone } from '../core/clone';
 import { EngineFault } from '../core/fault';
 import { defOf, locate, log, moveCard, ownersZone, topOf } from '../core/zones';
 import { canPayCost, discardOptions, discardPart, payCost } from './costs';
@@ -22,27 +23,15 @@ import type { TextContext } from './select';
 const MAX_OPS = 64;
 
 const ctxOf = (f: AbilityFrame): TextContext => ({ master: f.master, source: f.source });
-const stepOps = (steps: readonly Step[] | undefined): FrameOp[] => (steps ?? []).map((step) => ({ k: 'step', step }));
-
-/** The ability a frame resolves, or null for an event's effect. */
-export function frameAbility(s: GameState, catalog: CardCatalog, f: AbilityFrame): Ability | null {
-  if (f.index === null) return null;
-  const inst = s.cards[f.source.card];
-  const ability = inst ? catalog[inst.def]?.abilities?.[f.index] : undefined;
-  if (!ability) throw new EngineFault(`card ${f.source.card} has no ability ${f.index}`);
-  return ability;
-}
-
-function frameCost(s: GameState, catalog: CardCatalog, f: AbilityFrame): readonly CostPart[] | undefined {
-  const ability = frameAbility(s, catalog, f);
-  return ability && ability.kind !== 'continuous' ? ability.cost : undefined;
-}
+/** Steps become ops as copies, so the game state never shares objects with the card catalog. */
+const stepOps = (steps: readonly Step[] | undefined): FrameOp[] => (steps ?? []).map((step) => ({ k: 'step', step: deepClone(step) }));
 
 /** Starts resolving an ability or event effect. Only one resolves at a time. */
-export function openFrame(s: GameState, frame: Pick<AbilityFrame, 'kind' | 'master' | 'source' | 'def' | 'index' | 'ops'>): void {
+export function openFrame(s: GameState, frame: Pick<AbilityFrame, 'kind' | 'master' | 'source' | 'def' | 'index' | 'ops'> & { cost?: readonly CostPart[] }): void {
   if (s.resolving) throw new EngineFault('an ability is already resolving');
   if (frame.ops.length > MAX_OPS) throw new EngineFault('ability has too many steps');
-  s.resolving = { ...frame, chosen: [], costCards: [], look: null, wait: null };
+  const { cost, ...rest } = frame;
+  s.resolving = { ...rest, cost: deepClone([...(cost ?? [])]), chosen: [], costCards: [], look: null, wait: null };
 }
 
 /** Ops for an activated ability: choose cost cards, pay, played, then the effect (CR 8.6.2). */
@@ -60,6 +49,18 @@ export function automaticOps(ability: Extract<Ability, { kind: 'automatic' }>): 
 
 export function eventOps(effect: readonly Step[]): FrameOp[] {
   return stepOps(effect);
+}
+
+/**
+ * Whether ACCEPT is a legal answer to the open yes/no prompt. Paying a cost is
+ * offered only when the cost can really be paid. The prompt itself appears
+ * whenever the cost could be paid as far as the opponent can tell, so its
+ * appearance says nothing about the hand.
+ */
+export function canAccept(s: GameState, catalog: CardCatalog): boolean {
+  const f = s.resolving;
+  if (f?.wait?.for !== 'payCost') return true;
+  return canPayCost(s, catalog, f.master, f.source, f.cost);
 }
 
 function closeFrame(s: GameState): void {
@@ -91,10 +92,27 @@ function ask(s: GameState, f: AbilityFrame, player: PlayerId, purpose: PickPurpo
 /**
  * Opens a pick, or settles it at once when there is no real choice: nothing to
  * pick, or everything available must be taken.
+ *
+ * A pick among hidden cards by their information (`hiddenPool` = how many
+ * hidden cards it looks through, e.g. the hand) is always asked while there
+ * are any such cards, even if none qualify or all must be taken: otherwise
+ * whether the prompt appears would tell the opponent what the hidden cards are.
  */
-function pick(s: GameState, catalog: CardCatalog, f: AbilityFrame, wait: NonNullable<AbilityFrame['wait']>, player: PlayerId, purpose: PickPurpose, options: CardId[], min: number, max: number): void {
+function pick(
+  s: GameState,
+  catalog: CardCatalog,
+  f: AbilityFrame,
+  wait: NonNullable<AbilityFrame['wait']>,
+  player: PlayerId,
+  purpose: PickPurpose,
+  options: CardId[],
+  min: number,
+  max: number,
+  hiddenPool = 0,
+): void {
   f.wait = wait;
-  if (max === 0 || (min === max && max === options.length)) finishPick(s, catalog, f, options.slice(0, max));
+  const settled = max === 0 || (min === max && max === options.length);
+  if (settled && hiddenPool === 0) finishPick(s, catalog, f, options.slice(0, max));
   else ask(s, f, player, purpose, options, min, max);
 }
 
@@ -115,7 +133,8 @@ function finishPick(s: GameState, catalog: CardCatalog, f: AbilityFrame, picked:
   if (!wait) throw new EngineFault('a pick finished with nothing waiting for it');
   switch (wait.for) {
     case 'target':
-      f.chosen.push({ as: wait.as, cards: picked.map((c) => refOf(s, c)) });
+      // A name chosen again replaces the earlier pick (the validator keeps names unique per ability).
+      f.chosen = [...f.chosen.filter((c) => c.as !== wait.as), { as: wait.as, cards: picked.map((c) => refOf(s, c)) }];
       if (picked.length > 0) log(s, { kind: 'chosen', player: f.master, card: f.source.card, cards: [...picked] });
       return;
     case 'costCards':
@@ -208,14 +227,15 @@ function runOp(s: GameState, catalog: CardCatalog, f: AbilityFrame, op: FrameOp)
       optional(s, f, { for: 'payCost' }, f.master);
       return;
     case 'pickCost': {
-      const part = discardPart(frameCost(s, catalog, f));
+      const part = discardPart(f.cost);
       if (!part) return;
       const options = discardOptions(s, catalog, f.master, part.filter);
-      pick(s, catalog, f, { for: 'costCards' }, f.master, 'costDiscard', options, part.count, part.count);
+      const hidden = part.filter === undefined ? 0 : s.players[f.master].hand.length;
+      pick(s, catalog, f, { for: 'costCards' }, f.master, 'costDiscard', options, part.count, part.count, hidden);
       return;
     }
     case 'payCost':
-      payCost(s, catalog, f.master, f.source, frameCost(s, catalog, f), f.costCards);
+      payCost(s, catalog, f.master, f.source, f.cost, f.costCards);
       return;
     case 'played':
       log(s, { kind: 'ability', player: f.master, card: f.source.card, index: f.index, category: f.kind });
@@ -228,11 +248,12 @@ function runOp(s: GameState, catalog: CardCatalog, f: AbilityFrame, op: FrameOp)
       return;
     case 'lookTake': {
       const { take } = op;
-      const options = lookedInDeck(s, f).filter((c) => take.filter === undefined || matchesFilter(s, catalog, c, take.filter));
+      const looked = lookedInDeck(s, f);
+      const options = looked.filter((c) => take.filter === undefined || matchesFilter(s, catalog, c, take.filter));
       const max = Math.min(take.count, options.length);
       // CR 8.6.3.1.4: unrevealed cards picked by their information may be left unpicked.
       const min = take.upTo === true || take.filter !== undefined ? 0 : max;
-      pick(s, catalog, f, { for: 'move', to: take.to, reason: 'effect' }, f.master, 'lookTake', options, min, max);
+      pick(s, catalog, f, { for: 'move', to: take.to, reason: 'effect' }, f.master, 'lookTake', options, min, max, take.filter === undefined ? 0 : looked.length);
       return;
     }
     case 'lookRest':
@@ -254,21 +275,27 @@ export function resolveTargets(s: GameState, catalog: CardCatalog, f: AbilityFra
   return selectStage(s, catalog, ctxOf(f), target.all);
 }
 
-/** Whether a "you may" action can be done in full right now (CR 8.6.4). */
+/**
+ * Whether a "you may" action can be done in full right now (CR 8.6.4). One
+ * reading for every action: "in full" means the whole stated number of cards
+ * (cards that a deck refresh would supply count as available).
+ */
 function canDo(s: GameState, catalog: CardCatalog, f: AbilityFrame, step: Step): boolean {
   const p = s.players[f.master];
+  const deckCards = (who: PlayerId) => s.players[who].deck.length + s.players[who].waiting.length;
   switch (step.do) {
     case 'choose':
-      return selectStage(s, catalog, ctxOf(f), step.what).length > 0;
+      return selectStage(s, catalog, ctxOf(f), step.what).length >= step.count;
     case 'draw':
-      return s.players[performer(f, step.player)].deck.length > 0;
+      return deckCards(performer(f, step.player)) >= step.count;
     case 'discard':
       return s.players[performer(f, step.player)].hand.filter((c) => step.filter === undefined || matchesFilter(s, catalog, c, step.filter)).length >= step.count;
     case 'stockFromDeck':
+      return deckCards(f.master) >= step.count;
     case 'lookTop':
       return p.deck.length > 0;
     case 'heal':
-      return p.clock.length > 0;
+      return p.clock.length >= step.count;
     case 'power':
     case 'soul':
     case 'sendToWaiting':
@@ -277,7 +304,7 @@ function canDo(s: GameState, catalog: CardCatalog, f: AbilityFrame, step: Step):
     case 'damageOpp':
       return true;
     case 'salvage':
-      return p.waiting.some((c) => step.filter === undefined || matchesFilter(s, catalog, c, step.filter));
+      return p.waiting.filter((c) => step.filter === undefined || matchesFilter(s, catalog, c, step.filter)).length >= step.count;
     case 'may':
     case 'if':
       return true;
@@ -310,7 +337,7 @@ function runStep(s: GameState, catalog: CardCatalog, f: AbilityFrame, step: Step
       const options = s.players[who].hand.filter((c) => step.filter === undefined || matchesFilter(s, catalog, c, step.filter));
       // The hand is hidden from the opponent: a choice by card information may come up empty (CR 8.6.3.1.4).
       const [min, max] = bounds(options.length, step.count, step.upTo === true, step.filter !== undefined);
-      pick(s, catalog, f, { for: 'move', to: 'waiting', reason: 'effect' }, who, 'discard', options, min, max);
+      pick(s, catalog, f, { for: 'move', to: 'waiting', reason: 'effect' }, who, 'discard', options, min, max, step.filter === undefined ? 0 : s.players[who].hand.length);
       return;
     }
     case 'stockFromDeck':
@@ -440,8 +467,10 @@ export interface Activatable {
 
 /**
  * Activated abilities `player` may use in this play timing: from their stage
- * characters (CR 2.12), with the matching timing, while the ability's
- * conditions hold and its whole cost can be paid (CR 8.4.2.2).
+ * characters (CR 2.12), while the ability's conditions hold and its whole cost
+ * can be paid (CR 8.4.2.2). The main phase allows any of them (CR 6.5.1.2.3),
+ * counter-icon ones included (CR 2.8.2.1); the opponent's Counter Step allows
+ * only counter-icon ones (CR 7.4.1.2.1).
  */
 export function activatable(s: GameState, catalog: CardCatalog, player: PlayerId, window: 'main' | 'climax' | 'counter'): Activatable[] {
   if (window === 'climax') return [];
@@ -453,7 +482,9 @@ export function activatable(s: GameState, catalog: CardCatalog, player: PlayerId
     if (!abilities || workingMaster(s, catalog, card) !== player) continue;
     const ctx: TextContext = { master: player, source: refOf(s, card) };
     abilities.forEach((a, i) => {
-      if (a.kind === 'activated' && a.timing === window && holds(s, catalog, ctx, a.when) && canPayCost(s, catalog, player, ctx.source, a.cost)) {
+      if (a.kind !== 'activated') return;
+      const allowed = window === 'main' || a.timing === 'counter';
+      if (allowed && holds(s, catalog, ctx, a.when) && canPayCost(s, catalog, player, ctx.source, a.cost)) {
         out.push({ card, ability: i });
       }
     });
@@ -466,5 +497,5 @@ export function activate(s: GameState, catalog: CardCatalog, player: PlayerId, c
   const def = defOf(s, catalog, card);
   const ability = def.abilities?.[index];
   if (ability?.kind !== 'activated') throw new EngineFault(`${card} has no activated ability ${index}`);
-  openFrame(s, { kind: 'activated', master: player, source: refOf(s, card), def: def.id, index, ops: activatedOps(ability) });
+  openFrame(s, { kind: 'activated', master: player, source: refOf(s, card), def: def.id, index, ops: activatedOps(ability), cost: ability.cost });
 }

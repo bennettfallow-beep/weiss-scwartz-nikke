@@ -3,7 +3,7 @@
 
 Source: Weiss Schwarz (English Edition) Comprehensive Rules v2.10. Statements are paraphrases, not rule text.
 
-Rows: 271 · verified 168 · planned 40 · deferred 59 · out 4
+Rows: 271 · verified 205 · planned 3 · deferred 59 · out 4
 
 ## GEN: Player count and golden rules (CR 1.1, 1.3)
 
@@ -38,14 +38,14 @@ Rows: 271 · verified 168 · planned 40 · deferred 59 · out 4
 |---|---|---|---|---|---|
 | CARD-01 | A card's name identifies it; small reading-aid characters printed above the name, and any portions that are struck through or painted over, are not part of the name and are ignored whenever names are referenced. | §2.1.1, §2.1.1.1, §2.1.1.2 | verified | M1 | 3 |
 | CARD-02 | Some cards have no Japanese card name because they did not yet exist in the Japanese Edition when the English product was first printed. | §2.1.1.3 | out | none | 0 |
-| CARD-03 | A name written in quotation marks inside card text refers, unless stated otherwise, to a card bearing exactly that name. | §2.1.2 | planned | M3 | 0 |
+| CARD-03 | A name written in quotation marks inside card text refers, unless stated otherwise, to a card bearing exactly that name. | §2.1.2 | verified | M3 | 3 |
 | CARD-04 | Text of the form 'with "X" in its card name' matches cards whose name contains X as a portion: the bilingual form matches a part of the English name together with a part of the Japanese name, and the English-only form requires X to be bounded on each side by a punctuation mark or by nothing (start/end of the name). | §2.1.2.1, §2.1.2.2 | deferred | none | 0 |
 | CARD-05 | The illustration (including any flavor text printed above the card text), reminder text, collection ID, rarity, illustrator, and copyright information have no effect on gameplay. | §2.2.1, §2.2.2, §2.2.3, §2.12.3, §2.14.1, §2.14.2, §2.15.1, §2.15.2, §2.16.1, §2.16.2, §2.17.1, §2.17.2 | out | none | 0 |
 | CARD-06 | Every card is exactly one of three types: character, event, or climax. | §2.3.1, §2.3.2 | verified | M1 | 2 |
-| CARD-07 | When card text says 'character' without naming a zone, it means a character on the stage. | §2.3.2.1.2 | planned | M3 | 0 |
-| CARD-08 | When card text says 'climax' (which may be abbreviated 'CX') without naming a zone, it means a climax card placed in the climax area. | §2.3.2.3.2, §2.3.2.3.3 | planned | M3 | 0 |
+| CARD-07 | When card text says 'character' without naming a zone, it means a character on the stage. | §2.3.2.1.2 | verified | M3 | 2 |
+| CARD-08 | When card text says 'climax' (which may be abbreviated 'CX') without naming a zone, it means a climax card placed in the climax area. | §2.3.2.3.2, §2.3.2.3.3 | verified | M3 | 2 |
 | CARD-09 | Each card has a color, and its color restricts whether the card may be played, as set out in Section 8. | §2.4.1, §2.4.2 | verified | M1 | 4 |
-| CARD-10 | Traits exist only on characters; they have no rules effect of their own but abilities and effects may refer to them, marked with double angle brackets. | §2.5.1, §2.5.2, §2.5.3 | planned | M3 | 0 |
+| CARD-10 | Traits exist only on characters; they have no rules effect of their own but abilities and effects may refer to them, marked with double angle brackets. | §2.5.1, §2.5.2, §2.5.3 | verified | M3 | 3 |
 | CARD-11 | Level exists only on characters and events and is the minimum player level required to play that card, as governed by Section 8. | §2.6.1, §2.6.2 | verified | M1 | 4 |
 | CARD-12 | Cost exists only on characters and events; to play the card, that many cards must be moved from the player's stock to their waiting room. | §2.7.1, §2.7.2 | verified | M1 | 6 |
 | CARD-13 | A card with the Counter icon may be played during the Counter Step of the opponent's turn. | §2.8.1, §2.8.2 | verified | M2 | 4 |
@@ -54,7 +54,7 @@ Rows: 271 · verified 168 · planned 40 · deferred 59 · out 4
 | CARD-16 | Power exists only on characters and is the character's strength in battle. | §2.9.1 | verified | M2 | 2 |
 | CARD-17 | Soul exists only on characters and is the base amount of damage the character deals in its battle; it is shown by the number of soul icons rather than as a printed number. | §2.10.1, §2.10.2 | verified | M2 | 2 |
 | CARD-18 | A card's trigger icon(s) determine what happens when that card is revealed in the Trigger Step of an attack. | §2.11.1 | verified | M2 | 2 |
-| CARD-19 | Unless stated otherwise, a character's card text works only while it is on the stage and a climax's card text works only while it is in the climax area; however, an ability that by its nature is meant to be used in some other zone works in that zone. | §2.12.1, §2.12.2, §2.12.2.1, §2.12.2.2, §2.12.2.3 | planned | M3 | 0 |
+| CARD-19 | Unless stated otherwise, a character's card text works only while it is on the stage and a climax's card text works only while it is in the climax area; however, an ability that by its nature is meant to be used in some other zone works in that zone. | §2.12.1, §2.12.2, §2.12.2.1, §2.12.2.2, §2.12.2.3 | verified | M3 | 5 |
 | CARD-20 | Title name and Weiss/Schwarz side affiliation (shown by a white, black, or white-to-black gradient side frame) have no rules meaning in themselves, although effects may refer to them. | §2.13.1, §2.13.2, §2.18.1, §2.18.1.1, §2.18.1.2, §2.18.1.3, §2.18.2 | out | none | 0 |
 | CARD-21 | When a rule or effect checks information a card does not have, missing numeric information counts as 0 and missing non-numeric information counts as nonexistent. | §2.19.1 | verified | M1 | 2 |
 | CARD-22 | When two non-numeric values are compared and at least one of them is missing, they are never treated as identical. | §2.19.2 | deferred | none | 0 |
@@ -72,9 +72,9 @@ Rows: 271 · verified 168 · planned 40 · deferred 59 · out 4
 | ZONE-06 | If a card is sent to a zone without saying whose zone it is, and no other instruction applies, it goes to its owner's zone. | §3.1.6 | verified | M1 | 1 |
 | ZONE-07 | The deck, where a player's deck starts the game, is a hidden zone: its cards are face down, and no player may see their information or order or rearrange them. | §3.2.1, §3.2.2 | verified | M1 | 2 |
 | ZONE-08 | When something acts on several cards taken from the deck top or bottom, the cards are handled singly, one after another, in deck order. | §3.2.3 | verified | M1 | 2 |
-| ZONE-09 | For an 'up to N' deck action, before handling each next card the player may declare that they stop, which ends the action; they may even stop before handling the first card. | §3.2.3.1, §3.2.3.1.1 | planned | M3 | 0 |
+| ZONE-09 | For an 'up to N' deck action, before handling each next card the player may declare that they stop, which ends the action; they may even stop before handling the first card. | §3.2.3.1, §3.2.3.1.1 | verified | M3 | 7 |
 | ZONE-10 | If the deck becomes empty partway through such a deck action, the action is paused, a refresh (9.2) is carried out, and the action then resumes. | §3.2.3.2 | verified | M1 | 2 |
-| ZONE-11 | If the deck holds fewer cards than the action specifies, and cards would still remain in the deck after handling as many cards as it holds (e.g., merely looking at them), the player handles only the cards present and the action ends. | §3.2.3.3 | planned | M3 | 0 |
+| ZONE-11 | If the deck holds fewer cards than the action specifies, and cards would still remain in the deck after handling as many cards as it holds (e.g., merely looking at them), the player handles only the cards present and the action ends. | §3.2.3.3 | verified | M3 | 4 |
 | ZONE-12 | Shuffling puts the deck into an unpatterned random order, and the deck's owner always performs the shuffle regardless of who is master of the ability that called for it. | §3.2.4 | verified | M1 | 2 |
 | ZONE-13 | Cards flipped over from the deck are revealed and placed in the resolution zone. | §3.2.5 | verified | M2 | 2 |
 | ZONE-14 | Drawn cards go to the hand, which is hidden from the opponent; its owner may look at and reorder their own hand whenever they like. | §3.3.1, §3.3.2 | verified | M1 | 5 |
@@ -110,15 +110,15 @@ Rows: 271 · verified 168 · planned 40 · deferred 59 · out 4
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| CONC-01 | Every ability is an instruction that originates either from printed card text or from an effect, and each one belongs to exactly one category: activated, automatic, or continuous. | §4.1.1, §4.1.1.1 | planned | M3 | 0 |
-| CONC-02 | An effect is the content of what an ability instructs; the engine must distinguish one-shot effects from continuous effects as two of the three effect categories. | §4.1.2, §4.1.2.1 | planned | M3 | 0 |
+| CONC-01 | Every ability is an instruction that originates either from printed card text or from an effect, and each one belongs to exactly one category: activated, automatic, or continuous. | §4.1.1, §4.1.1.1 | verified | M3 | 3 |
+| CONC-02 | An effect is the content of what an ability instructs; the engine must distinguish one-shot effects from continuous effects as two of the three effect categories. | §4.1.2, §4.1.2.1 | verified | M3 | 2 |
 | CONC-03 | Replacement effects form a third, separate category of effects. | §4.1.2.1 | deferred | none | 0 |
 | CONC-04 | A card's owner is the player whose deck contained that card when the game began. | §4.2.1, §4.2.2 | verified | M1 | 4 |
 | CONC-05 | When the game is over, each player takes back the cards they own. | §4.2.3 | out | none | 0 |
 | CONC-06 | The master of a card is the player currently using it, which for a card in a zone is the player that zone belongs to. | §4.3.1, §4.3.2 | verified | M1 | 3 |
-| CONC-07 | The master of an effect is whoever is master of the ability that generated that effect. | §4.3.3 | planned | M3 | 0 |
-| CONC-08 | Whoever plays an activated ability is its master. | §4.3.4 | planned | M3 | 0 |
-| CONC-09 | An automatic or continuous ability belongs (as master) to whoever is master of the card carrying it; if an effect created the ability, it belongs to that effect's master instead. | §4.3.5, §4.3.6 | planned | M3 | 0 |
+| CONC-07 | The master of an effect is whoever is master of the ability that generated that effect. | §4.3.3 | verified | M3 | 6 |
+| CONC-08 | Whoever plays an activated ability is its master. | §4.3.4 | verified | M3 | 5 |
+| CONC-09 | An automatic or continuous ability belongs (as master) to whoever is master of the card carrying it; if an effect created the ability, it belongs to that effect's master instead. | §4.3.5, §4.3.6 | verified | M3 | 4 |
 | CONC-10 | During a check timing, all pending rule actions are resolved first, and automatic abilities in a standby condition whose trigger conditions are met are resolved only once no rule actions remain. | §4.4.1, §4.4.2 | verified | M1 | 3 |
 | CONC-11 | A check timing always happens immediately before a player receives a play timing, and the player gets the play timing only after every rule action and automatic ability from that check timing has been resolved. | §4.5.1, §4.5.2 | verified | M1 | 2 |
 | CONC-12 | At a play timing the player either performs one action that is legal at that moment or chooses to do nothing; after a chosen action resolves, that same player gets another play timing unless something specifies otherwise. | §4.5.3, §4.5.3.1 | verified | M1 | 3 |
@@ -126,7 +126,7 @@ Rows: 271 · verified 168 · planned 40 · deferred 59 · out 4
 | CONC-14 | Each character on the stage is in exactly one of three orientations: stand (upright from its controller's view), rest (sideways) or reverse (upside down), and standing, resting or reversing a card switches it into that orientation. | §4.6.1, §4.6.1.1, §4.6.1.2, §4.6.1.3 | verified | M1 | 3 |
 | CONC-15 | In card text, the stand, rest and reverse icons carry the same meaning as the corresponding words. | §4.6.1.1.1, §4.6.1.2.1, §4.6.1.3.1 | planned | M3b | 0 |
 | CONC-16 | An instruction to draw N cards moves cards into the drawing player's hand from the top of that player's own deck, taking the top card each time. | §4.7.1 | verified | M1 | 3 |
-| CONC-17 | An instruction to look at the top N cards of the deck, or at up to N cards from the top, lets the player check those cards' information while the cards stay in the deck. | §4.8.1 | planned | M3 | 0 |
+| CONC-17 | An instruction to look at the top N cards of the deck, or at up to N cards from the top, lets the player check those cards' information while the cards stay in the deck. | §4.8.1 | verified | M3 | 4 |
 | CONC-18 | An instruction to reveal the top N cards of the deck, or up to N cards from the top, shows those cards' information openly while the cards stay in the deck. | §4.9.1 | deferred | none | 0 |
 
 ## DMG: Damage process and source of damage (CR 4.10-4.11)
@@ -139,7 +139,7 @@ Rows: 271 · verified 168 · planned 40 · deferred 59 · out 4
 | DMG-04 | Moving cards into the clock by any means other than dealing damage is not a Damage Process, so it can never be canceled. | §4.10.2 | verified | M2 | 2 |
 | DMG-05 | A general reference in an effect to cards moved into a zone or revealed by an effect excludes cards handled during a Damage Process; only an effect that names damage specifically counts those cards. | §4.10.3 | deferred | none | 0 |
 | DMG-06 | When a character deals damage to another player in the Damage Step of an attack, the attacking character is the source of that damage. | §4.11.1, §4.11.1.1 | verified | M2 | 3 |
-| DMG-07 | Damage dealt by an event card, or by an effect of an ability that a card has, has that event card or that card as its source unless stated otherwise; if the source would be the player, the card is the source instead. | §4.11.1.2, §4.11.1.2.1 | planned | M3 | 0 |
+| DMG-07 | Damage dealt by an event card, or by an effect of an ability that a card has, has that event card or that card as its source unless stated otherwise; if the source would be the player, the card is the source instead. | §4.11.1.2, §4.11.1.2.1 | verified | M3 | 5 |
 
 ## TRG: Trigger icons (CR 4.12)
 
@@ -216,7 +216,7 @@ Rows: 271 · verified 168 · planned 40 · deferred 59 · out 4
 | MAIN-01 | The Main Phase starts by meeting the 'at the beginning of main phase' trigger condition. The turn player then gets a play timing, preceded by its check timing, in which they may take main-phase actions in any order and as often as they like, as long as each cost can be paid. | §6.5.1.1, §6.5.1.2 | verified | M1 | 3 |
 | MAIN-02 | In the main-phase play timing the turn player may play a character card from hand onto a stage position of their own that they choose, and the character is placed in that position. | §6.5.1.2.1 | verified | M1 | 1 |
 | MAIN-03 | In the main-phase play timing the turn player may play an event card from hand. It goes to the player's resolution zone and, once its effect has resolved, moves to its owner's waiting room. | §6.5.1.2.2 | verified | M1 | 2 |
-| MAIN-04 | In the main-phase play timing the turn player may use any of their activated abilities that are currently valid to play. | §6.5.1.2.3 | planned | M3 | 0 |
+| MAIN-04 | In the main-phase play timing the turn player may use any of their activated abilities that are currently valid to play. | §6.5.1.2.3 | verified | M3 | 5 |
 | MAIN-05 | The turn player may choose two of their stage positions and exchange what is in them. If both hold a card, the two cards are relocated at the same time. If only one holds a card, it moves into the empty position. If both are empty, nothing happens. | §6.5.1.2.4 | verified | M1 | 4 |
 | MAIN-06 | When the turn player chooses to take no action in the main-phase play timing, the Main Phase ends and play moves to the Climax Phase. | §6.5.1.3 | verified | M1 | 1 |
 
@@ -307,27 +307,27 @@ Rows: 271 · verified 168 · planned 40 · deferred 59 · out 4
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| ABL-01 | Every ability belongs to exactly one of three categories: activated, automatic, or continuous. An activated ability can only be used by a player who currently holds a play timing, and using it requires paying the cost shown in brackets before its effect text. | §8.1.1, §8.1.1.1, §8.1.1.1.1, §8.1.1.4 | planned | M3 | 0 |
+| ABL-01 | Every ability belongs to exactly one of three categories: activated, automatic, or continuous. An activated ability can only be used by a player who currently holds a play timing, and using it requires paying the cost shown in brackets before its effect text. | §8.1.1, §8.1.1.1, §8.1.1.1.1, §8.1.1.4 | verified | M3 | 5 |
 | ABL-02 | A trigger worded 'when (player) uses an activated ability' is met at the instant that player completes payment of that ability's cost. | §8.1.1.1.2 | deferred | none | 0 |
-| ABL-03 | An automatic ability is played on its own when its trigger condition happens; the trigger is either a stated event ('when ...') or the beginning or end of a named phase or step. If the ability carries a bracketed cost, that cost can be paid during resolution as its text directs. | §8.1.1.2, §8.1.1.2.1, §8.1.1.2.2 | planned | M3 | 0 |
-| ABL-04 | Activated abilities, automatic abilities, and cards in hand produce their effects only by being played and resolved. A continuous ability is never played; its effect simply holds for as long as its stated duration lasts. | §8.1.1.3, §8.1.1.3.1, §8.6.1 | planned | M3 | 0 |
-| ABL-05 | Effects are one-shot (the instructed action is carried out a single time and the effect is over), continuous (applies for its stated duration; with no stated duration it lasts for the rest of the game), or replacement (see ABL-23). | §8.2.1, §8.2.1.1, §8.2.1.2, §8.2.1.3, §8.8.1 | planned | M3 | 0 |
-| ABL-06 | When an effect (or part of it) is made inactive under a condition, the ability still exists while that condition holds but generates nothing and requires no choices; an effect said to be active under a condition is treated as inactive whenever that condition is unmet. | §8.3.1, §8.3.2, §8.3.3 | planned | M3 | 0 |
+| ABL-03 | An automatic ability is played on its own when its trigger condition happens; the trigger is either a stated event ('when ...') or the beginning or end of a named phase or step. If the ability carries a bracketed cost, that cost can be paid during resolution as its text directs. | §8.1.1.2, §8.1.1.2.1, §8.1.1.2.2 | verified | M3 | 7 |
+| ABL-04 | Activated abilities, automatic abilities, and cards in hand produce their effects only by being played and resolved. A continuous ability is never played; its effect simply holds for as long as its stated duration lasts. | §8.1.1.3, §8.1.1.3.1, §8.6.1 | verified | M3 | 4 |
+| ABL-05 | Effects are one-shot (the instructed action is carried out a single time and the effect is over), continuous (applies for its stated duration; with no stated duration it lasts for the rest of the game), or replacement (see ABL-23). | §8.2.1, §8.2.1.1, §8.2.1.2, §8.2.1.3, §8.8.1 | verified | M3 | 3 |
+| ABL-06 | When an effect (or part of it) is made inactive under a condition, the ability still exists while that condition holds but generates nothing and requires no choices; an effect said to be active under a condition is treated as inactive whenever that condition is unmet. | §8.3.1, §8.3.2, §8.3.3 | verified | M3 | 6 |
 | ABL-07 | At each check timing, first resolve every rule action currently due, all at the same time, and repeat this step as long as new rule actions arise; the check timing ends only when neither rule actions nor standby automatic abilities remain. | §8.5.1, §8.5.1.1, §8.5.1.4 | verified | M1 | 3 |
-| ABL-08 | Once rule actions are cleared at a check timing, if the turn player has automatic abilities in standby they pick one, play and resolve it, and rule actions are rechecked; only when the turn player has none waiting does the non-turn player pick and resolve one of theirs, again followed by a rule-action recheck. | §8.5.1.2, §8.5.1.3, §8.7.3 | planned | M3 | 0 |
+| ABL-08 | Once rule actions are cleared at a check timing, if the turn player has automatic abilities in standby they pick one, play and resolve it, and rule actions are rechecked; only when the turn player has none waiting does the non-turn player pick and resolve one of theirs, again followed by a rule-action recheck. | §8.5.1.2, §8.5.1.3, §8.7.3 | verified | M3 | 3 |
 | ABL-09 | When a player receives a play timing, a check timing is resolved first; then the player may take one permitted action or do nothing. Taking an action grants them another play timing afterward unless stated otherwise, while doing nothing ends the play timing and the phase or step advances. | §8.5.2, §8.5.2.1, §8.5.2.2, §8.5.2.3 | verified | M1 | 6 |
-| ABL-10 | Whenever an automatic ability's trigger condition is met it enters standby, once per time the condition is met, and standby abilities are only played during a check timing. | §8.7.1, §8.7.2, §8.7.2.1 | planned | M3 | 0 |
-| ABL-11 | A player may not skip any automatic ability of theirs that is in standby; every one must be played. When the same ability is in standby several times, its master decides the order in which those instances resolve. | §8.7.3, §8.7.3.1 | planned | M3 | 0 |
-| ABL-12 | One standby instance of an automatic ability is removed when that ability finishes resolving, when it cannot be played for any reason, or when its master declines to pay its optional cost and so does not play it. | §8.7.3, §8.7.3.2, §8.7.3.2.1 | planned | M3 | 0 |
+| ABL-10 | Whenever an automatic ability's trigger condition is met it enters standby, once per time the condition is met, and standby abilities are only played during a check timing. | §8.7.1, §8.7.2, §8.7.2.1 | verified | M3 | 3 |
+| ABL-11 | A player may not skip any automatic ability of theirs that is in standby; every one must be played. When the same ability is in standby several times, its master decides the order in which those instances resolve. | §8.7.3, §8.7.3.1 | verified | M3 | 3 |
+| ABL-12 | One standby instance of an automatic ability is removed when that ability finishes resolving, when it cannot be played for any reason, or when its master declines to pay its optional cost and so does not play it. | §8.7.3, §8.7.3.2, §8.7.3.2.1 | verified | M3 | 6 |
 | ABL-13 | When a zone-change triggered ability needs the moved card's information: a move between a public and a hidden zone uses the card's public-zone information; a move off the stage, or any move that changes its master, uses its on-stage information; any other public-to-public move uses its information in the destination zone. | §8.7.4, §8.7.4.1, §8.7.4.1.1, §8.7.4.1.2, §8.7.4.1.3 | deferred | none | 0 |
 | ABL-14 | An automatic ability created by an effect to trigger at some later moment (a timed trigger) has its trigger met only once, unless the effect says otherwise. | §8.7.5, §8.7.5.1 | deferred | none | 0 |
 | ABL-15 | A state trigger (met by a condition being true rather than by an event) enters standby only one time when its condition is fulfilled; after that ability resolves, it enters standby again if the condition is still fulfilled. | §8.7.6, §8.7.6.1 | deferred | none | 0 |
-| ABL-16 | An automatic ability in standby must still be played even if its source card has since moved to another zone; if that move makes its effect impossible, the effect just fails. | §8.7.7 | planned | M3 | 0 |
+| ABL-16 | An automatic ability in standby must still be played even if its source card has since moved to another zone; if that move makes its effect impossible, the effect just fails. | §8.7.7 | verified | M3 | 3 |
 | ABL-17 | To compute a card's information under continuous effects, begin with what is printed on the card, next apply every continuous effect that leaves the value itself unchanged, and only then apply every continuous effect that alters the value. | §8.9.1, §8.9.1.1, §8.9.1.2, §8.9.1.3 | deferred | none | 0 |
 | ABL-18 | When two continuous effects are not ordered by the layer rule and applying effect A changes what effect B applies to or how it applies, B depends on A and is always applied after A, regardless of which was created first. | §8.9.1.4 | deferred | none | 0 |
 | ABL-19 | Continuous effects still unordered after layers and dependency apply in creation order: an effect from a continuous ability is timestamped when its card arrived in its current zone (for a character on stage, when it was put onto its current stage position from another zone), and an effect from any other ability is timestamped when that ability was played. | §8.9.1.5, §8.9.1.5.1, §8.9.1.5.2 | deferred | none | 0 |
-| ABL-20 | A continuous effect that comes from something other than a continuous ability (an event, or an activated or automatic ability) does not apply to any card that changes zones after the ability was played; moving between stage positions does not count as changing zones here. | §8.9.2 | planned | M3 | 0 |
-| ABL-21 | A continuous effect that modifies cards in a particular zone applies to a card at the very moment that card enters that zone. | §8.9.3 | planned | M3 | 0 |
+| ABL-20 | A continuous effect that comes from something other than a continuous ability (an event, or an activated or automatic ability) does not apply to any card that changes zones after the ability was played; moving between stage positions does not count as changing zones here. | §8.9.2 | verified | M3 | 6 |
+| ABL-21 | A continuous effect that modifies cards in a particular zone applies to a card at the very moment that card enters that zone. | §8.9.3 | verified | M3 | 3 |
 | ABL-22 | When an automatic ability triggers on a card with given information entering a given zone, that card's information is read only after the continuous effects of that zone have been applied to it. | §8.9.3.1 | deferred | none | 0 |
 | ABL-23 | A replacement effect ('if X would do A, do B instead', optionally with 'may') stops the original event from happening at all and substitutes the new one; when several apply to the same event, the affected player (card or ability master, or the acting player / applying card's master for game actions) chooses the order, each applies at most once, attack-type replacements apply turn player's first, and an optional replacement whose choice cannot be made is not applied. | §8.2.1.3.1, §8.2.1.3.2, §8.10.1, §8.10.1.1, §8.10.2, §8.10.2.1, §8.10.2.2, §8.10.2.3, §8.10.2.4, §8.10.3 | deferred | none | 0 |
 | ABL-24 | If an effect refers to a specific card's information or state and that card moves to another zone while the effect is being carried out (moves between stage positions excepted), the effect uses the card's last known information and state from the zone it left. | §8.11.1 | deferred | none | 0 |
@@ -338,10 +338,10 @@ Rows: 271 · verified 168 · planned 40 · deferred 59 · out 4
 
 | ID | Rule (paraphrase) | CR | Status | Milestone | Tests |
 |---|---|---|---|---|---|
-| COST-01 | The bracketed action(s) at the start of an activated or automatic ability form its cost; paying it means performing those actions, and multiple cost actions are carried out in the order written, starting from the first. | §8.4.1, §8.4.2, §8.4.2.1 | planned | M3 | 0 |
+| COST-01 | The bracketed action(s) at the start of an activated or automatic ability form its cost; paying it means performing those actions, and multiple cost actions are carried out in the order written, starting from the first. | §8.4.1, §8.4.2, §8.4.2.1 | verified | M3 | 4 |
 | COST-02 | Between the start and the end of paying a cost, neither refresh nor level up is carried out. | §8.4.2.1, §9.2.3, §9.3.3 | deferred | none | 0 |
-| COST-03 | If an ability's cost cannot be paid in full, no part of it is paid. | §8.4.2.2 | planned | M3 | 0 |
-| COST-04 | A circled number X in an ability's cost or text means the card's or ability's master moves exactly X cards from their stock to their waiting room; when text tells a specific player to pay a circled number, that player moves exactly X cards from their own stock. | §8.4.3 | planned | M3 | 0 |
+| COST-03 | If an ability's cost cannot be paid in full, no part of it is paid. | §8.4.2.2 | verified | M3 | 4 |
+| COST-04 | A circled number X in an ability's cost or text means the card's or ability's master moves exactly X cards from their stock to their waiting room; when text tells a specific player to pay a circled number, that player moves exactly X cards from their own stock. | §8.4.3 | verified | M3 | 4 |
 
 ## PLAY: Playing and resolving cards (CR 8.6)
 
@@ -355,13 +355,13 @@ Rows: 271 · verified 168 · planned 40 · deferred 59 · out 4
 | PLAY-06 | A played character resolves by being put on its chosen stage position; if another character already stood there, that earlier character is sent to the waiting room by rule action. | §8.6.2.5.1 | verified | M1 | 3 |
 | PLAY-07 | A played event is put in its player's resolution zone, its effect is carried out, and then it goes to its owner's waiting room. | §8.6.2.5.2 | verified | M1 | 2 |
 | PLAY-08 | A played climax resolves by being placed in its player's climax area. | §8.6.2.5.3 | verified | M1 | 3 |
-| PLAY-09 | When a card or ability says to choose, the targets (cards, players, etc.) are picked during resolution, from the options that exist at the moment that instruction is reached. | §8.6.3 | planned | M3 | 0 |
-| PLAY-10 | When a choice names a fixed number, the player must pick as many targets as they can up to that number and may not decline while able; if fewer are available they pick all of them and the effect applies to those, and if none are available nothing is chosen and every part of the effect tied to that target is ignored. | §8.6.3.1, §8.6.3.1.2, §8.6.3.1.3 | planned | M3 | 0 |
-| PLAY-11 | When a choice is worded 'choose up to N', the player may pick any number of targets from zero through N. | §8.6.3.1.1 | planned | M3 | 0 |
-| PLAY-12 | When the choice is among unrevealed cards in a hidden zone and eligibility depends on their information, the zone is not treated as guaranteed to hold an eligible card, so the player is not required to choose such cards and may end with no target even when eligible cards are there. | §8.6.3.1.4 | planned | M3 | 0 |
-| PLAY-13 | For 'you may do A; if you did, do B; if you did not, do C', C happens only when, at the moment of deciding about A, the player could not do A or chose not to; 'if you did' and 'if you did not' are shorthand for these clauses. | §8.6.4, §8.6.4.1 | planned | M3 | 0 |
-| PLAY-14 | If text does not name who carries out an action, the master of the source card, ability or effect does it. | §8.6.5 | planned | M3 | 0 |
-| PLAY-15 | Cards revealed or looked at because of an effect return to their earlier state when that effect finishes resolving; for an individual card this ends sooner if it changes zone, is chosen to stay where it was, or has its position changed (such as by a shuffle) before the effect ends. | §8.6.6, §8.6.6.1 | planned | M3 | 0 |
+| PLAY-09 | When a card or ability says to choose, the targets (cards, players, etc.) are picked during resolution, from the options that exist at the moment that instruction is reached. | §8.6.3 | verified | M3 | 4 |
+| PLAY-10 | When a choice names a fixed number, the player must pick as many targets as they can up to that number and may not decline while able; if fewer are available they pick all of them and the effect applies to those, and if none are available nothing is chosen and every part of the effect tied to that target is ignored. | §8.6.3.1, §8.6.3.1.2, §8.6.3.1.3 | verified | M3 | 6 |
+| PLAY-11 | When a choice is worded 'choose up to N', the player may pick any number of targets from zero through N. | §8.6.3.1.1 | verified | M3 | 5 |
+| PLAY-12 | When the choice is among unrevealed cards in a hidden zone and eligibility depends on their information, the zone is not treated as guaranteed to hold an eligible card, so the player is not required to choose such cards and may end with no target even when eligible cards are there. | §8.6.3.1.4 | verified | M3 | 6 |
+| PLAY-13 | For 'you may do A; if you did, do B; if you did not, do C', C happens only when, at the moment of deciding about A, the player could not do A or chose not to; 'if you did' and 'if you did not' are shorthand for these clauses. | §8.6.4, §8.6.4.1 | verified | M3 | 8 |
+| PLAY-14 | If text does not name who carries out an action, the master of the source card, ability or effect does it. | §8.6.5 | verified | M3 | 4 |
+| PLAY-15 | Cards revealed or looked at because of an effect return to their earlier state when that effect finishes resolving; for an individual card this ends sooner if it changes zone, is chosen to stay where it was, or has its position changed (such as by a shuffle) before the effect ends. | §8.6.6, §8.6.6.1 | verified | M3 | 8 |
 
 ## RULE: Rule action types (CR 9.1)
 

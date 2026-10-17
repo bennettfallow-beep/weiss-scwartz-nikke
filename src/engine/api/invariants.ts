@@ -60,8 +60,8 @@ export function checkInvariants(s: GameState, catalog: CardCatalog): string[] {
   if ((pending?.kind === 'pick' || pending?.kind === 'optional') && s.resolving === null) v.push(`${pending.kind} prompt with no ability resolving`);
   if (pending?.kind === 'pick') {
     if (!(pending.min >= 0 && pending.min <= pending.max)) v.push(`pick bounds ${pending.min}-${pending.max}`);
-    if (pending.picked.length >= pending.max) v.push('pick already has its maximum');
-    if (pending.options.length === 0) v.push('pick with no options');
+    if (pending.max > 0 && pending.picked.length >= pending.max) v.push('pick already has its maximum');
+    if (pending.options.length === 0 && pending.min > 0) v.push('pick with no options that must pick');
     if (pending.options.some((c) => pending.picked.includes(c))) v.push('pick offers an already picked card');
   }
   for (const a of s.standby) {
