@@ -89,7 +89,13 @@ load. The language is small and closed; everything outside it is in `docs/KNOWN_
   - a choose name is used once per ability;
   - a cost rests the card at most once, and putting the card into the waiting room is the
     last part of a cost.
-- **Card text.** `cardText(def)` renders the language as deterministic English.
+- **Card text.** `cardText(def)` renders the language as deterministic English. Two different
+  abilities never read the same:
+  - a "you may" or "if" inside a branch is bracketed when anything follows it;
+  - with more than one choice in view, a reference names its choice by place ("the second chosen
+    character").
+
+  Checked exhaustively for small abilities, about 160,000 per search.
 
 How they run:
 
@@ -125,15 +131,18 @@ How they run:
     - Looking at the deck counts as done once one card can be looked at, because a look ends
       normally when the deck runs short (CR 3.2.3.3).
     - A discard chosen by card information ("a red card") is judged after the pick: which hand
-      cards qualify is hidden, so the yes is always followed by the pick, which may find nothing.
-      B runs if the stated number of cards was picked, otherwise C.
+      cards qualify is hidden, so whenever the hand holds at least the stated number of cards
+      (public), the yes is followed by the pick, which may find nothing. B runs if the stated
+      number of cards was picked, otherwise C. With fewer cards in hand, C runs at once.
 - **Prompts never reveal hidden cards.** Whether a prompt appears depends only on what both players
   can see:
   - A filtered pick from the hand or from looked-at cards is asked whenever there are such cards,
     even if none qualify. The player then just ends it.
   - Its bounds come from the number of those cards, not from the ones that qualify, and it ends
     only at its maximum or when the player ends it, so its length says nothing either.
-  - "You may" around such a discard is followed by the pick whatever the hand holds (above).
+  - "You may" around such a discard is followed by the pick whatever cards the hand holds (above).
+  - Conditions never look at hidden cards: the validator rejects a count of hand or stock cards by
+    their information (an unfiltered count is a public number and is allowed).
   - An automatic ability's "pay the cost?" is asked whenever the cost could be paid as far as the
     opponent can tell. ACCEPT is offered only when it really can.
 - **Looking at the deck** (`lookTop`). Only the looker sees the cards: `projectView` shows them to

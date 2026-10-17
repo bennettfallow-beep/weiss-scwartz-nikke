@@ -343,3 +343,44 @@ describe('re-review finding 4 and nits: attacking and defending characters, name
     expect(codes(withCards(event('E6', twice)))).toEqual(['ABILITY_REF@effect.1.as']);
   });
 });
+
+// --- Adversarial check of the re-review fixes (2026-10-17) ---------------------------
+
+describe('fix check: card text for references and "you may choose"', () => {
+  const auto = (effect: Step[]): Ability => ({ kind: 'automatic', trigger: { on: 'play' }, effect });
+  const pick = (as: string, side: 'you' | 'opponent', count = 1): Step => ({ do: 'choose', as, count, what: { side } });
+  const minus = (as: string): Step => ({ do: 'power', amount: -2000, target: { ref: as } });
+
+  it('with two choices in view, a reference names which one it means', () => {
+    const mine = abilityText(auto([pick('a', 'you'), pick('b', 'opponent'), minus('a')]));
+    const theirs = abilityText(auto([pick('a', 'you'), pick('b', 'opponent'), minus('b')]));
+    expect(mine).toBe(
+      "[AUTO] When this card is played and placed, choose 1 of your characters. Choose 1 of your opponent's characters. The first chosen character gets -2000 power until end of turn.",
+    );
+    expect(theirs).toContain('The second chosen character gets -2000 power');
+  });
+
+  it('choices in branches that exclude each other are each read as "that character"', () => {
+    const text = abilityText(auto([{ do: 'if', when: [{ if: 'turn', side: 'you' }], then: [pick('a', 'you'), minus('a')], else: [pick('b', 'opponent', 2), minus('b')] }]));
+    expect(text).toContain('then that character gets -2000');
+    expect(text).toContain('then those characters get -2000');
+    expect(text).not.toContain('chosen');
+  });
+
+  it('"if you do not" does not count the choice made by the optional action', () => {
+    const text = abilityText(auto([pick('a', 'you'), { do: 'may', steps: [pick('b', 'opponent')], then: [minus('b')], else: [minus('a')] }]));
+    expect(text).toContain('if you do, the second chosen character gets -2000');
+    expect(text).toContain('if you do not, that character gets -2000');
+  });
+
+  it('"you may choose your attacking character" is bracketed like any other "you may" when an outer part follows', () => {
+    const chooseUpTo: Step = { do: 'choose', as: 'a', count: 1, upTo: true, what: { side: 'you', role: 'attacker' } };
+    const plain: Step = { do: 'choose', as: 'a', count: 1, what: { side: 'you', role: 'attacker' } };
+    const draw: Step = { do: 'draw', count: 1 };
+    const hit: Step = { do: 'damageOpp', amount: 1 };
+    const outer = abilityText(auto([{ do: 'may', steps: [draw], then: [chooseUpTo], else: [hit] }]));
+    const inner = abilityText(auto([{ do: 'may', steps: [draw], then: [{ do: 'may', steps: [plain], else: [hit] }] }]));
+    expect(outer).toContain('if you do, (you may choose your attacking character); if you do not, deal 1 damage');
+    expect(inner).toContain('if you do, you may choose your attacking character; if you do not, deal 1 damage');
+  });
+});

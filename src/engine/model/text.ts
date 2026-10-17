@@ -15,7 +15,21 @@ const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? o
 const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 const whose = (side: Side) => (side === 'you' ? 'your' : "your opponent's");
 const signed = (n: number) => (n > 0 ? `+${n}` : `${n}`);
+
+/**
+ * Choices visible at this point of the text, in reading order: choose name ->
+ * how many it picks. As in the validator, a choice made inside a branch is not
+ * seen after it, and "if you do not" does not see the optional action's choice.
+ */
 type Refs = Map<string, number>;
+
+function ordinal(n: number): string {
+  const words = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth'];
+  const word = words[n - 1];
+  if (word) return word;
+  const teen = n % 100 >= 11 && n % 100 <= 13;
+  return `${n}${teen ? 'th' : (['th', 'st', 'nd', 'rd'][n % 10] ?? 'th')}`;
+}
 
 function levelText(level: CardFilter['level']): string {
   if (!level) return '';
@@ -63,7 +77,12 @@ function selectorText(sel: Selector, count?: number, upTo?: boolean): { text: st
 
 function targetText(t: Target, refs: Refs): { text: string; one: boolean } {
   if (t === 'this') return { text: 'this card', one: true };
-  if ('ref' in t) return (refs.get(t.ref) ?? 1) === 1 ? { text: 'that character', one: true } : { text: 'those characters', one: false };
+  if ('ref' in t) {
+    const one = (refs.get(t.ref) ?? 1) === 1;
+    // With more than one choice in view, "that character" could mean either: name it by its place.
+    if (refs.size > 1) return { text: `the ${ordinal([...refs.keys()].indexOf(t.ref) + 1)} chosen ${one ? 'character' : 'characters'}`, one };
+    return one ? { text: 'that character', one } : { text: 'those characters', one };
+  }
   return selectorText(t.all);
 }
 
@@ -175,8 +194,9 @@ function clause(step: Step, refs: Refs, imperative = false): string {
       return `return ${targetText(step.target, refs).text} to ${moveDest(step.target, refs, 'hand')}`;
     case 'may': {
       // Inside a sentence the parts are separated by semicolons, so the branch's end stays clear.
-      const action = clause(step.steps[0] ?? { do: 'damageOpp', amount: 0 }, refs, true);
-      const then = step.then ? `; if you do, ${branch(step.then, refs, step.else !== undefined)}` : '';
+      const inner = new Map(refs);
+      const action = clause(step.steps[0] ?? { do: 'damageOpp', amount: 0 }, inner, true);
+      const then = step.then ? `; if you do, ${branch(step.then, inner, step.else !== undefined)}` : '';
       const otherwise = step.else ? `; if you do not, ${branch(step.else, new Map(refs))}` : '';
       return `you may ${action}${then}${otherwise}`;
     }
@@ -186,6 +206,9 @@ function clause(step: Step, refs: Refs, imperative = false): string {
     }
   }
 }
+
+/** Steps whose text opens a clause of its own: "you may ...", "if ...". */
+const opensClause = (step: Step) => step.do === 'may' || step.do === 'if' || (step.do === 'choose' && step.what.role !== undefined && step.upTo === true);
 
 /**
  * Steps as one clause joined by `sep`. A nested "you may" or "if" is put in
@@ -197,7 +220,7 @@ function joined(steps: readonly Step[], refs: Refs, sep: string, closeLast = fal
   return steps
     .map((step, i) => {
       const text = clause(step, refs);
-      return (step.do === 'may' || step.do === 'if') && (i < steps.length - 1 || closeLast) ? `(${text})` : text;
+      return opensClause(step) && (i < steps.length - 1 || closeLast) ? `(${text})` : text;
     })
     .join(sep);
 }
