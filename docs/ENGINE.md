@@ -120,11 +120,20 @@ How they run:
     next card?".
   - "You may A; if you do B; if not C": C also runs when A was impossible. A counts as done only
     if it can be done in full: the whole stated number of cards (CR 8.6.4 leaves partial actions
-    open; this is the engine's single reading).
+    open; this is the engine's reading). It is judged from public information when the player
+    says yes, with two exceptions:
+    - Looking at the deck counts as done once one card can be looked at, because a look ends
+      normally when the deck runs short (CR 3.2.3.3).
+    - A discard chosen by card information ("a red card") is judged after the pick: which hand
+      cards qualify is hidden, so the yes is always followed by the pick, which may find nothing.
+      B runs if the stated number of cards was picked, otherwise C.
 - **Prompts never reveal hidden cards.** Whether a prompt appears depends only on what both players
   can see:
   - A filtered pick from the hand or from looked-at cards is asked whenever there are such cards,
     even if none qualify. The player then just ends it.
+  - Its bounds come from the number of those cards, not from the ones that qualify, and it ends
+    only at its maximum or when the player ends it, so its length says nothing either.
+  - "You may" around such a discard is followed by the pick whatever the hand holds (above).
   - An automatic ability's "pay the cost?" is asked whenever the cost could be paid as far as the
     opponent can tell. ACCEPT is offered only when it really can.
 - **Looking at the deck** (`lookTop`). Only the looker sees the cards: `projectView` shows them to

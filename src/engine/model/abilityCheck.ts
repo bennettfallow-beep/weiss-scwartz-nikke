@@ -116,6 +116,8 @@ function count(c: Ctx, x: unknown, path: string, max: number = ABILITY_LIMITS.co
 
 function text(c: Ctx, x: unknown, path: string): void {
   if (typeof x !== 'string' || x.trim() === '' || x.length > ABILITY_LIMITS.text) err(c, 'ABILITY_FILTER', path, `must be a name of 1-${ABILITY_LIMITS.text} characters`);
+  // Card text puts names in quotes and traits in «»; inside a name they would make the text ambiguous.
+  else if (/["«»]/.test(x)) err(c, 'ABILITY_FILTER', path, 'must not contain " « or »');
 }
 
 function upTo(c: Ctx, x: Obj, path: string): void {
@@ -299,12 +301,16 @@ function step(c: Ctx, x: unknown, path: string, scope: Set<string>, depth: numbe
     case 'choose':
       if (!shape(c, x, path, ['do', 'as', 'count', 'what'], ['upTo'])) return;
       if (typeof x.as !== 'string' || !NAME_PATTERN.test(x.as)) err(c, 'ABILITY_REF', `${path}.as`, 'must be a short lowercase name (a-z, 0-9, up to 12)');
-      else if (c.names.has(x.as)) err(c, 'ABILITY_REF', `${path}.as`, `the name "${x.as}" is already used in this ability`);
       else {
+        if (c.names.has(x.as)) err(c, 'ABILITY_REF', `${path}.as`, `the name "${x.as}" is already used in this ability`);
+        // In scope either way, so a later reference to it does not add a second error for one mistake.
         c.names.add(x.as);
         scope.add(x.as);
       }
-      count(c, x.count, `${path}.count`);
+      // There is at most one attacking and one defending character, so only 1 can be chosen.
+      if (isObj(x.what) && Object.hasOwn(x.what, 'role')) {
+        if (x.count !== 1) err(c, 'ABILITY_RANGE', `${path}.count`, 'must be 1 when choosing the attacking or defending character');
+      } else count(c, x.count, `${path}.count`);
       upTo(c, x, path);
       selector(c, x.what, `${path}.what`);
       return;

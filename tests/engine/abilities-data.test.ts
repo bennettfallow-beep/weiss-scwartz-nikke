@@ -818,7 +818,8 @@ const refStepArb: fc.Arbitrary<Step> = fc.oneof(
   fc.constant<Step>({ do: 'returnToHand', target: { ref: '?' } }),
 );
 const chooseArb = (kind: GenKind, allowUpTo: boolean): fc.Arbitrary<Step> =>
-  fc.tuple(intIn(1, 5), fc.boolean(), selectorArb(kind)).map(([count, upTo, what]): Step => ({ do: 'choose', as: '?', count, ...flag('upTo', upTo && allowUpTo), what }));
+  // Only 1 attacking or defending character can be chosen.
+  fc.tuple(intIn(1, 5), fc.boolean(), selectorArb(kind)).map(([count, upTo, what]): Step => ({ do: 'choose', as: '?', count: what.role ? 1 : count, ...flag('upTo', upTo && allowUpTo), what }));
 
 /** One to two steps. Nesting (may, if) only while the lists inside stay within depth 3. */
 function itemArb(kind: GenKind, depth: number): fc.Arbitrary<Step[]> {

@@ -234,7 +234,7 @@ export type StandbyAuto =
 
 /** One unit of work in an ability being resolved. */
 export type FrameOp =
-  | { k: 'step'; step: Step; forced?: true }
+  | { k: 'step'; step: Step; forced?: true; ifDone?: IfDone }
   /** Automatic ability with an optional cost: ask whether to pay. */
   | { k: 'offerCost' }
   /** Choose the cards a discard cost will put into the waiting room. */
@@ -248,11 +248,21 @@ export type FrameOp =
   | { k: 'lookTake'; take: LookTake }
   | { k: 'lookRest'; rest: 'top' | 'bottom' | 'waiting' };
 
+/**
+ * The rest of a "you may" whose action is a pick among hidden cards: whether
+ * the action was done is known only once `count` cards have been picked or not.
+ */
+export interface IfDone {
+  count: number;
+  then?: readonly Step[];
+  else?: readonly Step[];
+}
+
 /** What the open prompt of a frame is for. */
 export type FrameWait =
   | { for: 'target'; as: string }
   | { for: 'costCards' }
-  | { for: 'move'; to: 'hand' | 'stock' | 'waiting'; reason: MoveReason }
+  | { for: 'move'; to: 'hand' | 'stock' | 'waiting'; reason: MoveReason; ifDone?: IfDone }
   | { for: 'order'; where: 'top' | 'bottom' }
   | { for: 'payCost' }
   | { for: 'may'; step: Extract<Step, { do: 'may' }> }

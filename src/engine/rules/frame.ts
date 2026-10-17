@@ -9,7 +9,7 @@
 // cards themselves.
 
 import { other } from '../model/types';
-import type { AbilityFrame, CardCatalog, CardId, CardRef, FrameOp, GameState, MoveReason, PickPurpose, PlayerId, Task } from '../model/types';
+import type { AbilityFrame, CardCatalog, CardId, CardRef, FrameOp, GameState, IfDone, MoveReason, PickPurpose, PlayerId, Task } from '../model/types';
 import type { Ability, CostPart, Step, Target } from '../model/abilities';
 import { deepClone } from '../core/clone';
 import { EngineFault } from '../core/fault';
@@ -97,6 +97,8 @@ function ask(s: GameState, f: AbilityFrame, player: PlayerId, purpose: PickPurpo
  * hidden cards it looks through, e.g. the hand) is always asked while there
  * are any such cards, even if none qualify or all must be taken: otherwise
  * whether the prompt appears would tell the opponent what the hidden cards are.
+ * For the same reason its `max` comes from the pool size, not from the cards
+ * that qualify, so it does not end early when they run out (see answerPick).
  */
 function pick(
   s: GameState,
@@ -142,6 +144,9 @@ function finishPick(s: GameState, catalog: CardCatalog, f: AbilityFrame, picked:
       return;
     case 'move':
       queue(s, ...picked.map((c) => moveTask(c, s, wait.to, wait.reason)));
+      // "You may A" with A a pick among hidden cards: A was done if all its cards were picked (CR 8.6.4).
+      // The moves are queued ahead of the frame, so they happen before the branch.
+      if (wait.ifDone) f.ops.unshift(...stepOps(picked.length >= wait.ifDone.count ? wait.ifDone.then : wait.ifDone.else));
       return;
     case 'order': {
       const rest = lookedInDeck(s, f).filter((c) => !picked.includes(c));
@@ -168,7 +173,9 @@ export function answerPick(s: GameState, catalog: CardCatalog, prompt: PickPromp
   }
   const picked = [...prompt.picked, card];
   const options = prompt.options.filter((c) => c !== card);
-  if (picked.length >= prompt.max || options.length === 0) finishPick(s, catalog, f, picked);
+  // Only the maximum ends a pick by itself. A pick among hidden cards stays open when the cards that
+  // qualify run out, so how long it lasts says nothing about them; the player ends it with PASS.
+  if (picked.length >= prompt.max) finishPick(s, catalog, f, picked);
   else s.pending = { ...prompt, picked, options };
 }
 
@@ -189,8 +196,13 @@ export function answerOptional(s: GameState, catalog: CardCatalog, accepted: boo
     case 'may': {
       const action = wait.step.steps[0];
       // CR 8.6.4: "if you do not" also covers not being able to.
-      if (accepted && action && canDo(s, catalog, f, action)) f.ops.unshift({ k: 'step', step: action, forced: true }, ...stepOps(wait.step.then));
-      else f.ops.unshift(...stepOps(wait.step.else));
+      if (!accepted || !action || !canDo(s, catalog, f, action)) f.ops.unshift(...stepOps(wait.step.else));
+      else if (action.do === 'discard' && action.filter !== undefined) {
+        // Which hand cards qualify is hidden, so whether A can be done is not decided now: the pick may
+        // find nothing (CR 8.6.3.1.4), and the branch follows from what was picked.
+        const ifDone: IfDone = { count: action.count, ...(wait.step.then ? { then: wait.step.then } : {}), ...(wait.step.else ? { else: wait.step.else } : {}) };
+        f.ops.unshift({ k: 'step', step: action, ifDone });
+      } else f.ops.unshift({ k: 'step', step: action, forced: true }, ...stepOps(wait.step.then));
       return;
     }
     case 'drawMore':
@@ -221,7 +233,7 @@ export function answerOptional(s: GameState, catalog: CardCatalog, accepted: boo
 function runOp(s: GameState, catalog: CardCatalog, f: AbilityFrame, op: FrameOp): void {
   switch (op.k) {
     case 'step':
-      runStep(s, catalog, f, op.step, op.forced === true);
+      runStep(s, catalog, f, op.step, op.forced === true, op.ifDone);
       return;
     case 'offerCost':
       optional(s, f, { for: 'payCost' }, f.master);
@@ -249,11 +261,12 @@ function runOp(s: GameState, catalog: CardCatalog, f: AbilityFrame, op: FrameOp)
     case 'lookTake': {
       const { take } = op;
       const looked = lookedInDeck(s, f);
-      const options = looked.filter((c) => take.filter === undefined || matchesFilter(s, catalog, c, take.filter));
-      const max = Math.min(take.count, options.length);
+      const hidden = take.filter !== undefined;
+      const options = looked.filter((c) => !hidden || matchesFilter(s, catalog, c, take.filter ?? {}));
       // CR 8.6.3.1.4: unrevealed cards picked by their information may be left unpicked.
-      const min = take.upTo === true || take.filter !== undefined ? 0 : max;
-      pick(s, catalog, f, { for: 'move', to: take.to, reason: 'effect' }, f.master, 'lookTake', options, min, max, take.filter === undefined ? 0 : looked.length);
+      const max = Math.min(take.count, hidden ? looked.length : options.length);
+      const min = take.upTo === true || hidden ? 0 : max;
+      pick(s, catalog, f, { for: 'move', to: take.to, reason: 'effect' }, f.master, 'lookTake', options, min, max, hidden ? looked.length : 0);
       return;
     }
     case 'lookRest':
@@ -276,9 +289,13 @@ export function resolveTargets(s: GameState, catalog: CardCatalog, f: AbilityFra
 }
 
 /**
- * Whether a "you may" action can be done in full right now (CR 8.6.4). One
- * reading for every action: "in full" means the whole stated number of cards
- * (cards that a deck refresh would supply count as available).
+ * Whether a "you may" action can be done in full right now (CR 8.6.4), judged
+ * from what both players can see. "In full" means the whole stated number of
+ * cards (cards that a deck refresh would supply count as available), with two
+ * exceptions: looking at the deck needs only one card, because a look ends
+ * normally when the deck runs short (CR 3.2.3.3); and a discard by card
+ * information needs only enough cards in hand, because which ones qualify is
+ * hidden and is settled by the pick itself (answerOptional).
  */
 function canDo(s: GameState, catalog: CardCatalog, f: AbilityFrame, step: Step): boolean {
   const p = s.players[f.master];
@@ -289,7 +306,7 @@ function canDo(s: GameState, catalog: CardCatalog, f: AbilityFrame, step: Step):
     case 'draw':
       return deckCards(performer(f, step.player)) >= step.count;
     case 'discard':
-      return s.players[performer(f, step.player)].hand.filter((c) => step.filter === undefined || matchesFilter(s, catalog, c, step.filter)).length >= step.count;
+      return s.players[performer(f, step.player)].hand.length >= step.count;
     case 'stockFromDeck':
       return deckCards(f.master) >= step.count;
     case 'lookTop':
@@ -311,7 +328,7 @@ function canDo(s: GameState, catalog: CardCatalog, f: AbilityFrame, step: Step):
   }
 }
 
-function runStep(s: GameState, catalog: CardCatalog, f: AbilityFrame, step: Step, forced: boolean): void {
+function runStep(s: GameState, catalog: CardCatalog, f: AbilityFrame, step: Step, forced: boolean, ifDone?: IfDone): void {
   log(s, { kind: 'effect', player: f.master, card: f.source.card, op: step.do });
   const me = s.players[f.master];
   // A fixed number must be picked as far as possible (CR 8.6.3.1); "up to" allows none (CR 8.6.3.1.1).
@@ -334,10 +351,17 @@ function runStep(s: GameState, catalog: CardCatalog, f: AbilityFrame, step: Step
     }
     case 'discard': {
       const who = performer(f, step.player);
-      const options = s.players[who].hand.filter((c) => step.filter === undefined || matchesFilter(s, catalog, c, step.filter));
-      // The hand is hidden from the opponent: a choice by card information may come up empty (CR 8.6.3.1.4).
-      const [min, max] = bounds(options.length, step.count, step.upTo === true, step.filter !== undefined);
-      pick(s, catalog, f, { for: 'move', to: 'waiting', reason: 'effect' }, who, 'discard', options, min, max, step.filter === undefined ? 0 : s.players[who].hand.length);
+      const hand = s.players[who].hand;
+      const wait = { for: 'move', to: 'waiting', reason: 'effect', ...(ifDone ? { ifDone } : {}) } as const;
+      if (step.filter === undefined) {
+        const [min, max] = bounds(hand.length, step.count, step.upTo === true, false);
+        pick(s, catalog, f, wait, who, 'discard', [...hand], min, max);
+        return;
+      }
+      // The hand is hidden from the opponent: a choice by card information may come up empty
+      // (CR 8.6.3.1.4), and its bounds come from the hand size, not from the cards that qualify.
+      const options = hand.filter((c) => matchesFilter(s, catalog, c, step.filter ?? {}));
+      pick(s, catalog, f, wait, who, 'discard', options, 0, Math.min(step.count, hand.length), hand.length);
       return;
     }
     case 'stockFromDeck':

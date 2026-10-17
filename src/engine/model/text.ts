@@ -53,7 +53,7 @@ function selectorText(sel: Selector, count?: number, upTo?: boolean): { text: st
   const named = sel.name ? ` named "${sel.name}"` : '';
   if (sel.role) {
     // There is at most one attacking and one defending character.
-    const text = [whose(sel.side), ...qualifiers(sel), `${sel.role === 'attacker' ? 'attacking' : 'defending'} character`].join(' ') + named;
+    const text = [whose(sel.side), ...(sel.other ? ['other'] : []), ...qualifiers(sel), `${sel.role === 'attacker' ? 'attacking' : 'defending'} character`].join(' ') + named;
     return { text, one: true };
   }
   const desc = [...(sel.other ? ['other'] : []), ...qualifiers(sel), 'characters'].join(' ') + named;
@@ -176,33 +176,35 @@ function clause(step: Step, refs: Refs, imperative = false): string {
     case 'may': {
       // Inside a sentence the parts are separated by semicolons, so the branch's end stays clear.
       const action = clause(step.steps[0] ?? { do: 'damageOpp', amount: 0 }, refs, true);
-      const then = step.then ? `; if you do, ${branch(step.then, refs)}` : '';
+      const then = step.then ? `; if you do, ${branch(step.then, refs, step.else !== undefined)}` : '';
       const otherwise = step.else ? `; if you do not, ${branch(step.else, new Map(refs))}` : '';
       return `you may ${action}${then}${otherwise}`;
     }
     case 'if': {
       const otherwise = step.else ? `; otherwise, ${branch(step.else, new Map(refs))}` : '';
-      return `if ${conditionsText(step.when)}, ${branch(step.then, new Map(refs))}${otherwise}`;
+      return `if ${conditionsText(step.when)}, ${branch(step.then, new Map(refs), step.else !== undefined)}${otherwise}`;
     }
   }
 }
 
 /**
- * Steps as one clause joined by `sep`. A nested "you may" or "if" that is not
- * the last step is put in parentheses, so it is clear where it ends.
+ * Steps as one clause joined by `sep`. A nested "you may" or "if" is put in
+ * parentheses when something follows it (a later step, or with `closeLast` the
+ * enclosing step's own "if you do not" / "otherwise" part), so it is clear
+ * where it ends.
  */
-function joined(steps: readonly Step[], refs: Refs, sep: string): string {
+function joined(steps: readonly Step[], refs: Refs, sep: string, closeLast = false): string {
   return steps
     .map((step, i) => {
       const text = clause(step, refs);
-      return (step.do === 'may' || step.do === 'if') && i < steps.length - 1 ? `(${text})` : text;
+      return (step.do === 'may' || step.do === 'if') && (i < steps.length - 1 || closeLast) ? `(${text})` : text;
     })
     .join(sep);
 }
 
 /** The steps of a branch as one clause: "a, then b, then c". */
-function branch(steps: readonly Step[], refs: Refs): string {
-  return joined(steps, refs, ', then ');
+function branch(steps: readonly Step[], refs: Refs, closeLast = false): string {
+  return joined(steps, refs, ', then ', closeLast);
 }
 
 /** Effect steps as sentences, one per top-level step. */

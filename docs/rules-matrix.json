@@ -3741,9 +3741,11 @@
       "impl": [
         "src/engine/rules/frame.ts#runStep",
         "src/engine/rules/frame.ts#runOp",
-        "src/engine/rules/select.ts#matchesFilter"
+        "src/engine/rules/select.ts#matchesFilter",
+        "src/engine/rules/frame.ts#pick",
+        "src/engine/rules/frame.ts#answerPick"
       ],
-      "notes": "Fail-to-find for searches. The printed v2.10 sentence literally says the player is 'not allowed to choose' such cards, which contradicts the sentence before it if read literally; confirm the interpretation before implementing. Owner decision 2026-10-16: a filtered choice among unrevealed cards in a hidden zone (hand, deck) may find nothing even when a match is there. An unfiltered choice is forced (the rule needs a condition on card information)."
+      "notes": "Fail-to-find for searches. The printed v2.10 sentence literally says the player is 'not allowed to choose' such cards, which contradicts the sentence before it if read literally; confirm the interpretation before implementing. Owner decision 2026-10-16: a filtered choice among unrevealed cards in a hidden zone (hand, deck) may find nothing even when a match is there. An unfiltered choice is forced (the rule needs a condition on card information). Such a pick takes its bounds from the number of hidden cards, not from the matches, and stays open until the player ends it, so neither its bounds nor its length tell the opponent anything."
     },
     {
       "id": "PLAY-13",
@@ -3759,9 +3761,10 @@
         "src/engine/rules/frame.ts#answerOptional",
         "src/engine/rules/frame.ts#canDo",
         "src/engine/rules/frame.ts#runStep",
-        "src/engine/model/text.ts#clause"
+        "src/engine/model/text.ts#clause",
+        "src/engine/rules/frame.ts#finishPick"
       ],
-      "notes": ""
+      "notes": "Engine reading: A counts as done only if done in full, judged from public information when the player says yes. A discard chosen by card information is the exception: which hand cards qualify is hidden (PLAY-12), so the branch is chosen after the pick, from whether the stated number was picked. Looking at the deck counts as done once one card can be looked at, since a look ends normally when the deck runs short (CR 3.2.3.3)."
     },
     {
       "id": "PLAY-14",

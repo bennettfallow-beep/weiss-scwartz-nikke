@@ -670,7 +670,8 @@ describe('PLAY-12: a filtered choice among unrevealed cards in a hidden zone may
     const noBlue = mainPhase({ hand: ['Y0', 'R0', 'SFT'] });
     const sft = cardIn(noBlue, 0, 'hand', 'SFT');
     const asked = go(noBlue, playEvent(0, sft));
-    expect(asked.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'discard', card: sft, options: [], picked: [], min: 0, max: 0 });
+    // Its bounds follow the hand size, not the blue cards in it, so they say nothing either.
+    expect(asked.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'discard', card: sft, options: [], picked: [], min: 0, max: 1 });
     expect(offers(asked.state)).toEqual(['PASS']);
     const n = go(asked.state, pass(0));
     expect(n.state.pending).toEqual({ kind: 'play', player: 0, window: 'main' });
@@ -861,13 +862,18 @@ describe('PLAY-13: "you may" with "if you do" and "if you do not"', () => {
     expect(b1.state.players[0].stock).toHaveLength(2);
   });
 
-  it('[PLAY-13] "you may discard 1 blue card" holding only cards of other colors: A cannot be done, so a yes still leads to the "if you do not" part and nothing is discarded', () => {
+  it('[PLAY-13] "you may discard 1 blue card" holding only cards of other colors: A cannot be done, so a yes leads to an empty pick and then the "if you do not" part, and nothing is discarded', () => {
     const s0 = mainPhase({ hand: ['Y0', 'R0', 'BLD'] });
     const [y0, r0] = [cardIn(s0, 0, 'hand', 'Y0'), cardIn(s0, 0, 'hand', 'R0')];
     const r = go(s0, playEvent(0, cardIn(s0, 0, 'hand', 'BLD')));
-    const end = r.state.pending?.kind === 'optional' ? go(r.state, accept(0)) : { state: r.state, events: [] };
-    expect(only(trace(end.state, [...r.events, ...end.events]), 'effect', 'move:effect', 'move:draw')).toEqual([
+    const yes = go(r.state, accept(0));
+    // Which hand cards are blue is hidden, so the yes is followed by the pick either way; here nothing can be picked.
+    expect(pickOf(yes.state)).toMatchObject({ player: 0, purpose: 'discard', options: [], min: 0 });
+    expect(legalActions(yes.state, cat).map((a) => a.type)).toEqual(['PASS']);
+    const end = go(yes.state, pass(0));
+    expect(only(trace(end.state, [...r.events, ...yes.events, ...end.events]), 'effect', 'move:effect', 'move:draw')).toEqual([
       'effect:0:may',
+      'effect:0:discard',
       'effect:0:draw',
       'move:draw:G0:0.deck->0.hand',
     ]);
