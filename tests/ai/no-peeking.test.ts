@@ -49,7 +49,15 @@ describe('no peeking', () => {
           }
         }
       }
-      expect(text, file).not.toMatch(/require\(|import\(/);
+      // No module is loaded any other way: no dynamic import(), require() or `import x = require()`, however spaced.
+      const loads: string[] = [];
+      const visit = (node: ts.Node): void => {
+        if (ts.isCallExpression(node) && (node.expression.kind === ts.SyntaxKind.ImportKeyword || (ts.isIdentifier(node.expression) && node.expression.text === 'require'))) loads.push(node.getText(source));
+        if (ts.isImportEqualsDeclaration(node) && ts.isExternalModuleReference(node.moduleReference)) loads.push(node.getText(source));
+        ts.forEachChild(node, visit);
+      };
+      visit(source);
+      expect(loads, file).toEqual([]);
     }
   });
 
