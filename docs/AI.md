@@ -24,7 +24,9 @@ Tests check:
   list of harmless engine helpers.
 - that swapping around every card the player cannot see (the other hand, both decks, both
   stocks) never changes a single decision.
-- that nothing the bot is handed names a card it cannot see.
+- that the zones, the look, its own decision and its legal moves name no card it cannot see. The
+  log, effects and the current attack may name cards it saw earlier that have since gone out of
+  sight.
 
 ## How it plays
 
@@ -35,11 +37,11 @@ Tests check:
 | Level up | Put a card of the color the hand most needs into the level zone (a color not already there). |
 | Main phase | <ul><li>Play characters into empty center positions first. Replace a character only if the new one is clearly better.</li><li>Play events and abilities whose effect is worth more than their cost. An effect that would do nothing now is worth nothing: no character to choose, or "the defending character" outside a battle. So counter cards wait for the counter step.</li><li>Use each activated ability at most once a turn.</li><li>Swap positions only when that strictly improves the line-up: strong, standing characters in the center.</li></ul> |
 | Climax | Play one when two or more attacks will follow. With only one attack (always the case on the first player's first turn), play one only if another climax is in hand. |
-| Attack | <ul><li>Attack directly when nothing is in front.</li><li>Otherwise attack frontally when the attacker wins the battle, and from the side when it would lose.</li><li>On a tie both characters are reversed. It then attacks frontally only when that trade is worth it, or when a side attack would lose soul to the defender's level. Otherwise it attacks from the side.</li><li>It attacks with everything that can.</li></ul> |
+| Attack | <ul><li>Attack directly when nothing is in front.</li><li>Otherwise attack frontally when the attacker wins the battle, and from the side when it would lose.</li><li>On a tie both characters are reversed. It weighs that trade (the defender's worth against its own) against the soul a side attack would lose to the defender's level, and picks the better.</li><li>It attacks with everything that can.</li></ul> |
 | Counter step | Use Backup or a counter event only when it saves the defender (or at least takes the attacker down with it). |
-| Encore | Pay for characters worth more than the stock. Not when the position is now taken: the character there would be lost, so that counts against it. |
+| Encore | Pay for characters worth more than the stock. If the position is now taken, the character there would be lost, so its worth counts against paying. |
 | Trigger icons | <ul><li>Take the extra stock.</li><li>Draw, unless the hand is full.</li><li>Take the best card back from the waiting room.</li><li>Return the opponent's strongest character.</li><li>Standby onto a full stage only when the new character is worth more than the weakest one it pushes off.</li></ul> |
-| Optional costs | Pay an automatic ability's optional cost when the effect is worth more than the cost. A cost that puts the card itself into the waiting room costs what that card is worth. |
+| Optional costs | Pay an automatic ability's optional cost when the effect is worth more than the cost. A cost that puts the card itself into the waiting room costs what that card is worth, or nothing if the card is reversed and leaving anyway. |
 | Ability choices | Boosts go to its own strongest character; removal goes to the opponent's strongest. Discards throw away the least useful cards. Salvage and "look at the top" take the most useful. |
 | End of turn | Discard down to 7 one card at a time, spare climaxes first. |
 | Order of abilities and icons | The first option. |

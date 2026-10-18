@@ -22,10 +22,20 @@ describe('no peeking', () => {
     for (const file of files.filter((f) => f !== 'decide.ts' && f !== 'index.ts')) {
       const text = readFileSync(join(dir, file), 'utf8');
       expect(text, file).not.toMatch(/\bGameState\b|\blegalActions\b|\bprojectView\b|\bapplyAction\b|\bcheckInvariants\b|\bcreateGame\b|\breplay\b/);
-      for (const m of text.matchAll(/import\s*\{([^}]*)\}\s*from\s*'[./]*engine'/g)) {
-        for (const name of (m[1] ?? '').split(',').map((n) => n.trim()).filter(Boolean)) expect(allowed.has(name), `${file} imports ${name} from the engine`).toBe(true);
+      // Every import or re-export from the engine, however it is written: either quote style, the barrel or its index file.
+      const engine = /^(\.\.\/)+engine(\/index(\.ts)?)?$/;
+      for (const m of text.matchAll(/(import|export)\s+(type\s+)?([^;]*?)\s+from\s+['"]([^'"]+)['"]/g)) {
+        if (!engine.test(m[4] ?? '') || m[2]) continue;
+        const clause = (m[3] ?? '').trim();
+        expect(clause.startsWith('{') && clause.endsWith('}'), `${file}: only named imports from the engine (${clause})`).toBe(true);
+        const names = clause.slice(1, -1).split(',').map((n) => n.trim()).filter(Boolean);
+        for (const n of names) {
+          if (n.startsWith('type ')) continue;
+          const name = n.split(/\s+as\s+/)[0] ?? n;
+          expect(allowed.has(name), `${file} imports ${name} from the engine`).toBe(true);
+        }
       }
-      expect(text, file).not.toMatch(/import\s*\*\s*as|require\(|import\(/);
+      expect(text, file).not.toMatch(/require\(|import\(/);
     }
   });
 

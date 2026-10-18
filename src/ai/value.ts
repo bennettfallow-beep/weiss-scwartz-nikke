@@ -163,11 +163,11 @@ export function costValue(cost: readonly CostPart[] | undefined, source: number)
 }
 
 /** What playing a character's "when played" abilities is worth. */
-export function onPlayValue(def: CardDef): number {
+export function onPlayValue(def: CardDef, at: Situation = ANY): number {
   let total = 0;
   for (const a of def.abilities ?? []) {
     if (a.kind !== 'automatic' || a.trigger.on !== 'play') continue;
-    total += Math.max(0, stepsValue(a.effect) + costValue(a.cost, characterValue(def)));
+    total += Math.max(0, stepsValue(a.effect, at) + costValue(a.cost, characterValue(def)));
   }
   return total;
 }

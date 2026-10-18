@@ -47,11 +47,14 @@ export function shuffleHidden(state: GameState, viewer: PlayerId, seed: string):
 /**
  * Ids of cards `viewer` cannot see that still appear in what that player is
  * shown now: the zones, the look, their own decision, and their legal actions.
- * The log, effects and the current attack are left out: they name cards the
- * player saw at the time, which may have moved out of sight since.
+ * Left out, because they name cards the player saw at the time, which may have
+ * moved out of sight since: the log, effects, the current attack, the ability
+ * being resolved, and the card whose ability is asking a question.
  */
 export function hiddenIdsShown(state: GameState, viewer: PlayerId, view: GameView, legal: readonly Action[] = []): CardId[] {
   const hidden = new Set(hiddenFrom(state, viewer));
-  const text = JSON.stringify({ players: view.players, look: view.look, pending: view.pending, legal });
+  const p = view.pending;
+  const pending = p && (p.kind === 'pick' || p.kind === 'optional') && 'card' in p ? { ...p, card: null } : p;
+  const text = JSON.stringify({ players: view.players, look: view.look, pending, legal });
   return [...text.matchAll(/"(p[01]-\d+)"/g)].map((m) => m[1] as CardId).filter((id) => hidden.has(id));
 }

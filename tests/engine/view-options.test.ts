@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import { applyAction, createGame, currentPower, currentSoul, legalActions, projectEvents, projectView, seedRng } from '../../src/engine';
 import type { CardCatalog, CardDef, GameState } from '../../src/engine';
-import { cardIn, makeState, ops } from '../../src/engine/testkit';
+import { act, cardIn, makeState, ops } from '../../src/engine/testkit';
 import { randomChoice } from '../../src/ai';
 import { catalog } from '../helpers/catalog';
 import { fuzzCatalog, fuzzDecks } from '../helpers/fuzz-decks';
@@ -112,5 +112,34 @@ describe('view options', () => {
     // Player 0's own hand is not hidden from player 0.
     for (const id of state.players[0].hand) expect(hidden.has(id)).toBe(false);
     for (const id of state.players[1].hand) expect(hidden.has(id)).toBe(true);
+  });
+
+  it('the hidden-id check catches a planted id, and does not count the card whose ability is asking', () => {
+    // The ability puts its own card into the waiting room, then draws from an empty deck: the refresh
+    // shuffles that card into the deck while its "discard 1" choice is still open.
+    const relay: CardDef = {
+      id: 'VW-RELAY',
+      name: 'Relay Cadet',
+      kind: 'character',
+      color: 'yellow',
+      level: 0,
+      cost: 0,
+      power: 1000,
+      soul: 1,
+      abilities: [{ kind: 'automatic', trigger: { on: 'play' }, effect: [{ do: 'sendToWaiting', target: 'this' }, { do: 'draw', count: 1 }, { do: 'discard', count: 1 }] }],
+    };
+    const c2: CardCatalog = { ...catalog, [relay.id]: relay };
+    let s = makeState(c2, { start: 'main', players: [{ hand: ['VW-RELAY', 'Y1', 'Y1'], deck: ['Y0'], waiting: Array<string>(4).fill('Y1') }, { deck: ['R0', 'R0'], hand: ['R0'] }] });
+    const id = cardIn(s, 0, 'hand', 'VW-RELAY');
+    s = act(s, c2, { type: 'PLAY_CHARACTER', player: 0, slot: 1, card: id });
+    for (let i = 0; i < 5 && s.pending?.kind !== 'pick'; i++) s = act(s, c2, legalActions(s, c2)[0] as never);
+    expect(s.pending).toMatchObject({ kind: 'pick', card: id });
+    expect(s.players[0].deck).toContain(id);
+    const view = projectView(s, 0, { catalog: c2 });
+    expect(hiddenIdsShown(s, 0, view, legalActions(s, c2))).toEqual([]);
+    // A real leak, the opponent's hand card named in a zone, is caught.
+    const theirs = s.players[1].hand[0] as string;
+    const leaky = { ...view, players: [{ ...view.players[0], waiting: [...view.players[0].waiting, { id: theirs, def: '?' }] }, view.players[1]] } as typeof view;
+    expect(hiddenIdsShown(s, 0, leaky)).toEqual([theirs]);
   });
 });

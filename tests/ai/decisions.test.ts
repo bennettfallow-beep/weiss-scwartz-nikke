@@ -43,6 +43,13 @@ const extra: CardDef[] = [
   // "When this attacks, you may put it into the waiting room: draw 1."
   { id: 'AI-SAC', name: 'Last Stand', kind: 'character', color: 'yellow', level: 0, cost: 0, power: 9000, soul: 2, abilities: [{ kind: 'automatic', trigger: { on: 'attack' }, cost: [{ pay: 'selfToWaiting' }], effect: [{ do: 'draw', count: 1 }] }] },
   { id: 'AI-SBX', name: 'Reserve Call', kind: 'climax', color: 'yellow', triggers: ['standby'] },
+  // "When this attacks, you may pay 1 stock: put the defending character into the waiting room."
+  { id: 'AI-SNIPE', name: 'Marksman', kind: 'character', color: 'yellow', level: 0, cost: 0, power: 2000, soul: 1, abilities: [{ kind: 'automatic', trigger: { on: 'attack' }, cost: [{ pay: 'stock', count: 1 }], effect: [{ do: 'sendToWaiting', target: { all: { side: 'opponent', role: 'defender' } } }] }] },
+  // "When this becomes reversed, you may put it into the waiting room: draw 2."
+  { id: 'AI-MEDIC', name: 'Field Courier', kind: 'character', color: 'red', level: 0, cost: 0, power: 7000, soul: 1, abilities: [{ kind: 'automatic', trigger: { on: 'reversed' }, cost: [{ pay: 'selfToWaiting' }], effect: [{ do: 'draw', count: 2 }] }] },
+  // "When this is played, choose 1 of your opponent's characters and return it to hand."
+  { id: 'AI-HERALD', name: 'Recall Herald', kind: 'character', color: 'yellow', level: 0, cost: 0, power: 2000, soul: 1, abilities: [{ kind: 'automatic', trigger: { on: 'play' }, effect: [{ do: 'choose', as: 'z', count: 1, what: { side: 'opponent' } }, { do: 'returnToHand', target: { ref: 'z' } }] }] },
+  { id: 'AI-PLAIN', name: 'Steady Guard', kind: 'character', color: 'yellow', level: 0, cost: 0, power: 3500, soul: 1 },
   {
     id: 'AI-PUMP',
     name: 'Rally Signal',
@@ -154,6 +161,16 @@ describe('heuristic bot: main and climax phases', () => {
     expect(choose(s)).toEqual({ type: 'PASS', player: 0 });
   });
 
+  it("a character's \"when played\" effect counts only if it will find a target", () => {
+    const mine = () => ({ hand: ['AI-HERALD', 'AI-PLAIN'], stage: { 2: 'Y3', 3: 'Y3' }, deck: ['Y0', 'Y0'] });
+    const withTarget = makeState(cat, { start: 'main', players: [mine(), { deck: ['R0'], stage: { 2: 'R0' } }] });
+    const a = choose(withTarget);
+    expect(a.type === 'PLAY_CHARACTER' && withTarget.cards[a.card]?.def).toBe('AI-HERALD');
+    const noTarget = makeState(cat, { start: 'main', players: [mine(), { deck: ['R0'] }] });
+    const b = choose(noTarget);
+    expect(b.type === 'PLAY_CHARACTER' && noTarget.cards[b.card]?.def).toBe('AI-PLAIN');
+  });
+
   it('keeps counter cards for the counter step: no counter event or counter ability in its own main phase', () => {
     const s = makeState(cat, { start: 'main', players: [{ hand: ['AI-PARRY'], stage: { 1: 'AI-GUARD' }, stock: ['Y0'], deck: ['Y0'] }, { deck: ['R0'] }] });
     expect(choose(s)).toEqual({ type: 'PASS', player: 0 });
@@ -184,6 +201,25 @@ describe('heuristic bot: attacks and defence', () => {
   it('on a power tie: from the side against an equal level-0 character, frontally when a side attack would lose soul to the level', () => {
     expect(choose(attackFrom('Y0', 'G0'))).toEqual({ type: 'ATTACK', player: 0, slot: 2, attack: 'side' }); // 2000 each, level 0
     expect(choose(attackFrom('Y1', 'AI-TIE'))).toEqual({ type: 'ATTACK', player: 0, slot: 2, attack: 'frontal' }); // 5000 each, level 1
+  });
+
+  it('"the defending character" exists only in a frontal attack: it pays for such an effect then, not on a side attack', () => {
+    const attackWith = (attack: 'frontal' | 'side') => {
+      const s = makeState(cat, { start: 'attack', players: [{ deck: ['Y0', 'Y0', 'Y0'], stock: ['Y0', 'Y0'], stage: { 2: 'AI-SNIPE' } }, { deck: ['R0', 'R0', 'R0'], stage: { 2: 'R3' } }] });
+      return act(s, cat, { type: 'ATTACK', player: 0, slot: 2, attack });
+    };
+    const frontal = attackWith('frontal');
+    expect(frontal.pending).toMatchObject({ kind: 'optional', purpose: 'payCost', player: 0 });
+    expect(choose(frontal)).toEqual({ type: 'ACCEPT', player: 0 });
+    expect(choose(attackWith('side'))).toEqual({ type: 'PASS', player: 0 });
+  });
+
+  it('a reversed character that is leaving anyway is put into the waiting room for its effect', () => {
+    let s = makeState(cat, { start: 'attack', players: [{ deck: ['Y0', 'Y0', 'Y0'], stage: { 2: 'Y3' } }, { deck: ['R0', 'R0', 'R0'], stage: { 2: 'AI-MEDIC' } }] });
+    s = act(s, cat, { type: 'ATTACK', player: 0, slot: 2, attack: 'frontal' });
+    for (let i = 0; i < 10 && !(s.pending?.kind === 'optional' && s.pending.player === 1); i++) s = act(s, cat, { type: 'PASS', player: s.pending?.player ?? 0 });
+    expect(s.pending).toMatchObject({ kind: 'optional', purpose: 'payCost', player: 1 });
+    expect(choose(s, 1)).toEqual({ type: 'ACCEPT', player: 1 });
   });
 
   it('does not sacrifice a strong attacker to its own "you may put this into the waiting room" cost', () => {

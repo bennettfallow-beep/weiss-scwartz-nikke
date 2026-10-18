@@ -69,21 +69,30 @@ function attacksAllowed(view: GameView): number {
 }
 
 /** Whether a character on the stage matches the selector now, read from the bot's own side ("you" is the bot). */
+/** Whether a character card fits a selector's card information (CR 2.1.2 names, traits, color, level). */
+function fits(d: CardDef | undefined, what: Selector): boolean {
+  if (d?.kind !== 'character') return false;
+  if (what.name !== undefined && d.name !== what.name) return false;
+  if (what.trait !== undefined && !(d.traits ?? []).includes(what.trait)) return false;
+  if (what.color !== undefined && d.color !== what.color) return false;
+  const level = d.level ?? 0;
+  if (what.level?.min !== undefined && level < what.level.min) return false;
+  if (what.level?.max !== undefined && level > what.level.max) return false;
+  return true;
+}
+
+/**
+ * Whether a character on the stage matches the selector now, read from the bot's own side ("you"
+ * is the bot). As in the engine, "the defending character" exists only in a frontal attack.
+ */
 function selectorMatches(ctx: Ctx, what: Selector, source: CardId | null): boolean {
   const pv = what.side === 'you' ? ctx.my : ctx.opp;
   const attack = ctx.view.attack;
   return pv.stage.flat().some((c) => {
-    const d = defOf(ctx.catalog, c.def);
-    if (d?.kind !== 'character') return false;
+    if (!fits(defOf(ctx.catalog, c.def), what)) return false;
     if (what.other && c.id === source) return false;
-    if (what.name !== undefined && d.name !== what.name) return false;
-    if (what.trait !== undefined && !(d.traits ?? []).includes(what.trait)) return false;
-    if (what.color !== undefined && d.color !== what.color) return false;
-    const level = d.level ?? 0;
-    if (what.level?.min !== undefined && level < what.level.min) return false;
-    if (what.level?.max !== undefined && level > what.level.max) return false;
     if (what.role === 'attacker' && c.id !== attack?.attacker.card) return false;
-    if (what.role === 'defender' && c.id !== attack?.facing?.card) return false;
+    if (what.role === 'defender' && (attack?.type !== 'frontal' || c.id !== attack.facing?.card)) return false;
     return true;
   });
 }
@@ -91,6 +100,11 @@ function selectorMatches(ctx: Ctx, what: Selector, source: CardId | null): boole
 /** The situation an effect of `source` would happen in right now. */
 function now(ctx: Ctx, source: CardId | null): Situation {
   return { battle: ctx.view.attack !== null, matches: (what) => selectorMatches(ctx, what, source) };
+}
+
+/** The situation a character's "when played" ability will meet: the stage now, plus the character itself. */
+function onArrival(ctx: Ctx, card: CardId, def: CardDef): Situation {
+  return { battle: false, matches: (what) => selectorMatches(ctx, what, card) || (what.side === 'you' && !what.other && what.role === undefined && fits(def, what)) };
 }
 
 /** How much a card on the stage would be missed: its worth, plus one for the card itself. */
@@ -155,7 +169,7 @@ function playCharacterScore(ctx: Ctx, card: CardId, slot: Slot): number {
   const def = defIn(ctx, card);
   if (!def) return NEVER;
   const weight = isCenter(slot) ? 1 : 0.4;
-  let score = weight * characterValue(def) + onPlayValue(def) - STOCK * (def.cost ?? 0) - 0.5 * handCardValue(ctx, card);
+  let score = weight * characterValue(def) + onPlayValue(def, onArrival(ctx, card, def)) - STOCK * (def.cost ?? 0) - 0.5 * handCardValue(ctx, card);
   const occupant = stageCard(ctx.my, slot);
   // The character already there goes to the waiting room: count it as lost.
   if (occupant) score -= weight * stageValue(ctx, occupant) + 1;
@@ -344,9 +358,10 @@ function optionalScore(ctx: Ctx, p: Extract<Pending, { kind: 'optional' }>): num
       const def = r ? defOf(ctx.catalog, r.def) : undefined;
       const ability = r && r.index !== null ? def?.abilities?.[r.index] : undefined;
       if (!r || !def || !ability || ability.kind !== 'automatic') return 0.5;
-      // A cost that puts the card itself into the waiting room loses what that card is worth.
+      // A cost that puts the card itself into the waiting room loses what that card is worth, unless it
+      // is reversed: then it leaves in the Encore Step anyway, and Encore is offered either way.
       const at = stageEntry(ctx, r.card);
-      const source = at ? stageValue(ctx, at.card) : characterValue(def);
+      const source = at ? (at.card.orientation === 'reverse' ? 0 : stageValue(ctx, at.card)) : characterValue(def);
       return stepsValue(ability.effect, now(ctx, r.card)) + costValue(ability.cost, source);
     }
     case 'may':
