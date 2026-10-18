@@ -30,6 +30,7 @@ import {
   validate,
 } from '../../src/engine';
 import type { Action, GameEvent, GameState, RngState } from '../../src/engine';
+import { randomChoice } from '../../src/ai';
 import { fuzzCatalog as catalog, fuzzDecks } from '../helpers/fuzz-decks';
 
 const GAMES = Number(process.env.FUZZ_GAMES ?? 2000);
@@ -40,14 +41,6 @@ const ROUND_TRIP_EVERY = 40;
 export type Coverage = Map<string, number>;
 const bump = (c: Coverage, key: string, n = 1) => c.set(key, (c.get(key) ?? 0) + n);
 
-/** Picks an action type uniformly, then an action of that type, so long lists (mulligans, swaps) do not swamp the game. */
-function pick(legal: readonly Action[], rng: RngState): [Action, RngState] {
-  const types = [...new Set(legal.map((a) => a.type))];
-  const [ti, r1] = nextInt(rng, types.length);
-  const ofType = legal.filter((a) => a.type === types[ti]);
-  const [ai, r2] = nextInt(r1, ofType.length);
-  return [ofType[ai] as Action, r2];
-}
 
 function tally(c: Coverage, events: readonly GameEvent[], before: GameState): void {
   let inDamage = before.damage !== null;
@@ -130,7 +123,7 @@ export function playGame(seed: string, pairing: [number, number], coverage: Cove
       break;
     }
     const [problems, r0] = oracleProblems(state, legal, rng);
-    const [action, r1] = pick(legal, r0);
+    const [action, r1] = randomChoice(legal, r0);
     rng = r1;
     violations.push(...problems.map((p) => `action ${i}: ${p}`));
     const result = applyAction(state, catalog, action);
