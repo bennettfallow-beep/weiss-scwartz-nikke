@@ -50,6 +50,9 @@ const extra: CardDef[] = [
   // "When this is played, choose 1 of your opponent's characters and return it to hand."
   { id: 'AI-HERALD', name: 'Recall Herald', kind: 'character', color: 'yellow', level: 0, cost: 0, power: 2000, soul: 1, abilities: [{ kind: 'automatic', trigger: { on: 'play' }, effect: [{ do: 'choose', as: 'z', count: 1, what: { side: 'opponent' } }, { do: 'returnToHand', target: { ref: 'z' } }] }] },
   { id: 'AI-PLAIN', name: 'Steady Guard', kind: 'character', color: 'yellow', level: 0, cost: 0, power: 3500, soul: 1 },
+  { id: 'AI-LONE', name: 'Lone Scout', kind: 'character', color: 'yellow', level: 0, cost: 0, power: 500, soul: 1 },
+  // "When this is played, choose 1 of your other characters named Lone Scout: +3000 power."
+  { id: 'AI-BUFF', name: 'Scout Booster', kind: 'character', color: 'yellow', level: 0, cost: 0, power: 1000, soul: 1, abilities: [{ kind: 'automatic', trigger: { on: 'play' }, effect: [{ do: 'choose', as: 'w', count: 1, what: { side: 'you', other: true, name: 'Lone Scout' } }, { do: 'power', amount: 3000, target: { ref: 'w' } }] }] },
   {
     id: 'AI-PUMP',
     name: 'Rally Signal',
@@ -169,6 +172,12 @@ describe('heuristic bot: main and climax phases', () => {
     const noTarget = makeState(cat, { start: 'main', players: [mine(), { deck: ['R0'] }] });
     const b = choose(noTarget);
     expect(b.type === 'PLAY_CHARACTER' && noTarget.cards[b.card]?.def).toBe('AI-PLAIN');
+  });
+
+  it('a "when played" target that the play itself pushes off the stage does not count', () => {
+    // The only Lone Scout is in the one free-for-replacement position; playing there sends it away first (CR 9.6.2).
+    const s = makeState(cat, { start: 'main', players: [{ hand: ['AI-BUFF'], stage: { 1: 'Y3', 2: 'Y3', 3: 'Y3', 4: 'AI-LONE', 5: 'Y3' }, deck: ['Y0', 'Y0'] }, { deck: ['R0'] }] });
+    expect(choose(s)).toEqual({ type: 'PASS', player: 0 });
   });
 
   it('keeps counter cards for the counter step: no counter event or counter ability in its own main phase', () => {

@@ -25,8 +25,8 @@ Tests check:
 - that swapping around every card the player cannot see (the other hand, both decks, both
   stocks) never changes a single decision.
 - that the zones, the look, its own decision and its legal moves name no card it cannot see. The
-  log, effects and the current attack may name cards it saw earlier that have since gone out of
-  sight.
+  log, effects, the current attack, the ability being resolved and the card whose ability is
+  asking may name cards it saw earlier that have since gone out of sight.
 
 ## How it plays
 

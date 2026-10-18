@@ -68,7 +68,6 @@ function attacksAllowed(view: GameView): number {
   return view.turn === 1 && view.active === view.starting ? 1 : 3;
 }
 
-/** Whether a character on the stage matches the selector now, read from the bot's own side ("you" is the bot). */
 /** Whether a character card fits a selector's card information (CR 2.1.2 names, traits, color, level). */
 function fits(d: CardDef | undefined, what: Selector): boolean {
   if (d?.kind !== 'character') return false;
@@ -85,11 +84,11 @@ function fits(d: CardDef | undefined, what: Selector): boolean {
  * Whether a character on the stage matches the selector now, read from the bot's own side ("you"
  * is the bot). As in the engine, "the defending character" exists only in a frontal attack.
  */
-function selectorMatches(ctx: Ctx, what: Selector, source: CardId | null): boolean {
+function selectorMatches(ctx: Ctx, what: Selector, source: CardId | null, gone: CardId | null = null): boolean {
   const pv = what.side === 'you' ? ctx.my : ctx.opp;
   const attack = ctx.view.attack;
   return pv.stage.flat().some((c) => {
-    if (!fits(defOf(ctx.catalog, c.def), what)) return false;
+    if (c.id === gone || !fits(defOf(ctx.catalog, c.def), what)) return false;
     if (what.other && c.id === source) return false;
     if (what.role === 'attacker' && c.id !== attack?.attacker.card) return false;
     if (what.role === 'defender' && (attack?.type !== 'frontal' || c.id !== attack.facing?.card)) return false;
@@ -102,9 +101,13 @@ function now(ctx: Ctx, source: CardId | null): Situation {
   return { battle: ctx.view.attack !== null, matches: (what) => selectorMatches(ctx, what, source) };
 }
 
-/** The situation a character's "when played" ability will meet: the stage now, plus the character itself. */
-function onArrival(ctx: Ctx, card: CardId, def: CardDef): Situation {
-  return { battle: false, matches: (what) => selectorMatches(ctx, what, card) || (what.side === 'you' && !what.other && what.role === undefined && fits(def, what)) };
+/**
+ * The situation a character's "when played" ability will meet: the stage now, plus the character
+ * itself, minus the one it replaces at `slot` (that one leaves by rule action first, CR 9.6.2).
+ */
+function onArrival(ctx: Ctx, card: CardId, def: CardDef, slot: Slot): Situation {
+  const replaced = stageCard(ctx.my, slot)?.id ?? null;
+  return { battle: false, matches: (what) => selectorMatches(ctx, what, card, replaced) || (what.side === 'you' && !what.other && what.role === undefined && fits(def, what)) };
 }
 
 /** How much a card on the stage would be missed: its worth, plus one for the card itself. */
@@ -169,7 +172,7 @@ function playCharacterScore(ctx: Ctx, card: CardId, slot: Slot): number {
   const def = defIn(ctx, card);
   if (!def) return NEVER;
   const weight = isCenter(slot) ? 1 : 0.4;
-  let score = weight * characterValue(def) + onPlayValue(def, onArrival(ctx, card, def)) - STOCK * (def.cost ?? 0) - 0.5 * handCardValue(ctx, card);
+  let score = weight * characterValue(def) + onPlayValue(def, onArrival(ctx, card, def, slot)) - STOCK * (def.cost ?? 0) - 0.5 * handCardValue(ctx, card);
   const occupant = stageCard(ctx.my, slot);
   // The character already there goes to the waiting room: count it as lost.
   if (occupant) score -= weight * stageValue(ctx, occupant) + 1;

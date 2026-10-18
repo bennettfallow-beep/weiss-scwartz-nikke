@@ -2,8 +2,9 @@
 // touches the game state; it passes the bot the view and the legal actions.
 // Swapping around the hidden cards must not change a single decision.
 import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join, resolve, sep } from 'node:path';
 
+import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
 import { decide, heuristicBot, randomBot } from '../../src/ai';
@@ -15,6 +16,7 @@ import { hiddenIdsShown, shuffleHidden } from '../helpers/hidden-shuffle';
 describe('no peeking', () => {
   it('only src/ai/decide.ts touches the game state; the bots see the view and their legal actions', () => {
     const dir = join(__dirname, '..', '..', 'src', 'ai');
+    const engineDir = resolve(dir, '..', 'engine');
     const files = (readdirSync(dir, { recursive: true }) as string[]).filter((f) => f.endsWith('.ts')).map((f) => f.split('\\').join('/'));
     expect(files).toContain('decide.ts');
     // Engine functions a bot may call: none of them can create, run or inspect a game.
@@ -22,17 +24,29 @@ describe('no peeking', () => {
     for (const file of files.filter((f) => f !== 'decide.ts' && f !== 'index.ts')) {
       const text = readFileSync(join(dir, file), 'utf8');
       expect(text, file).not.toMatch(/\bGameState\b|\blegalActions\b|\bprojectView\b|\bapplyAction\b|\bcheckInvariants\b|\bcreateGame\b|\breplay\b/);
-      // Every import or re-export from the engine, however it is written: either quote style, the barrel or its index file.
-      const engine = /^(\.\.\/)+engine(\/index(\.ts)?)?$/;
-      for (const m of text.matchAll(/(import|export)\s+(type\s+)?([^;]*?)\s+from\s+['"]([^'"]+)['"]/g)) {
-        if (!engine.test(m[4] ?? '') || m[2]) continue;
-        const clause = (m[3] ?? '').trim();
-        expect(clause.startsWith('{') && clause.endsWith('}'), `${file}: only named imports from the engine (${clause})`).toBe(true);
-        const names = clause.slice(1, -1).split(',').map((n) => n.trim()).filter(Boolean);
-        for (const n of names) {
-          if (n.startsWith('type ')) continue;
-          const name = n.split(/\s+as\s+/)[0] ?? n;
-          expect(allowed.has(name), `${file} imports ${name} from the engine`).toBe(true);
+      // Every import or re-export that reaches the engine, read with the TypeScript parser so no spelling slips past.
+      const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
+      for (const statement of source.statements) {
+        if (!(ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement)) || !statement.moduleSpecifier || !ts.isStringLiteral(statement.moduleSpecifier)) continue;
+        const target = resolve(dir, dirname(file), statement.moduleSpecifier.text);
+        if (target !== engineDir && !target.startsWith(`${engineDir}${sep}`)) continue;
+        const where = `${file}: ${statement.getText(source)}`;
+        if (ts.isImportDeclaration(statement)) {
+          const clause = statement.importClause;
+          if (!clause || clause.isTypeOnly) continue;
+          expect(clause.name, `${where} (default import)`).toBeUndefined();
+          const bindings = clause.namedBindings;
+          expect(bindings === undefined || ts.isNamedImports(bindings), `${where} (namespace import)`).toBe(true);
+          for (const el of bindings && ts.isNamedImports(bindings) ? bindings.elements : []) {
+            if (!el.isTypeOnly) expect(allowed.has((el.propertyName ?? el.name).text), where).toBe(true);
+          }
+        } else {
+          if (statement.isTypeOnly) continue;
+          const clause = statement.exportClause;
+          expect(clause !== undefined && ts.isNamedExports(clause), `${where} (export *)`).toBe(true);
+          for (const el of clause && ts.isNamedExports(clause) ? clause.elements : []) {
+            if (!el.isTypeOnly) expect(allowed.has((el.propertyName ?? el.name).text), where).toBe(true);
+          }
         }
       }
       expect(text, file).not.toMatch(/require\(|import\(/);

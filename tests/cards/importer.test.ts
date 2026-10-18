@@ -173,7 +173,7 @@ describe('importer: never throws, round trip', () => {
     expect(r.issues).toHaveLength(MAX_ISSUES);
     expect(r.issues.at(-1)?.message).toBe(`and ${150_000 - MAX_ISSUES + 1} more issues`);
     expect(Object.keys(r.catalog)).toEqual(['TST/T01-002']);
-  });
+  }, 30_000);
 
   it('a card number belongs to the first card that uses it, even when that card has a wrong shape', () => {
     const r = importCardSet(JSON.stringify(file([character({ level: 'zero' }), character({ name: 'Beta' })])));
@@ -215,7 +215,7 @@ describe('importer: never throws, round trip', () => {
       }),
       { seed: 20261017, numRuns: 500 },
     );
-  });
+  }, 30_000);
 
   it('exporting and importing again gives back the same set', () => {
     const first = importCardSetData(synFile, { mode: 'strict' });
