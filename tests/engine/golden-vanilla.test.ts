@@ -24,6 +24,8 @@ interface Golden {
   turns: number;
   result: string;
   logHash: string;
+  /** Decisions made on the end-of-turn hand-limit discard prompt. A game with none is untouched by changes to that prompt. */
+  discardPrompts: number;
 }
 
 /** JSON with sorted keys, so the hash does not depend on property order. */
@@ -59,7 +61,9 @@ function play(seed: string, pairing: [number, number]): Golden {
   let state: GameState = created.state;
   let rng = seedRng(`golden-${seed}`);
   let actions = 0;
+  let discardPrompts = 0;
   while (!state.result && actions < MAX_ACTIONS) {
+    if (state.pending?.kind === 'discard') discardPrompts++;
     const [action, next] = pick(legalActions(state, catalog), rng);
     rng = next;
     const r = applyAction(state, catalog, action);
@@ -68,7 +72,7 @@ function play(seed: string, pairing: [number, number]): Golden {
     actions++;
   }
   const result = state.result === null ? 'none' : state.result.kind === 'draw' ? 'draw' : `p${state.result.winner}:${state.result.reason}`;
-  return { seed, pairing, actions, turns: state.turn, result, logHash: hash(canonical(state.log)) };
+  return { seed, pairing, actions, turns: state.turn, result, logHash: hash(canonical(state.log)), discardPrompts };
 }
 
 function playAll(): Golden[] {
