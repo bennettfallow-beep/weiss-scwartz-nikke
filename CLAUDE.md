@@ -14,6 +14,7 @@ npm run typecheck          # app + pure layers + node scripts/tests (3 tsconfigs
 npm run lint               # ESLint, including the purity rules
 npm test                   # Vitest unit + rule tests
 npm run test:fuzz          # seeded random-game fuzz (from M2)
+npm run simulate           # computer player vs random: 504 seat-swapped games, >= 80% wins, p95 <= 50 ms
 npm run check:matrix       # rules traceability + gate for finished milestones; -- --write regenerates docs
 npm run check:cards        # SYN set legal and covers every ability feature; no official card data in git
 npm run check:assets       # every file in assets/ has a license entry

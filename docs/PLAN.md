@@ -100,7 +100,7 @@ Decision: "Nikke theme" = a sci-fi squad *mood* with **entirely original** art a
 - **Done adds:** a test/script that fails if any file under `assets/` lacks a license entry; manual originality review by you at M3 and M6.
 
 ## AI
-- `RandomBot` drives fuzz. `HeuristicBot`: weighted rule-based scoring over legal actions, seeded tie-breaks, no search, no peeking (metamorphic test: permuting hidden opponent cards cannot change its choice). p95 decision under 50 ms.
+- `randomBot` drives the fuzz. `heuristicBot`: rule-of-thumb scores over the legal actions, seeded tie-breaks, no search, no peeking (test: swapping every hidden card's definition changes no decision). p95 decision under 50 ms. Plain-language account: `docs/AI.md`.
 
 ## UI
 Screens: Home, Deck pick, Game board, Log (+ replay export), Rules/Help, Game over, Import. Portrait board; action tray derived only from `legalActions` (UI holds zero rule logic). Hot-seat `HandoffScreen` renders no private data; shown on every seat change (including counter step and resume from background). Counter prompts are never auto-skipped in hot-seat (skipping would leak "no counter"). Undo only while the last step is reversible and the same player acts. Save = versioned envelope + `normalizeSave` (idempotent, migration chain); incompatible saves prompt, never silently dropped. Basics: testIDs, 44pt targets, no color-only state.
@@ -142,9 +142,8 @@ Things a milestone found but left for a later one, so they are not lost.
   - Shot's extra damage has no source card (CR 4.11.1.2).
   - Backup picks the only defender; effects with several defenders would need a choice.
   - Play requirements read printed level, cost and color; v1 has no effect that changes them.
-- **M4:** the hand-limit discard lists every combination of cards. A large hand makes that
-  list huge. Switch it to the one-card-at-a-time `pick` prompt abilities already use before
-  the AI relies on it.
+- **M4 (done):** the hand-limit discard is now answered one card at a time (CHOOSE_CARD), so
+  its action list stays short. The computer player is described in `docs/AI.md`.
 - **M5:**
   - Keep the seed and generator state out of anything a player can read in a save.
   - A save must record which card catalog it was made with (e.g. a hash): lenient imports

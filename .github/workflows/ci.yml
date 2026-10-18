@@ -49,6 +49,19 @@ jobs:
         env:
           FUZZ_GAMES: '300'
 
+  simulate:
+    name: computer player gate (504 games vs random)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run simulate
+
   web-e2e:
     name: web build + Playwright
     runs-on: ubuntu-24.04  # pinned: Playwright 1.56.1 must support the runner OS
