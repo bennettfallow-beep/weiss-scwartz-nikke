@@ -4,7 +4,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 
-import { exportCardSet, importCardSet, importCardSetData, IMPORT_ISSUE_CODES, loadSyn, MAX_FILE_CHARS, MAX_ISSUES } from '../../src/cards';
+import { exportCardSet, importCardSet, importCardSetData, IMPORT_ISSUE_CODES, loadSyn, MAX_CARD_DEPTH, MAX_FILE_CHARS, MAX_ISSUES } from '../../src/cards';
 import type { ImportIssue } from '../../src/cards';
 import { validateDeck } from '../../src/engine';
 import synFile from '../../src/cards/sets/syn-001.json';
@@ -42,7 +42,8 @@ const BAD: [string, Json | string, string][] = [
   ['a printed line over 600 characters', file([character({ text: ['x'.repeat(601)] })]), 'IMPORT_RANGE@cards.0.text.0'],
   ['Backup without its stock cost', file([character({ backup: { power: 2000, level: 1 } })]), 'IMPORT_SHAPE@cards.0.backup.stock'],
   ['the same card number twice', file([character(), character({ name: 'Beta' })]), 'IMPORT_DUPLICATE@cards.1.number'],
-  ['a name with a strike-through mark', file([character({ name: 'Al̶pha' })]), 'IMPORT_NAME@cards.0.name'],
+  ['a card nested deeper than the limit', file([character({ effect: JSON.parse(`${'['.repeat(MAX_CARD_DEPTH + 2)}${']'.repeat(MAX_CARD_DEPTH + 2)}`) as unknown })]), 'IMPORT_RANGE@cards.0'],
+  ['a name with a strike-through mark', file([character({ name: 'Al\u0336pha' })]), 'IMPORT_NAME@cards.0.name'],
   ['a name with reading-aid markup', file([character({ name: '<ruby>Alpha<rt>a</rt></ruby>' })]), 'IMPORT_NAME@cards.0.name'],
   ['a trait with extra spaces', file([character({ traits: [' Squad'] })]), 'IMPORT_NAME@cards.0.traits.0'],
   ['a climax with a level', file([{ number: 'TST/T01-002', name: 'Gate', kind: 'climax', color: 'yellow', level: 1 }]), 'CATALOG_FIELD@cards.0.level'],
@@ -145,6 +146,46 @@ describe('importer: lenient and strict', () => {
 });
 
 describe('importer: never throws, round trip', () => {
+  // Nested JSON written as text, so building it needs no recursion here either.
+  const nested = (depth: number) => JSON.parse(`${'['.repeat(depth)}${']'.repeat(depth)}`) as unknown;
+
+  it('deeply nested ability or effect data is reported, never a crash, in either mode, and the result can be exported', () => {
+    const deep = nested(20000);
+    const cases = [
+      file([character({ effect: [deep] })]),
+      file([character({ abilities: [drawOnPlay, drawOnPlay, drawOnPlay, drawOnPlay, { kind: 'automatic', trigger: { on: 'play' }, effect: [deep] }] })]),
+      file([{ number: 'TST/T01-003', name: 'Flash', kind: 'event', color: 'red', level: 0, cost: 0, effect: [deep] }, character()]),
+    ];
+    for (const f of cases) {
+      for (const mode of ['lenient', 'strict'] as const) {
+        // Passed as data: JSON.stringify itself cannot write nesting this deep.
+        const r = importCardSetData(f, { mode });
+        expect(r.ok).toBe(false);
+        expect(errors(r.issues)).toContain('IMPORT_RANGE@cards.0');
+        if (r.set) expect(() => exportCardSet(r.set!)).not.toThrow();
+      }
+    }
+  });
+
+  it('a card with a huge number of problems is reported in full count, never a crash', () => {
+    const many = character(Object.fromEntries(Array.from({ length: 150_000 }, (_, i) => [`f${i}`, 0])));
+    const r = importCardSet(JSON.stringify(file([many, character({ number: 'TST/T01-002', name: 'Beta' })])));
+    expect(r.issues).toHaveLength(MAX_ISSUES);
+    expect(r.issues.at(-1)?.message).toBe(`and ${150_000 - MAX_ISSUES + 1} more issues`);
+    expect(Object.keys(r.catalog)).toEqual(['TST/T01-002']);
+  });
+
+  it('a card number belongs to the first card that uses it, even when that card has a wrong shape', () => {
+    const r = importCardSet(JSON.stringify(file([character({ level: 'zero' }), character({ name: 'Beta' })])));
+    expect(errors(r.issues)).toEqual(expect.arrayContaining(['IMPORT_SHAPE@cards.0.level', 'IMPORT_DUPLICATE@cards.1.number']));
+    expect(r.issues.find((i) => i.code === 'IMPORT_DUPLICATE')?.message).toContain('cards.0');
+    expect(r.catalog).toEqual({});
+  });
+
+  it('when no card has the right shape there is no set to give back', () => {
+    expect(importCardSet(JSON.stringify(file([character({ kind: 'partner' })]))).set).toBeNull();
+  });
+
   it('any JSON value gives a result, never an exception', () => {
     fc.assert(
       fc.property(fc.jsonValue(), (v) => {
@@ -194,21 +235,28 @@ describe('importer: never throws, round trip', () => {
 
 describe('CARD-23: rules names', () => {
   it('[CARD-23] the rules name is stored without print-only marks: a reading aid kept in printedName never reaches the engine, and leftover marks in name are rejected', () => {
-    const r = importCardSet(JSON.stringify(file([character({ name: 'Alpha', printedName: 'Alpha̶ <ruby>A<rt>a</rt></ruby>' })])));
+    const r = importCardSet(JSON.stringify(file([character({ name: 'Alpha', printedName: 'Alpha\u0336 <ruby>A<rt>a</rt></ruby>' })])));
     expect(r.ok).toBe(true);
     expect(r.catalog['TST/T01-001']?.name).toBe('Alpha');
-    for (const name of ['Al̵pha', 'Alpha<rt>a</rt>', 'Al\npha']) {
+    for (const name of ['Al\u0335pha', 'Alpha<rt>a</rt>', 'Al\npha']) {
       expect(errors(importCardSet(JSON.stringify(file([character({ name })]))).issues)).toContain('IMPORT_NAME@cards.0.name');
     }
   });
 
-  it('[CARD-23] names that differ only in spacing or Unicode form are the same rules name, so they share the 4-copy limit', () => {
-    const composed = 'Café Unit';
-    const decomposed = 'Café  Unit ';
-    const r = importCardSet(JSON.stringify(file([character({ number: 'TST/T01-001', name: composed }), character({ number: 'TST/T01-002', name: decomposed })])));
-    expect(r.ok).toBe(true);
-    expect(r.catalog['TST/T01-002']?.name).toBe(composed);
-    const deck = [...Array<string>(3).fill('TST/T01-001'), ...Array<string>(2).fill('TST/T01-002')];
-    expect(validateDeck(deck, r.catalog).map((e) => e.code)).toContain('DECK_COPIES');
+  it('[CARD-23] names that differ only in spacing, invisible characters or Unicode form are the same rules name, so they share the 4-copy limit', () => {
+    const composed = 'Caf\u00e9 Unit';
+    for (const variant of ['Cafe\u0301  Unit ', 'Caf\u00e9\u200b Unit', 'Caf\u00ad\u00e9 Unit\ufeff']) {
+      const r = importCardSet(JSON.stringify(file([character({ number: 'TST/T01-001', name: composed }), character({ number: 'TST/T01-002', name: variant })])));
+      expect(r.ok).toBe(true);
+      expect(r.catalog['TST/T01-002']?.name).toBe(composed);
+      const deck = [...Array<string>(3).fill('TST/T01-001'), ...Array<string>(2).fill('TST/T01-002')];
+      expect(validateDeck(deck, r.catalog).map((e) => e.code)).toContain('DECK_COPIES');
+    }
+  });
+
+  it('[CARD-23] a name split over lines, by any line-break character, is rejected', () => {
+    for (const name of ['Al\u2028pha', 'Al\u2029pha', 'Al\u0085pha', 'Al\vpha']) {
+      expect(errors(importCardSet(JSON.stringify(file([character({ name })]))).issues)).toContain('IMPORT_NAME@cards.0.name');
+    }
   });
 });

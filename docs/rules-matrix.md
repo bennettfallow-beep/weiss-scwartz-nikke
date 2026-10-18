@@ -58,7 +58,7 @@ Rows: 271 · verified 208 · planned 0 · deferred 59 · out 4
 | CARD-20 | Title name and Weiss/Schwarz side affiliation (shown by a white, black, or white-to-black gradient side frame) have no rules meaning in themselves, although effects may refer to them. | §2.13.1, §2.13.2, §2.18.1, §2.18.1.1, §2.18.1.2, §2.18.1.3, §2.18.2 | out | none | 0 |
 | CARD-21 | When a rule or effect checks information a card does not have, missing numeric information counts as 0 and missing non-numeric information counts as nonexistent. | §2.19.1 | verified | M1 | 2 |
 | CARD-22 | When two non-numeric values are compared and at least one of them is missing, they are never treated as identical. | §2.19.2 | deferred | none | 0 |
-| CARD-23 | Imported card data must store the rules name: reading-aid characters printed above the name and struck-through or painted-over parts are dropped before the name is used anywhere. | §2.1.1.1, §2.1.1.2 | verified | M3b | 2 |
+| CARD-23 | Imported card data must store the rules name: reading-aid characters printed above the name and struck-through or painted-over parts are dropped before the name is used anywhere. | §2.1.1.1, §2.1.1.2 | verified | M3b | 3 |
 
 ## ZONE: Zones of the game (CR 3)
 
@@ -124,7 +124,7 @@ Rows: 271 · verified 208 · planned 0 · deferred 59 · out 4
 | CONC-12 | At a play timing the player either performs one action that is legal at that moment or chooses to do nothing; after a chosen action resolves, that same player gets another play timing unless something specifies otherwise. | §4.5.3, §4.5.3.1 | verified | M1 | 3 |
 | CONC-13 | When the player with a play timing chooses to do nothing, the game moves forward instead of granting another play timing. | §4.5.3.2 | verified | M1 | 2 |
 | CONC-14 | Each character on the stage is in exactly one of three orientations: stand (upright from its controller's view), rest (sideways) or reverse (upside down), and standing, resting or reversing a card switches it into that orientation. | §4.6.1, §4.6.1.1, §4.6.1.2, §4.6.1.3 | verified | M1 | 3 |
-| CONC-15 | In card text, the stand, rest and reverse icons carry the same meaning as the corresponding words. | §4.6.1.1.1, §4.6.1.2.1, §4.6.1.3.1 | verified | M3b | 2 |
+| CONC-15 | In card text, the stand, rest and reverse icons carry the same meaning as the corresponding words. | §4.6.1.1.1, §4.6.1.2.1, §4.6.1.3.1 | verified | M3b | 3 |
 | CONC-16 | An instruction to draw N cards moves cards into the drawing player's hand from the top of that player's own deck, taking the top card each time. | §4.7.1 | verified | M1 | 3 |
 | CONC-17 | An instruction to look at the top N cards of the deck, or at up to N cards from the top, lets the player check those cards' information while the cards stay in the deck. | §4.8.1 | verified | M3 | 4 |
 | CONC-18 | An instruction to reveal the top N cards of the deck, or up to N cards from the top, shows those cards' information openly while the cards stay in the deck. | §4.9.1 | deferred | none | 0 |

@@ -87,15 +87,15 @@ Purity enforced three ways: `tsconfig.engine.json` (no DOM/RN/node types), ESLin
 
 ## Cards and importer
 - Versioned JSON schema (`schemaVersion: 1`) generated from zod (`schema/card-set.v1.json`); drift test. Optional `art: { url }` per card, a link only, for personal card files; see docs/CARDS.md.
-- `importCardSet(text)` collects up to ~200 issues `{severity, code, path, message}`. Lenient mode (default): unsupported ability becomes a visible "not implemented" vanilla card; strict mode rejects. `parseDecklist` ("4 SYN-EMB-003") included.
+- `importCardSet(text)` collects up to 200 issues `{severity, code, path, message}`. Lenient mode (default): a card is played without the abilities the engine cannot run (they are listed as warnings), and a card with other errors is left out while the rest import; strict mode rejects. `parseDecklist` ("4 SYN/Y01-001") included. Details: docs/CARDS.md.
 - Placeholder set `SYN` (`src/cards/sets/`): 39 original cards in three 50-card decks (yellow, red, blue), no pictures, exercising every ability feature; the fuzz tests play them. IP rules: original names and text, card text generated from DSL, no official PDF/art committed (PDF in gitignored `docs/_private/`), neutral display title + "unofficial" disclaimer.
 
 ## Card art and theme (added 2026-10-10; superseded 2026-10-17)
 Superseded for card pictures: you chose the real card art for personal use (see Decisions). The repository still holds no official images or links; SYN cards have no picture. The rest of this section stands for app branding.
 Decision: "Nikke theme" = a sci-fi squad *mood* with **entirely original** art and characters. No official Nikke or Bushiroad images are pulled, bundled, traced or committed (publisher artwork, not ours to redistribute).
-- **Allowed:** original characters, names, factions and palette; generic sci-fi / armored-squad visual mood; original SVG illustrations I generate (geometric/procedural silhouettes, patterns, emblems) as `SYN` set art; CC0 assets only if you point me at a specific one and its license is verified from the source's own page.
+- **Allowed (app branding):** original names, palette and generic sci-fi / armored-squad visual mood; CC0 assets only if you point me at a specific one and its license is verified from the source's own page. `SYN` cards have no picture.
 - **Not allowed:** any actual Nikke character, name, logo, screenshot, or likeness; "Nikke" or "Weiss Schwarz" in the app title, bundle id, store listing or repo description (neutral display title stays); tracing or "redrawing" official cards.
-- **Mechanics:** schema gets an optional `art` field (`{kind: 'svg'|'bundled', ref}`) in v1.1 of the schema; v1 placeholders render from original SVG. Art files live in `assets/syn-001/` with a `LICENSE` stating they are original/CC0. Your own local images stay out of the repo (picked on-device, stored in app storage) if you later want them; not built in v1.
+- **Mechanics:** card-set format v1 has an optional `art: { url }` per card: a link, used only in your personal card files (`local-cards/` or the phone), downloaded on the phone (M5/M6). The repository holds no card images or links; `npm run check:cards` enforces it. See docs/CARDS.md.
 - **Limit:** I can produce vector/procedural art, not painted illustration. Expect clean stylized silhouettes and emblems, not anime-quality portraits. If you want painted art, it needs an artist or an image source you hold rights to.
 - **Done adds:** a test/script that fails if any file under `assets/` lacks a license entry; manual originality review by you at M3 and M6.
 

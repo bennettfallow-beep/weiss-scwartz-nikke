@@ -24,7 +24,8 @@ export interface DecklistResult {
 }
 
 export const MAX_DECKLIST_CHARS = 20_000;
-const ENTRY = /^(\d{1,3})\s*[xX]?\s+([A-Za-z0-9]+(?:[/-][A-Za-z0-9]+)*)(?:\s+.*)?$/;
+// The optional "x" is tied to its own spaces, so a run of spaces can be split only one way (no backtracking blow-up).
+const ENTRY = /^(\d{1,3})(?:\s*[xX])?\s+([A-Za-z0-9]+(?:[/-][A-Za-z0-9]+)*)(?:\s+.*)?$/;
 
 /** Reads a decklist against a catalog. Never throws. */
 export function parseDecklist(text: string, catalog: CardCatalog): DecklistResult {

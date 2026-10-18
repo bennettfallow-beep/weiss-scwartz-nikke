@@ -19,6 +19,9 @@ export function allFeatures(): string[] {
     'cost:discard.filter',
     'cost:automatic',
     ...CONDITION_KINDS.map((c) => `condition:${c}`),
+    // Optional parts of conditions that take another path in the engine.
+    'condition:climax.name',
+    ...(['level', 'climax', 'count', 'turn'] as const).map((c) => `condition:${c}.opponent`),
     'condition:activated.when',
     'condition:continuous.when',
     ...COUNT_ZONES.map((z) => `countZone:${z}`),
@@ -68,6 +71,8 @@ export function featuresOf(defs: readonly CardDef[]): Set<string> {
   };
   const condition = (c: Condition) => {
     used.add(`condition:${c.if}`);
+    if ((c.if === 'count' ? c.what.side : c.side) === 'opponent') used.add(`condition:${c.if}.opponent`);
+    if (c.if === 'climax' && c.name) used.add('condition:climax.name');
     if (c.if === 'count') {
       filter(c.what);
       if (c.what.zone) used.add(`countZone:${c.what.zone}`);

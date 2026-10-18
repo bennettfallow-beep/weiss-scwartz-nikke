@@ -164,6 +164,10 @@
           "kind": "continuous",
           "when": [
             {
+              "if": "turn",
+              "side": "opponent"
+            },
+            {
               "if": "count",
               "what": {
                 "side": "you",
@@ -720,6 +724,27 @@
               "player": "opponent"
             }
           ]
+        },
+        {
+          "kind": "continuous",
+          "when": [
+            {
+              "if": "climax",
+              "side": "opponent"
+            },
+            {
+              "if": "level",
+              "side": "opponent",
+              "min": 1
+            }
+          ],
+          "modifiers": [
+            {
+              "stat": "power",
+              "amount": 1000,
+              "target": "this"
+            }
+          ]
         }
       ]
     },
@@ -868,8 +893,30 @@
               "count": 1
             },
             {
-              "do": "discard",
-              "count": 1
+              "do": "if",
+              "when": [
+                {
+                  "if": "count",
+                  "what": {
+                    "side": "you",
+                    "zone": "hand"
+                  },
+                  "min": 4
+                }
+              ],
+              "then": [
+                {
+                  "do": "discard",
+                  "count": 1
+                }
+              ],
+              "else": [
+                {
+                  "do": "power",
+                  "amount": 500,
+                  "target": "this"
+                }
+              ]
             }
           ]
         }
@@ -967,7 +1014,8 @@
               "side": "you"
             },
             {
-              "if": "climax"
+              "if": "climax",
+              "name": "Amber Surge"
             }
           ],
           "modifiers": [
@@ -1271,30 +1319,9 @@
           },
           "effect": [
             {
-              "do": "if",
-              "when": [
-                {
-                  "if": "count",
-                  "what": {
-                    "side": "you",
-                    "zone": "hand"
-                  },
-                  "max": 3
-                }
-              ],
-              "then": [
-                {
-                  "do": "draw",
-                  "count": 1,
-                  "upTo": true
-                }
-              ],
-              "else": [
-                {
-                  "do": "discard",
-                  "count": 1
-                }
-              ]
+              "do": "draw",
+              "count": 1,
+              "upTo": true
             }
           ]
         }

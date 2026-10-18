@@ -8,7 +8,7 @@
 
 import { checkCardAbilities, validateCatalog } from '../engine';
 import type { CardCatalog, CardDef } from '../engine';
-import { CardRecordSchema, CardSetShellSchema, SCHEMA_VERSION } from './schema';
+import { CARD_NUMBER, CardRecordSchema, CardSetShellSchema, SCHEMA_VERSION } from './schema';
 import type { CardRecord, CardSetFile } from './schema';
 import { isNormalName, nameProblem, normalizeCardText, normalizeName } from './text';
 
@@ -91,7 +91,11 @@ function fromZod(issue: { code: string; path: readonly PropertyKey[]; message: s
   }
 }
 
-/** Every card-name string inside ability data (filters, selectors, conditions, triggers all use the key "name"). */
+/**
+ * Every card-name string inside ability data (filters, selectors, conditions,
+ * triggers all use the key "name"). Only called on abilities that passed
+ * checkCardAbilities, whose depth is bounded.
+ */
 function namesIn(x: unknown, path: string, out: { path: string; name: string }[]): void {
   if (Array.isArray(x)) x.forEach((item, i) => namesIn(item, `${path}.${i}`, out));
   else if (typeof x === 'object' && x !== null) {
@@ -147,14 +151,62 @@ function readJson(text: string): { ok: true; value: unknown } | { ok: false; iss
   }
 }
 
-function capped(issues: ImportIssue[]): ImportIssue[] {
-  if (issues.length <= MAX_ISSUES) return issues;
-  const kept = issues.slice(0, MAX_ISSUES - 1);
-  const more = issues.length - kept.length;
-  return [...kept, { severity: issues.slice(kept.length).some((i) => i.severity === 'error') ? 'error' : 'warning', code: 'IMPORT_LIMIT', path: '', message: `and ${more} more issues` }];
+/**
+ * Issues as they are found. Keeps at most MAX_ISSUES and counts the rest, and
+ * counts errors as it goes, so a file with a huge number of problems still
+ * costs time in proportion to its size.
+ */
+function issueList() {
+  const kept: ImportIssue[] = [];
+  let over = 0;
+  let overError = false;
+  let errors = 0;
+  return {
+    add: (issue: ImportIssue): void => {
+      if (issue.severity === 'error') errors += 1;
+      if (kept.length < MAX_ISSUES) kept.push(issue);
+      else {
+        over += 1;
+        overError ||= issue.severity === 'error';
+      }
+    },
+    errors: () => errors,
+    /** The issues to report: all of them, or the first MAX_ISSUES - 1 and an IMPORT_LIMIT line. */
+    list: (): ImportIssue[] => {
+      if (over === 0) return kept;
+      const shown = kept.slice(0, MAX_ISSUES - 1);
+      const hidden = kept.slice(MAX_ISSUES - 1);
+      const severity = overError || hidden.some((i) => i.severity === 'error') ? 'error' : 'warning';
+      return [...shown, { severity, code: 'IMPORT_LIMIT', path: '', message: `and ${over + hidden.length} more issues` }];
+    },
+  };
 }
 
-const failed = (issues: ImportIssue[]): ImportResult => ({ ok: false, set: null, catalog: {}, display: {}, issues: capped(issues) });
+/** How deeply one card's data may nest. Real cards need about 14 levels; the limit keeps every later walk bounded. */
+export const MAX_CARD_DEPTH = 32;
+
+/** Whether `root` nests deeper than `max` levels, found without recursion so no input can exhaust the stack. */
+function nestsDeeperThan(root: unknown, max: number): boolean {
+  const stack: [unknown, number][] = [[root, 0]];
+  for (let item = stack.pop(); item; item = stack.pop()) {
+    const [x, depth] = item;
+    if (depth > max) return true;
+    if (typeof x === 'object' && x !== null) for (const v of Object.values(x)) if (typeof v === 'object' && v !== null) stack.push([v, depth + 1]);
+  }
+  return false;
+}
+
+/** The card number of a raw card, if it is written correctly. */
+function rawNumber(card: unknown): string | undefined {
+  const n = typeof card === 'object' && card !== null && !Array.isArray(card) ? (card as { number?: unknown }).number : undefined;
+  return typeof n === 'string' && n.length <= 32 && CARD_NUMBER.test(n) ? n : undefined;
+}
+
+const failed = (issues: readonly ImportIssue[]): ImportResult => {
+  const list = issueList();
+  issues.forEach(list.add);
+  return { ok: false, set: null, catalog: {}, display: {}, issues: list.list() };
+};
 
 /** Reads a card-set file. See docs/CARDS.md for the format and every issue code. */
 export function importCardSet(text: string, options: ImportOptions = {}): ImportResult {
@@ -165,74 +217,84 @@ export function importCardSet(text: string, options: ImportOptions = {}): Import
 /** Like importCardSet, for a file already parsed from JSON. */
 export function importCardSetData(raw: unknown, options: ImportOptions = {}): ImportResult {
   const lenient = options.mode !== 'strict';
-  const fail = failed;
   const version = typeof raw === 'object' && raw !== null && !Array.isArray(raw) ? (raw as { schemaVersion?: unknown }).schemaVersion : undefined;
   if (version !== SCHEMA_VERSION) {
-    return fail([{ severity: 'error', code: 'IMPORT_VERSION', path: 'schemaVersion', message: `schemaVersion must be ${SCHEMA_VERSION}` }]);
+    return failed([{ severity: 'error', code: 'IMPORT_VERSION', path: 'schemaVersion', message: `schemaVersion must be ${SCHEMA_VERSION}` }]);
   }
   const shell = CardSetShellSchema.safeParse(raw);
-  if (!shell.success) return fail(shell.error.issues.flatMap(fromZod));
+  if (!shell.success) return failed(shell.error.issues.flatMap(fromZod));
+
+  const issues = issueList();
+  const add = (severity: ImportIssue['severity'], code: string, path: string, message: string) => issues.add({ severity, code, path, message });
+
+  // A card number belongs to the first card that uses it, even if that card is wrong in other ways.
+  const owner = new Map<string, number>();
+  shell.data.cards.forEach((card, i) => {
+    const n = rawNumber(card);
+    if (n === undefined) return;
+    const first = owner.get(n);
+    if (first === undefined) owner.set(n, i);
+    else add('error', 'IMPORT_DUPLICATE', `cards.${i}.number`, `card number ${n} is already used by cards.${first}`);
+  });
 
   // Each card on its own: a card with a wrong shape is reported and left out; the others go on.
-  const issues: ImportIssue[] = [];
-  const records: CardRecord[] = [];
-  const fileIndex: number[] = [];
+  const records: { record: CardRecord; index: number }[] = [];
   shell.data.cards.forEach((card, i) => {
+    if (nestsDeeperThan(card, MAX_CARD_DEPTH)) {
+      add('error', 'IMPORT_RANGE', `cards.${i}`, `the card's data nests more than ${MAX_CARD_DEPTH} levels deep`);
+      return;
+    }
     const parsed = CardRecordSchema.safeParse(card);
-    if (parsed.success) {
-      records.push(parsed.data);
-      fileIndex.push(i);
-    } else issues.push(...parsed.error.issues.flatMap((issue) => fromZod({ ...issue, path: ['cards', i, ...issue.path] })));
+    if (parsed.success) records.push({ record: parsed.data, index: i });
+    else for (const issue of parsed.error.issues) for (const x of fromZod({ ...issue, path: ['cards', i, ...issue.path] })) issues.add(x);
   });
-  const set: CardSetFile = { ...shell.data, cards: records };
 
-  const add = (severity: ImportIssue['severity'], code: string, path: string, message: string) => issues.push({ severity, code, path, message });
   const cardErrors = new Set<number>();
-  const firstAt = new Map<string, number>();
-  const kept: { record: CardRecord; index: number; def: CardDef; display: CardDisplay }[] = [];
+  const kept: { record: CardRecord; index: number; def: CardDef; display: CardDisplay; refs: { path: string; name: string }[] }[] = [];
 
-  records.forEach((r, k) => {
-    const i = fileIndex[k] ?? k;
+  for (const { record: r, index: i } of records) {
     const at = `cards.${i}`;
-    const errorsBefore = issues.filter((x) => x.severity === 'error').length;
-    const dup = firstAt.get(r.number);
-    if (dup !== undefined) add('error', 'IMPORT_DUPLICATE', `${at}.number`, `card number ${r.number} is already used by cards.${dup}`);
-    else firstAt.set(r.number, i);
+    const errorsBefore = issues.errors();
+    if (owner.get(r.number) !== i) cardErrors.add(i);
 
     // CR 2.1.1.1-2.1.1.2: the rules name never carries reading aids or struck-through parts.
     const problem = nameProblem(r.name);
     if (problem) add('error', 'IMPORT_NAME', `${at}.name`, `name ${problem}`);
     const name = normalizeName(r.name);
-    if (!problem && name !== r.name) add('warning', 'IMPORT_NAME_NORMALIZED', `${at}.name`, `name stored as "${name}" (spacing or Unicode form)`);
+    if (!problem && name !== r.name) add('warning', 'IMPORT_NAME_NORMALIZED', `${at}.name`, `name stored as "${name}" (spacing, invisible characters or Unicode form)`);
     r.traits?.forEach((t, k) => {
       if (!isNormalName(t)) add('error', 'IMPORT_NAME', `${at}.traits.${k}`, 'a trait must be written in normal form (no extra spaces or marks)');
     });
 
     // Abilities: one ability's problems drop that ability in lenient mode; problems with the list stay errors.
-    const failed = new Set<number>();
-    let effectFailed = false;
+    const bad = new Set<number>();
+    let effectBad = false;
+    let listBad = false;
     for (const e of checkCardAbilities({ kind: r.kind, abilities: r.abilities, effect: r.effect }, at)) {
       const inner = e.path ?? '';
       const one = /^abilities\.(\d+)(?:\.|$)/.exec(inner);
       const inEffect = r.kind === 'event' && e.code !== 'ABILITY_KIND' && /^effect(?:\.|$)/.test(inner);
-      if (lenient && one) failed.add(Number(one[1]));
-      else if (lenient && inEffect) effectFailed = true;
+      if (one) bad.add(Number(one[1]));
+      else if (inEffect) effectBad = true;
+      else listBad = true;
       add(lenient && (one || inEffect) ? 'warning' : 'error', e.code, `${at}.${inner}`, e.message);
     }
-    const keep = (r.abilities ?? []).map((_a, k) => k).filter((k) => !failed.has(k));
-    for (const k of failed) add('warning', 'IMPORT_ABILITY_DROPPED', `${at}.abilities.${k}`, 'this ability is not supported; the card is played without it');
-    if (effectFailed) add('warning', 'IMPORT_ABILITY_DROPPED', `${at}.effect`, "this event's effect is not supported; the event is played without it");
+    const keep = listBad ? [] : (r.abilities ?? []).map((_a, k) => k).filter((k) => !bad.has(k));
+    const keepEffect = !listBad && !effectBad && r.kind === 'event' && r.effect !== undefined;
+    if (lenient) {
+      for (const k of bad) add('warning', 'IMPORT_ABILITY_DROPPED', `${at}.abilities.${k}`, 'this ability is not supported; the card is played without it');
+      if (effectBad) add('warning', 'IMPORT_ABILITY_DROPPED', `${at}.effect`, "this event's effect is not supported; the event is played without it");
+    }
 
-    // Names in kept abilities refer to cards by their rules name, so they must already be in normal form.
+    // Names in abilities that passed the checks refer to cards by their rules name, so they must already be in normal form.
     const refs: { path: string; name: string }[] = [];
     keep.forEach((k) => namesIn(r.abilities?.[k], `${at}.abilities.${k}`, refs));
-    if (r.effect !== undefined && !effectFailed) namesIn(r.effect, `${at}.effect`, refs);
+    if (keepEffect) namesIn(r.effect, `${at}.effect`, refs);
     for (const ref of refs) if (!isNormalName(ref.name)) add('error', 'IMPORT_NAME', ref.path, 'a card name in an ability must be written in normal form');
 
-    const def = toDef(r, name, keep, r.effect !== undefined && !effectFailed);
-    if (issues.filter((x) => x.severity === 'error').length > errorsBefore) cardErrors.add(i);
-    kept.push({ record: r, index: i, def, display: toDisplay(r, keep) });
-  });
+    if (issues.errors() > errorsBefore) cardErrors.add(i);
+    kept.push({ record: r, index: i, def: toDef(r, name, keep, keepEffect), display: toDisplay(r, keep), refs });
+  }
 
   // What each kind of card may have (CR 2.3-2.10), from the engine's own check, one card at a time and
   // without abilities (checked above).
@@ -246,21 +308,18 @@ export function importCardSetData(raw: unknown, options: ImportOptions = {}): Im
 
   // A name in an ability that matches no card in this set is allowed (it may name a card from another set) but worth a look.
   const names = new Set(kept.map((k) => k.def.name));
-  kept.forEach((k) => {
-    const refs: { path: string; name: string }[] = [];
-    k.display.abilityIndex.forEach((fileIndex) => namesIn(k.record.abilities?.[fileIndex], `cards.${k.index}.abilities.${fileIndex}`, refs));
-    if (k.def.effect) namesIn(k.record.effect, `cards.${k.index}.effect`, refs);
-    for (const ref of refs) if (!names.has(ref.name)) add('warning', 'IMPORT_REFERENCE', ref.path, `no card in this set is named "${ref.name}"`);
-  });
+  for (const k of kept) for (const ref of k.refs) if (!names.has(ref.name)) add('warning', 'IMPORT_REFERENCE', ref.path, `no card in this set is named "${ref.name}"`);
 
-  const ok = !issues.some((x) => x.severity === 'error');
-  const usable = kept.filter((k) => !cardErrors.has(k.index) && firstAt.get(k.record.number) === k.index);
+  const ok = issues.errors() === 0;
+  const usable = kept.filter((k) => !cardErrors.has(k.index));
   const catalog: CardCatalog = ok || lenient ? Object.fromEntries(usable.map((k) => [k.def.id, k.def])) : {};
   const display: Record<string, CardDisplay> = ok || lenient ? Object.fromEntries(usable.map((k) => [k.def.id, k.display])) : {};
-  return { ok, set, catalog, display, issues: capped(issues) };
+  // With no card of the right shape left there is no valid set to give back.
+  const set: CardSetFile | null = records.length > 0 ? { ...shell.data, cards: records.map((x) => x.record) } : null;
+  return { ok, set, catalog, display, issues: issues.list() };
 }
 
-/** A card-set file as text; importing it again gives back the same set. */
+/** A card-set file as text; importing it again gives back an equal set. */
 export function exportCardSet(set: CardSetFile): string {
   return `${JSON.stringify(set, null, 2)}\n`;
 }

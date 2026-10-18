@@ -665,7 +665,7 @@
         "src/cards/text.ts#nameProblem",
         "src/cards/importer.ts#importCardSetData"
       ],
-      "notes": "CARD-01 relies on CardDef.name already being the rules name; the importer is what guarantees it. The importer cannot see print styling in plain data, so the guarantee is structural: a card file keeps the printed form (reading aids, struck-through parts) in printedName, which never reaches the engine; name is the rules name, stored in one normal form (NFC, single spaces), and leftover strike marks, ruby markup or line breaks in it are rejected (IMPORT_NAME). Names from third-party data are only as correct as the source."
+      "notes": "CARD-01 relies on CardDef.name already being the rules name; the importer is what guarantees it. The importer cannot see print styling in plain data, so the guarantee is structural: a card file keeps the printed form (reading aids, struck-through parts) in printedName, which never reaches the engine; name is the rules name, stored in one normal form (NFC, invisible formatting characters removed, single spaces), and leftover strike marks, ruby markup or line breaks of any kind in it are rejected (IMPORT_NAME). Names from third-party data are only as correct as the source."
     },
     {
       "id": "ZONE-01",
@@ -1587,7 +1587,7 @@
       "impl": [
         "src/cards/text.ts#normalizeCardText"
       ],
-      "notes": "Needed when parsing card text and costs in M3. Scope: printed text lines (display and the ability survey). Abilities themselves are structured data and the renderer writes words, so no icon reaches the engine. Canonical tokens: [STAND] [REST] [REVERSE], also in 【】; after a form of 'be'/'become' they read as the state (rested, reversed)."
+      "notes": "Needed when parsing card text and costs in M3. Scope: printed text lines (display and the ability survey). Abilities themselves are structured data and the renderer writes words, so no icon reaches the engine. Canonical tokens: [STAND] [REST] [REVERSE] (upper case), also in 【】. They read as the state (rested, standing, reversed) after 'is'/'becomes'/'remains'/'as' (also with 'not') and before 'character(s)', otherwise as the verb."
     },
     {
       "id": "CONC-16",

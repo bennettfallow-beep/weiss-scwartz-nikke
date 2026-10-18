@@ -10,15 +10,24 @@ describe('CONC-15: stand, rest and reverse icons', () => {
     expect(normalizeCardText('[REST] this card: draw 1.')).toBe('Rest this card: draw 1.');
     expect(normalizeCardText('Choose 1 of your characters and [STAND] it.')).toBe('Choose 1 of your characters and stand it.');
     expect(normalizeCardText('When this card becomes [REVERSE], draw 1.')).toBe('When this card becomes reversed, draw 1.');
-    expect(normalizeCardText('If that character is 【REST】, it gets +1000.')).toBe('If that character is rested, it gets +1000.');
-    expect(normalizeCardText('[stand] all of your characters')).toBe('Stand all of your characters');
+    expect(normalizeCardText('If that character is \u3010REST\u3011, it gets +1000.')).toBe('If that character is rested, it gets +1000.');
+    // Only the upper-case tokens are icons; ordinary words in brackets are left alone.
+    expect(normalizeCardText('[stand] all of your characters')).toBe('[stand] all of your characters');
+  });
+
+  it('[CONC-15] an icon that describes a state reads as the state, also after "not", "as" and before a noun', () => {
+    expect(normalizeCardText('If it is not [REST], draw 1.')).toBe('If it is not rested, draw 1.');
+    expect(normalizeCardText("If it's [STAND], draw 1.")).toBe("If it's standing, draw 1.");
+    expect(normalizeCardText('Put it on the stage as [REST].')).toBe('Put it on the stage as rested.');
+    expect(normalizeCardText('All of your [REST] characters get +500 power.')).toBe('All of your rested characters get +500 power.');
+    expect(normalizeCardText('It remains [REVERSE].')).toBe('It remains reversed.');
   });
 
   it('[CONC-15] the engine writes the words itself: no SYN card text contains an icon token', () => {
     const syn = loadSyn();
     const lines = Object.values(syn.catalog).flatMap(cardText);
     expect(lines.length).toBeGreaterThan(30);
-    expect(lines.filter((l) => /[[【](STAND|REST|REVERSE)[\]】]/i.test(l))).toEqual([]);
+    expect(lines.filter((l) => /[[\u3010](STAND|REST|REVERSE)[\]\u3011]/i.test(l))).toEqual([]);
   });
 });
 
@@ -31,7 +40,7 @@ describe('CLIMAX-04: "CX phase"', () => {
   });
 
   it('normalizing twice changes nothing', () => {
-    const pieces = fc.constantFrom('[REST]', '[STAND]', '[REVERSE]', '【REST】', 'CX phase', 'CX Phase', 'CX', 'becomes ', 'is ', 'this card', '. ', ' ', 'phase', 'x');
+    const pieces = fc.constantFrom('[REST]', '[STAND]', '[REVERSE]', '\u3010REST\u3011', 'REST', 'rest', '[', ']', '\u3010', '\u3011', 'CX phase', 'CX Phase', 'CX', 'becomes ', 'is ', 'as ', 'not ', 'this card', ' characters', '. ', ' ', 'phase', 'x');
     fc.assert(
       fc.property(fc.array(pieces, { maxLength: 12 }), (parts) => {
         const once = normalizeCardText(parts.join(''));

@@ -3,7 +3,7 @@
 //   - together the SYN cards use every part of the ability language;
 //   - every SYN card renders as text, with no icon tokens left;
 //   - schema/card-set.v1.json matches the format (--write regenerates it);
-//   - no official card data is tracked by git (scripts/lib/ip-guard.ts).
+//   - no official card data is in git or about to be added (scripts/lib/ip-guard.ts).
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -42,7 +42,17 @@ else {
 }
 
 const git = (args: string[]) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' });
-const tracked = git(['ls-files', '-z']).split('\0').filter((f) => f !== '');
+// Tracked files and new files git would add, so the guard runs before anything is committed.
+const files = [...new Set(git(['ls-files', '-z', '--cached', '--others', '--exclude-standard']).split('\0').filter((f) => f !== ''))];
+/** A file's text; null when it is binary (has a NUL byte) or has been deleted. */
+const read = (file: string): string | null => {
+  try {
+    const bytes = readFileSync(join(ROOT, file));
+    return bytes.subarray(0, 8000).includes(0) ? null : bytes.toString('utf8');
+  } catch {
+    return null;
+  }
+};
 const ignored = (path: string) => {
   try {
     git(['check-ignore', '-q', path]);
@@ -51,7 +61,7 @@ const ignored = (path: string) => {
     return false;
   }
 };
-errors.push(...ipGuard({ tracked, read: (f) => readFileSync(join(ROOT, f), 'utf8'), ignored }));
+errors.push(...ipGuard({ files, read, ignored }));
 
 if (errors.length > 0) {
   for (const e of errors) console.error(`error: ${e}`);
@@ -59,5 +69,5 @@ if (errors.length > 0) {
 }
 const deckSizes = Object.values(syn.decks).map((d) => d.length);
 console.log(
-  `cards OK: SYN ${defs.length} cards, ${deckSizes.length} legal decks (${deckSizes.join('/')}), ${allFeatures().length}/${allFeatures().length} ability features, schema current, ${tracked.length} tracked files hold no official card data`,
+  `cards OK: SYN ${defs.length} cards, ${deckSizes.length} legal decks (${deckSizes.join('/')}), ${allFeatures().length}/${allFeatures().length} ability features, schema current, ${files.length} files in git or about to be hold no official card data`,
 );

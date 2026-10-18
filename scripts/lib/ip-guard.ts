@@ -6,36 +6,58 @@
 export const ALLOWED_SET_CODES: readonly string[] = ['SYN', 'TST'];
 export const PERSONAL_DIR = 'local-cards/';
 
-/** A card number: a set code in capitals, a slash, a release code, a dash, a number (like the SYN cards). */
-export const CARD_NUMBER_LIKE = /\b([A-Z][A-Z0-9]{1,5})\/([A-Z0-9]{1,8})-([A-Z0-9]{1,6})\b/g;
+/**
+ * A card number: a set code, a slash (also written JSON-escaped), a release
+ * code that starts with a letter and has digits, a dash, and a number with at
+ * least two digits, in any case. Paths such as "docs/rules-matrix" or
+ * "draft/2020-12" do not fit, so they never match.
+ */
+export const CARD_NUMBER_LIKE = /\b([A-Za-z][A-Za-z0-9]{1,5})(?:\/|\\\/|\\u002[fF])([A-Za-z]{1,4}\d{1,4}[A-Za-z]{0,3})-([A-Za-z]{0,3}\d{2,4}[A-Za-z]{0,6})\b/g;
 
-const TEXT_FILE = /\.(ts|tsx|js|mjs|cjs|json|md|txt|ya?ml)$/;
-const SKIP = new Set(['package-lock.json']);
+const allowed = (code: string) => ALLOWED_SET_CODES.includes(code.toUpperCase());
 
 export interface GuardInput {
-  /** Every file git tracks, relative to the repository root, with "/" separators. */
-  tracked: readonly string[];
-  read: (path: string) => string;
+  /** Every file git tracks or would add (not ignored), relative to the repository root, with "/" separators. */
+  files: readonly string[];
+  /** The file's text, or null when it is binary or no longer exists. */
+  read: (path: string) => string | null;
   /** Whether git ignores this path. */
   ignored: (path: string) => boolean;
+}
+
+/** Card-set files (an object with a list of cards) found in a JSON text, if it is one. */
+function cardSetIn(text: string): { code?: unknown; cards: unknown[] } | null {
+  try {
+    const value = JSON.parse(text) as unknown;
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
+    const { set, cards } = value as { set?: { code?: unknown }; cards?: unknown };
+    return Array.isArray(cards) ? { code: set?.code, cards } : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Problems, one line each; empty when the repository is clean. */
 export function ipGuard(input: GuardInput): string[] {
   const problems: string[] = [];
-  for (const f of input.tracked.filter((t) => t.startsWith(PERSONAL_DIR))) problems.push(`${f} is tracked, but ${PERSONAL_DIR} holds personal card data and must never be committed`);
+  for (const f of input.files.filter((t) => t.startsWith(PERSONAL_DIR))) problems.push(`${f} is in git, but ${PERSONAL_DIR} holds personal card data and must never be committed`);
   if (!input.ignored(`${PERSONAL_DIR}probe.json`)) problems.push(`${PERSONAL_DIR} is not ignored by git; add it to .gitignore`);
 
-  for (const file of input.tracked) {
-    if (!TEXT_FILE.test(file) || SKIP.has(file.split('/').pop() ?? '')) continue;
+  for (const file of input.files) {
+    if (file === 'package-lock.json') continue;
     const text = input.read(file);
+    if (text === null) continue;
     text.split('\n').forEach((line, i) => {
       for (const m of line.matchAll(CARD_NUMBER_LIKE)) {
-        if (!ALLOWED_SET_CODES.includes(m[1] ?? '')) problems.push(`${file}:${i + 1}: card number ${m[0]} is not from an original set (${ALLOWED_SET_CODES.join(', ')})`);
+        if (!allowed(m[1] ?? '')) problems.push(`${file}:${i + 1}: card number ${m[0]} is not from an original set (${ALLOWED_SET_CODES.join(', ')})`);
       }
     });
-    // Card pictures are links in personal files only; a tracked card file never has one.
-    if (file.startsWith('src/cards/sets/') && file.endsWith('.json') && /"art"\s*:/.test(text)) problems.push(`${file}: a tracked card file must not link card art`);
+    // Any card-set file in git is an original set, and links no card art (pictures are for personal files only).
+    if (/\.json$/i.test(file)) {
+      const set = cardSetIn(text);
+      if (set && typeof set.code === 'string' && !allowed(set.code)) problems.push(`${file}: a card set with code ${set.code} is not an original set`);
+      if (set?.cards.some((c) => typeof c === 'object' && c !== null && Object.hasOwn(c, 'art'))) problems.push(`${file}: a card file in git must not link card art`);
+    }
   }
   return problems;
 }
