@@ -28,7 +28,7 @@ describe('IP guard', () => {
 
   it('flags a card number from another set, with file and line, however it is written', () => {
     expect(problemsWith(`ok\nconst id = "${official}";`)).toEqual([expect.stringContaining('src/a.ts:2')]);
-    for (const written of [official.toLowerCase(), `${code}\\/S99-E001`, `${code}\\u002fS99-E001`, `${code}/S99-001`, `${code}/S99-PE01`]) {
+    for (const written of [official.toLowerCase(), `${code}\\/S99-E001`, `${code}\\u002fS99-E001`, `${code}/S99-001`, `${code}/S99-PE01`, `${code}\uff0fS99-E001`]) {
       expect(problemsWith(`x ${written} y`)).toHaveLength(1);
     }
   });

@@ -13,8 +13,8 @@ How cards and decks get into the game. The importer is `src/cards` (`importCardS
 
 `npm run check:cards` checks every file that is in git or that git would add (not ignored). It
 fails if:
-- a file contains a card number from any set other than SYN or the test-only TST. Lower case and
-  JSON-escaped slashes count too.
+- a file contains a card number from any set other than SYN or the test-only TST. Lower case,
+  JSON-escaped slashes and full-width slashes count too.
 - anything in `local-cards/` is in git;
 - a card file in git links art or has another set code.
 

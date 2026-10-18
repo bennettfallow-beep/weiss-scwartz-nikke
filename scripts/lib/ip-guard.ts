@@ -7,12 +7,12 @@ export const ALLOWED_SET_CODES: readonly string[] = ['SYN', 'TST'];
 export const PERSONAL_DIR = 'local-cards/';
 
 /**
- * A card number: a set code, a slash (also written JSON-escaped), a release
+ * A card number: a set code, a slash (also JSON-escaped or full-width), a release
  * code that starts with a letter and has digits, a dash, and a number with at
  * least two digits, in any case. Paths such as "docs/rules-matrix" or
  * "draft/2020-12" do not fit, so they never match.
  */
-export const CARD_NUMBER_LIKE = /\b([A-Za-z][A-Za-z0-9]{1,5})(?:\/|\\\/|\\u002[fF])([A-Za-z]{1,4}\d{1,4}[A-Za-z]{0,3})-([A-Za-z]{0,3}\d{2,4}[A-Za-z]{0,6})\b/g;
+export const CARD_NUMBER_LIKE = /\b([A-Za-z][A-Za-z0-9]{1,5})(?:\/|\\\/|\\u002[fF]|\uff0f)([A-Za-z]{1,4}\d{1,4}[A-Za-z]{0,3})-([A-Za-z]{0,3}\d{2,4}[A-Za-z]{0,6})\b/g;
 
 const allowed = (code: string) => ALLOWED_SET_CODES.includes(code.toUpperCase());
 
