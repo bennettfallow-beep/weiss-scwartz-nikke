@@ -39,9 +39,14 @@ function isNonNegativeInt(x: unknown): boolean {
  */
 export function validateCatalog(catalog: CardCatalog): EngineError[] {
   const errors: EngineError[] = [];
+  if (typeof catalog !== 'object' || catalog === null || Array.isArray(catalog)) return [{ code: 'CATALOG_SHAPE', path: '', message: 'the catalog must map card ids to card definitions' }];
   for (const [key, def] of Object.entries(catalog)) {
     const at = `card ${key}`;
     const err = (code: string, path: string, message: string) => errors.push({ code, path, message: `${at}: ${message}` });
+    if (typeof def !== 'object' || def === null || Array.isArray(def)) {
+      err('CATALOG_SHAPE', '', 'not a card definition');
+      continue;
+    }
     if (def.id !== key) err('CATALOG_ID', 'id', `id "${shown(def.id)}" does not match its key`);
     if (typeof def.name !== 'string' || def.name.trim() === '') err('CATALOG_NAME', 'name', 'missing name');
     if (!CARD_KINDS.includes(def.kind)) err('CATALOG_KIND', 'kind', 'kind must be character, event or climax');

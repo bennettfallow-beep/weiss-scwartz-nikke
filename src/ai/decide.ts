@@ -12,8 +12,10 @@ export function decide(state: GameState, catalog: CardCatalog, player: PlayerId,
   const legal = legalActions(state, catalog);
   if (actor(state) !== player || legal.length === 0) throw new Error(`player ${player} has no decision to make`);
   const view = projectView(state, player, { catalog, logSinceTurn: state.turn });
-  const decision = bot.choose(view, legal, catalog, rng);
+  // The keys are taken before the bot runs, and the bot gets frozen copies, so it cannot change what counts as legal.
+  const keys = new Set(legal.map(actionKey));
+  const decision = bot.choose(view, legal.map((a) => Object.freeze({ ...a })), catalog, rng);
   const key = actionKey(decision.action);
-  if (!legal.some((a) => actionKey(a) === key)) throw new Error(`${bot.name} chose an action that is not legal: ${key}`);
+  if (!keys.has(key)) throw new Error(`${bot.name} chose an action that is not legal: ${key}`);
   return decision;
 }

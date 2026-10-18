@@ -1,6 +1,9 @@
 // Regression net for M3 and later: seeded random games with the frozen M2 decks
-// (no card abilities) must produce exactly the event logs M2 produced. Adding
+// (no card abilities) must produce exactly the recorded event logs. Adding
 // abilities to the engine may add state, but must not change a vanilla game.
+// The logs were recorded at M2 and re-recorded once at M4, when the hand-limit
+// discard became one card at a time: replaying the 90 M2 games with each discard
+// split into single picks gave the same logs apart from the action entries.
 //
 //   UPDATE_GOLDEN=1 npx vitest run --project unit tests/engine/golden-vanilla.test.ts
 // rewrites the fixture. Only do that for a deliberate, explained rules change.
@@ -85,7 +88,7 @@ function playAll(): Golden[] {
   return out;
 }
 
-describe('vanilla games are unchanged (golden logs from M2)', () => {
+describe('vanilla games are unchanged (golden logs; M2, re-recorded at M4)', () => {
   it('replays every recorded game to the same event log', () => {
     const games = playAll();
     if (process.env.UPDATE_GOLDEN === '1') writeFileSync(FIXTURE, `${JSON.stringify(games, null, 1)}\n`);

@@ -3,9 +3,10 @@
 // No search, and it sees only what its player may see (the view).
 
 import { ENCORE_COST, facing, HAND_LIMIT, isCenter, LEVEL_UP_AT, LOSING_LEVEL, nextInt } from '../engine';
-import type { Action, CardCatalog, CardDef, CardId, Color, GameView, Pending, PlayerId, PlayerView, RngState, Slot, Step, VisibleStageCard } from '../engine';
+import type { Action, CardCatalog, CardDef, CardId, Color, GameView, Pending, PlayerId, PlayerView, RngState, Selector, Slot, Step, VisibleStageCard } from '../engine';
 import type { Bot, Decision } from './bot';
 import { characterValue, costValue, DAMAGE, defOf, effectOnPick, fighter, keepValue, onPlayValue, STOCK, stepsValue } from './value';
+import type { Situation } from './value';
 
 /** What the bot knows while choosing: its view, the catalog, and handy lookups. */
 interface Ctx {
@@ -65,6 +66,37 @@ function stageEntry(ctx: Ctx, card: CardId): { owner: PlayerId; slot: Slot; card
 /** The starting player's first turn allows one attack only (CR 7.2.1.3.1.2). */
 function attacksAllowed(view: GameView): number {
   return view.turn === 1 && view.active === view.starting ? 1 : 3;
+}
+
+/** Whether a character on the stage matches the selector now, read from the bot's own side ("you" is the bot). */
+function selectorMatches(ctx: Ctx, what: Selector, source: CardId | null): boolean {
+  const pv = what.side === 'you' ? ctx.my : ctx.opp;
+  const attack = ctx.view.attack;
+  return pv.stage.flat().some((c) => {
+    const d = defOf(ctx.catalog, c.def);
+    if (d?.kind !== 'character') return false;
+    if (what.other && c.id === source) return false;
+    if (what.name !== undefined && d.name !== what.name) return false;
+    if (what.trait !== undefined && !(d.traits ?? []).includes(what.trait)) return false;
+    if (what.color !== undefined && d.color !== what.color) return false;
+    const level = d.level ?? 0;
+    if (what.level?.min !== undefined && level < what.level.min) return false;
+    if (what.level?.max !== undefined && level > what.level.max) return false;
+    if (what.role === 'attacker' && c.id !== attack?.attacker.card) return false;
+    if (what.role === 'defender' && c.id !== attack?.facing?.card) return false;
+    return true;
+  });
+}
+
+/** The situation an effect of `source` would happen in right now. */
+function now(ctx: Ctx, source: CardId | null): Situation {
+  return { battle: ctx.view.attack !== null, matches: (what) => selectorMatches(ctx, what, source) };
+}
+
+/** How much a card on the stage would be missed: its worth, plus one for the card itself. */
+function occupantLoss(ctx: Ctx, slot: Slot): number {
+  const occupant = stageCard(ctx.my, slot);
+  return occupant ? stageValue(ctx, occupant) + 1 : 0;
 }
 
 function standingCenter(pv: PlayerView): VisibleStageCard[] {
@@ -134,22 +166,22 @@ function playCharacterScore(ctx: Ctx, card: CardId, slot: Slot): number {
 function eventScore(ctx: Ctx, card: CardId): number {
   const def = defIn(ctx, card);
   if (!def) return NEVER;
-  return stepsValue(def.effect) - STOCK * (def.cost ?? 0) - 0.3;
+  return stepsValue(def.effect, now(ctx, card)) - STOCK * (def.cost ?? 0) - 0.3;
 }
 
 /** Each activated ability at most once per turn, counted from this turn's log. */
-function usedThisTurn(ctx: Ctx, card: CardId): boolean {
-  return ctx.view.log.some((e) => e.turn === ctx.view.turn && e.kind === 'ability' && e.category === 'activated' && e.card === card);
+function usedThisTurn(ctx: Ctx, card: CardId, index: number): boolean {
+  return ctx.view.log.some((e) => e.turn === ctx.view.turn && e.kind === 'ability' && e.category === 'activated' && e.card === card && e.index === index);
 }
 
 function activateScore(ctx: Ctx, card: CardId, index: number): number {
   const def = defIn(ctx, card);
   const ability = def?.abilities?.[index];
-  if (!def || ability?.kind !== 'activated' || usedThisTurn(ctx, card)) return NEVER;
+  if (!def || ability?.kind !== 'activated' || usedThisTurn(ctx, card, index)) return NEVER;
   const at = stageEntry(ctx, card);
   // Resting a standing center character in the main phase costs its attack.
   const restsAttacker = ability.timing === 'main' && ability.cost.some((p) => p.pay === 'rest') && at !== null && isCenter(at.slot) && at.card.orientation === 'stand';
-  return stepsValue(ability.effect) + costValue(ability.cost, at ? stageValue(ctx, at.card) : characterValue(def)) - (restsAttacker ? 2 : 0) - 0.2;
+  return stepsValue(ability.effect, now(ctx, card)) + costValue(ability.cost, at ? stageValue(ctx, at.card) : characterValue(def)) - (restsAttacker ? 2 : 0) - 0.2;
 }
 
 function climaxScore(ctx: Ctx, card: CardId): number {
@@ -161,12 +193,12 @@ function climaxScore(ctx: Ctx, card: CardId): number {
   let bonus = 0;
   for (const a of def.abilities ?? []) {
     if (a.kind === 'continuous') for (const m of a.modifiers) bonus += (m.stat === 'soul' ? 1.5 * m.amount : (0.8 * m.amount) / 1000) * (m.target === 'this' ? 0 : attackers);
-    if (a.kind === 'automatic' && a.trigger.on === 'play') bonus += Math.max(0, stepsValue(a.effect));
+    if (a.kind === 'automatic' && a.trigger.on === 'play') bonus += Math.max(0, stepsValue(a.effect, now(ctx, card)));
   }
   // Characters on the stage that answer this climax being played.
   for (const c of ctx.my.stage.flat()) {
     for (const a of defOf(ctx.catalog, c.def)?.abilities ?? []) {
-      if (a.kind === 'automatic' && a.trigger.on === 'climaxPlayed' && (a.trigger.name === undefined || a.trigger.name === def.name)) bonus += Math.max(0, stepsValue(a.effect));
+      if (a.kind === 'automatic' && a.trigger.on === 'climaxPlayed' && (a.trigger.name === undefined || a.trigger.name === def.name)) bonus += Math.max(0, stepsValue(a.effect, now(ctx, c.id)));
     }
   }
   return 1 + bonus;
@@ -290,7 +322,11 @@ function chooseScore(ctx: Ctx, p: Extract<Pending, { kind: 'choose' }>, card: Ca
       return 1 + keepValue(defIn(ctx, card), handDefs(ctx), myLevel(ctx));
     case 'standby': {
       const def = defIn(ctx, card);
-      return def ? 1 + characterValue(def) : 0;
+      if (!def) return 0;
+      // With every position taken, the character goes onto the weakest one, which is lost.
+      const slots = [1, 2, 3, 4, 5] as const;
+      const full = slots.every((s) => stageCard(ctx.my, s));
+      return 1 + characterValue(def) - (full ? Math.min(...slots.map((s) => occupantLoss(ctx, s))) : 0);
     }
   }
 }
@@ -305,9 +341,13 @@ function optionalScore(ctx: Ctx, p: Extract<Pending, { kind: 'optional' }>): num
   switch (p.purpose) {
     case 'payCost': {
       const r = ctx.view.resolving;
-      const ability = r && r.index !== null ? defOf(ctx.catalog, r.def)?.abilities?.[r.index] : undefined;
-      if (!ability || ability.kind !== 'automatic') return 0.5;
-      return stepsValue(ability.effect) + costValue(ability.cost, 0);
+      const def = r ? defOf(ctx.catalog, r.def) : undefined;
+      const ability = r && r.index !== null ? def?.abilities?.[r.index] : undefined;
+      if (!r || !def || !ability || ability.kind !== 'automatic') return 0.5;
+      // A cost that puts the card itself into the waiting room loses what that card is worth.
+      const at = stageEntry(ctx, r.card);
+      const source = at ? stageValue(ctx, at.card) : characterValue(def);
+      return stepsValue(ability.effect, now(ctx, r.card)) + costValue(ability.cost, source);
     }
     case 'may':
     case 'lookMore':
@@ -331,7 +371,7 @@ function playScore(ctx: Ctx, p: Extract<Pending, { kind: 'play' }>, a: Action): 
   if (a.type === 'ACTIVATE') {
     if (p.window !== 'counter') return activateScore(ctx, a.card, a.ability);
     const ability = defIn(ctx, a.card)?.abilities?.[a.ability];
-    return ability?.kind === 'activated' && !usedThisTurn(ctx, a.card) ? counterScore(ctx, powerGain(ability.effect), -costValue(ability.cost, 3)) : NEVER;
+    return ability?.kind === 'activated' && !usedThisTurn(ctx, a.card, a.ability) ? counterScore(ctx, powerGain(ability.effect), -costValue(ability.cost, 3)) : NEVER;
   }
   if (a.type === 'BACKUP') {
     const backup = defIn(ctx, a.card)?.backup;
@@ -367,7 +407,8 @@ function score(ctx: Ctx, p: Pending, a: Action): number {
     case 'encore': {
       if (a.type !== 'ACCEPT') return 0;
       const def = defIn(ctx, p.card);
-      return (def ? characterValue(def) : 0) - STOCK * p.cost - 2 + (ctx.my.counts.stock - p.cost >= ENCORE_COST ? 0.5 : 0);
+      // Returning to a position that is now taken sends the character there to the waiting room.
+      return (def ? characterValue(def) : 0) - STOCK * p.cost - 2 + (ctx.my.counts.stock - p.cost >= ENCORE_COST ? 0.5 : 0) - occupantLoss(ctx, p.slot);
     }
     case 'pick':
       return a.type === 'CHOOSE_CARD' ? pickScore(ctx, p, a.card) : 0;

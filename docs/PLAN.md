@@ -146,6 +146,9 @@ Things a milestone found but left for a later one, so they are not lost.
   its action list stays short. The computer player is described in `docs/AI.md`.
 - **M5:**
   - Keep the seed and generator state out of anything a player can read in a save.
+  - Seed the computer player's random source from fresh entropy, never from the game seed.
+    In tests and `simulate` both come from known seed names, which is fine for repeatable
+    runs. In a real game, a bot that could work out the game seed could replay the shuffles.
   - A save must record which card catalog it was made with (e.g. a hash): lenient imports
     can leave abilities out, which shifts ability numbers in saved actions.
   - Card pictures: download on the device from the card file's links; check the image host

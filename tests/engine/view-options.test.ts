@@ -8,7 +8,7 @@ import { cardIn, makeState, ops } from '../../src/engine/testkit';
 import { randomChoice } from '../../src/ai';
 import { catalog } from '../helpers/catalog';
 import { fuzzCatalog, fuzzDecks } from '../helpers/fuzz-decks';
-import { hiddenFrom, shuffleHidden } from '../helpers/hidden-shuffle';
+import { hiddenFrom, hiddenIdsShown, shuffleHidden } from '../helpers/hidden-shuffle';
 
 /** Original synthetic card: +1000 power to your other characters. */
 const leader: CardDef = {
@@ -87,6 +87,8 @@ describe('view options', () => {
     for (const seed of ['view-a', 'view-b', 'view-c']) {
       for (const [k, s] of gameStates(seed, 15).entries()) {
         for (const viewer of [0, 1] as const) {
+          // No hidden card's id is shown either: an id gives away which decklist slot the card came from.
+          expect(hiddenIdsShown(s, viewer, projectView(s, viewer, { catalog: fuzzCatalog }), viewer === s.pending?.player ? legalActions(s, fuzzCatalog) : []), `${seed} state ${k} viewer ${viewer}`).toEqual([]);
           const { state: swapped, changed } = shuffleHidden(s, viewer, `${seed}-${k}-${viewer}`);
           if (changed === 0) continue;
           expect(projectView(swapped, viewer, { catalog: fuzzCatalog }), `${seed} state ${k} viewer ${viewer}`).toEqual(projectView(s, viewer, { catalog: fuzzCatalog }));

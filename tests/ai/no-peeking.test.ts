@@ -7,19 +7,25 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { decide, heuristicBot, randomBot } from '../../src/ai';
-import { actionKey, actor, applyAction, createGame, legalActions, seedRng } from '../../src/engine';
+import { actionKey, actor, applyAction, createGame, legalActions, projectView, seedRng } from '../../src/engine';
 import type { GameState, RngState } from '../../src/engine';
 import { fuzzCatalog as catalog, fuzzDecks } from '../helpers/fuzz-decks';
-import { shuffleHidden } from '../helpers/hidden-shuffle';
+import { hiddenIdsShown, shuffleHidden } from '../helpers/hidden-shuffle';
 
 describe('no peeking', () => {
   it('only src/ai/decide.ts touches the game state; the bots see the view and their legal actions', () => {
     const dir = join(__dirname, '..', '..', 'src', 'ai');
-    const files = readdirSync(dir).filter((f) => f.endsWith('.ts'));
+    const files = (readdirSync(dir, { recursive: true }) as string[]).filter((f) => f.endsWith('.ts')).map((f) => f.split('\\').join('/'));
     expect(files).toContain('decide.ts');
+    // Engine functions a bot may call: none of them can create, run or inspect a game.
+    const allowed = new Set(['ENCORE_COST', 'facing', 'HAND_LIMIT', 'isCenter', 'LEVEL_UP_AT', 'LOSING_LEVEL', 'nextInt']);
     for (const file of files.filter((f) => f !== 'decide.ts' && f !== 'index.ts')) {
       const text = readFileSync(join(dir, file), 'utf8');
-      expect(text, file).not.toMatch(/\bGameState\b|\blegalActions\b|\bprojectView\b|\bapplyAction\b|\bcheckInvariants\b/);
+      expect(text, file).not.toMatch(/\bGameState\b|\blegalActions\b|\bprojectView\b|\bapplyAction\b|\bcheckInvariants\b|\bcreateGame\b|\breplay\b/);
+      for (const m of text.matchAll(/import\s*\{([^}]*)\}\s*from\s*'[./]*engine'/g)) {
+        for (const name of (m[1] ?? '').split(',').map((n) => n.trim()).filter(Boolean)) expect(allowed.has(name), `${file} imports ${name} from the engine`).toBe(true);
+      }
+      expect(text, file).not.toMatch(/import\s*\*\s*as|require\(|import\(/);
     }
   });
 
@@ -37,6 +43,8 @@ describe('no peeking', () => {
         if (p === null) throw new Error('no actor');
         const d = decide(state, catalog, p, heuristicBot, rngs[p]);
         if (i % 3 === 0) {
+          // Nothing the bot is handed names a card it cannot see.
+          expect(hiddenIdsShown(state, p, projectView(state, p, { catalog, logSinceTurn: state.turn }), legalActions(state, catalog)), `${seed} action ${i}`).toEqual([]);
           const other = shuffleHidden(state, p, `${seed}-${i}`);
           compared++;
           if (other.changed > 0) {

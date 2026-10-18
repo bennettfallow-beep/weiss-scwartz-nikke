@@ -408,7 +408,6 @@ export function perform(s: GameState, catalog: CardCatalog, action: Action): voi
   }
 }
 
-/** CHOOSE_CARD answers a `choose` prompt; what happens depends on why it was asked. */
 /**
  * CR 6.8.1.2: the hand-limit cards are chosen first, then put into the waiting
  * room together, in the order chosen. Nothing happens between choices.
@@ -422,6 +421,7 @@ function chooseDiscard(s: GameState, pending: Extract<NonNullable<GameState['pen
   for (const c of picked) moveCard(s, c, ownersZone(s, c, 'waiting'), 'handLimit');
 }
 
+/** CHOOSE_CARD answers a `choose` prompt; what happens depends on why it was asked. */
 function chooseCard(s: GameState, pending: GameState['pending'], card: CardId): void {
   if (pending?.kind !== 'choose') throw new EngineFault('CHOOSE_CARD without a choose prompt');
   const p = pending.player;

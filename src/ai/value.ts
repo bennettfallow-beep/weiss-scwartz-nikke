@@ -2,7 +2,7 @@
 // card in hand". Plain rules of thumb from public card data only; docs/AI.md
 // explains them in words.
 
-import type { CardCatalog, CardDef, CostPart, Side, Step, Target } from '../engine';
+import type { CardCatalog, CardDef, CostPart, Selector, Side, Step, Target } from '../engine';
 
 /** One stock is worth about half a card: it pays for plays, Backup and Encore. */
 export const STOCK = 0.5;
@@ -23,24 +23,48 @@ export function characterValue(def: CardDef): number {
   return fighter(def.power ?? 0, def.soul ?? 0, def.level ?? 0) + 0.5 * (def.abilities?.length ?? 0);
 }
 
-/** Who a step's target belongs to: the card itself and earlier picks are judged by their selector. */
-function sideOf(target: Target, refs: ReadonlyMap<string, Side>): { side: Side; all: boolean } {
+/**
+ * When an effect would happen. Without one, every target is assumed to exist
+ * (how a card in hand is judged). With one, "the attacking/defending character"
+ * exists only during a battle, and a selector that finds nobody on the stage
+ * makes its steps worth nothing.
+ */
+export interface Situation {
+  battle: boolean;
+  /** Whether any character on the stage matches the selector now. */
+  matches?: (what: Selector) => boolean;
+}
+
+const ANY: Situation = { battle: true };
+
+/** Whether a selector can find anyone in this situation. */
+function reachable(what: Selector, at: Situation): boolean {
+  if (what.role !== undefined && !at.battle) return false;
+  return at.matches ? at.matches(what) : true;
+}
+
+/** Whose card a step's target is, or null when it hits nobody. The card itself and earlier picks are judged by their selector. */
+function sideOf(target: Target, refs: ReadonlyMap<string, Side | null>, at: Situation): { side: Side; all: boolean } | null {
   if (target === 'this') return { side: 'you', all: false };
-  if ('ref' in target) return { side: refs.get(target.ref) ?? 'you', all: false };
-  return { side: target.all.side, all: true };
+  if ('ref' in target) {
+    const side = refs.has(target.ref) ? refs.get(target.ref) : 'you';
+    return side === null || side === undefined ? null : { side, all: false };
+  }
+  return reachable(target.all, at) ? { side: target.all.side, all: true } : null;
 }
 
 /** What a list of effect steps is worth to the ability's master. */
-export function stepsValue(steps: readonly Step[] | undefined, refs: Map<string, Side> = new Map()): number {
+export function stepsValue(steps: readonly Step[] | undefined, at: Situation = ANY, refs: Map<string, Side | null> = new Map()): number {
   let total = 0;
-  for (const step of steps ?? []) total += stepValue(step, refs);
+  for (const step of steps ?? []) total += stepValue(step, at, refs);
   return total;
 }
 
-function stepValue(step: Step, refs: Map<string, Side>): number {
+function stepValue(step: Step, at: Situation, refs: Map<string, Side | null>): number {
   switch (step.do) {
     case 'choose':
-      refs.set(step.as, step.what.side);
+      // A forced choice with nobody to pick (or an attack role outside a battle) leaves later steps nothing to act on.
+      refs.set(step.as, reachable(step.what, at) ? step.what.side : null);
       return 0;
     case 'draw':
       return (step.player === 'opponent' ? -1 : 1) * step.count;
@@ -52,9 +76,10 @@ function stepValue(step: Step, refs: Map<string, Side>): number {
       return 1.2 * step.count;
     case 'power':
     case 'soul': {
-      const { side, all } = sideOf(step.target, refs);
+      const target = sideOf(step.target, refs, at);
+      if (!target) return 0;
       const size = step.do === 'power' ? (0.8 * step.amount) / 1000 : 1.5 * step.amount;
-      return (side === 'you' ? 1 : -1) * size * (all ? 2 : 1);
+      return (target.side === 'you' ? 1 : -1) * size * (target.all ? 2 : 1);
     }
     case 'damageOpp':
       return DAMAGE * step.amount;
@@ -66,17 +91,17 @@ function stepValue(step: Step, refs: Map<string, Side>): number {
       return 0.3 + take.count * (take.to === 'hand' ? 0.8 : take.to === 'stock' ? STOCK : 0.1);
     }
     case 'sendToWaiting': {
-      const { side } = sideOf(step.target, refs);
-      return side === 'you' ? -3 : 3;
+      const target = sideOf(step.target, refs, at);
+      return target === null ? 0 : target.side === 'you' ? -3 : 3;
     }
     case 'returnToHand': {
-      const { side } = sideOf(step.target, refs);
-      return side === 'you' ? -1 : 2;
+      const target = sideOf(step.target, refs, at);
+      return target === null ? 0 : target.side === 'you' ? -1 : 2;
     }
     case 'may':
-      return Math.max(stepsValue(step.steps, refs) + stepsValue(step.then, refs), stepsValue(step.else, refs));
+      return Math.max(stepsValue(step.steps, at, refs) + stepsValue(step.then, at, refs), stepsValue(step.else, at, refs));
     case 'if':
-      return (stepsValue(step.then, refs) + stepsValue(step.else, refs)) / 2;
+      return (stepsValue(step.then, at, refs) + stepsValue(step.else, at, refs)) / 2;
   }
 }
 
@@ -142,7 +167,7 @@ export function onPlayValue(def: CardDef): number {
   let total = 0;
   for (const a of def.abilities ?? []) {
     if (a.kind !== 'automatic' || a.trigger.on !== 'play') continue;
-    total += Math.max(0, stepsValue(a.effect) + costValue(a.cost, 0));
+    total += Math.max(0, stepsValue(a.effect) + costValue(a.cost, characterValue(def)));
   }
   return total;
 }

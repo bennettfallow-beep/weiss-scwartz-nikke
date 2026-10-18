@@ -193,6 +193,18 @@ describe('untrusted input', () => {
     }
   });
 
+  it('a catalog that is not an object, or a card entry that is not one, is an error value, not a crash', () => {
+    for (const bad of [null, undefined, 5, 'cards', []]) {
+      expect(validateCatalog(bad as never).map((e) => e.code)).toEqual(['CATALOG_SHAPE']);
+      expect(createGame({ seed: 's', decks: decks() }, bad as never).ok).toBe(false);
+    }
+    for (const entry of [null, undefined, 7, 'card', []]) {
+      const errors = validateCatalog({ ...catalog, X: entry } as never);
+      expect(errors).toEqual([expect.objectContaining({ code: 'CATALOG_SHAPE', path: '' })]);
+      expect(createGame({ seed: 's', decks: decks() }, { ...catalog, X: entry } as never).ok).toBe(false);
+    }
+  });
+
   it('rejects a REORDER that is not exactly the same cards (nested arrays, duplicates, missing)', () => {
     const s = newGame();
     const p = s.pending?.player ?? 0;

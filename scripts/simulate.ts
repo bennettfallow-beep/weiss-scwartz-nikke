@@ -2,10 +2,12 @@
 // rates and decision times (M4).
 //
 //   npm run simulate                                  the gate: 504 games, heuristic vs random
-//   npm run simulate -- --games 90 --a heuristic --b heuristic
+//   npm run simulate -- --games 180 --a heuristic --b heuristic --gate none --p95 none
 //
 // Games come in pairs with the same seed and decks; only the seats swap, so
-// neither bot gains from the deal or from going first. Win rate counts every
+// neither bot gains from the deal or from going first. A bot against itself
+// plays each seed once: swapping identical bots would replay the same game.
+// Win rate counts every
 // game, so draws and games stopped at the action cap count against bot A. Any
 // illegal action or engine error fails the run. Results are the same on every
 // run; only the times vary.
@@ -29,6 +31,14 @@ interface Options {
   p95: number | null;
 }
 
+/** A number in [min, max], or null for 'none'. Anything else is an error, so a typo cannot switch the gate off. */
+function limit(flag: string, value: string, min: number, max: number): number | null {
+  if (value === 'none') return null;
+  const n = Number(value);
+  if (value.trim() === '' || !Number.isFinite(n) || n < min || n > max) throw new Error(`${flag} must be a number from ${min} to ${max}, or none (got "${value}")`);
+  return n;
+}
+
 function parseArgs(argv: readonly string[]): Options {
   const opts: Options = { games: 504, a: 'heuristic', b: 'random', gate: 0.8, p95: 50 };
   for (let i = 0; i < argv.length; i++) {
@@ -39,8 +49,8 @@ function parseArgs(argv: readonly string[]): Options {
     if (flag === '--games') opts.games = Number(value);
     else if (flag === '--a') opts.a = value;
     else if (flag === '--b') opts.b = value;
-    else if (flag === '--gate') opts.gate = value === 'none' ? null : Number(value);
-    else if (flag === '--p95') opts.p95 = value === 'none' ? null : Number(value);
+    else if (flag === '--gate') opts.gate = limit(flag, value, 0, 1);
+    else if (flag === '--p95') opts.p95 = limit(flag, value, 0, 60_000);
     else throw new Error(`unknown flag ${flag}`);
   }
   if (!Number.isInteger(opts.games) || opts.games < 18 || opts.games % 18 !== 0) throw new Error('--games must be a multiple of 18 (9 deck pairings x 2 seatings)');
@@ -98,13 +108,16 @@ function main(): void {
   // Same-named bots share one timing list, and one seat order decides who is "A".
   const times = new Map<string, number[]>([[a.name, []], [b.name, []]]);
   const seedsPerPairing = opts.games / 18;
+  // Swapping a bot with itself would replay the very same game, so a mirror match plays each seed once.
+  const mirror = a.name === b.name;
+  const seatings: readonly PlayerId[] = mirror ? [0] : [0, 1];
   const records: GameRecord[] = [];
   const started = performance.now();
   for (let k = 0; k < seedsPerPairing; k++) {
     for (const [i, first] of decks.entries()) {
       for (const [j, second] of decks.entries()) {
         const seed = `sim-${i}${j}-${k}`;
-        for (const aSeat of [0, 1] as const) {
+        for (const aSeat of seatings) {
           const seats: [Bot, Bot] = aSeat === 0 ? [a, b] : [b, a];
           records.push(play(seed, [[...first], [...second]], syn.catalog, seats, aSeat, times));
         }
@@ -126,9 +139,15 @@ function main(): void {
     .digest('hex')
     .slice(0, 16);
 
-  console.log(`simulate: ${records.length} games, A = ${opts.a}, B = ${opts.b} (${seedsPerPairing} seeds x 9 deck pairings x 2 seatings)`);
+  console.log(
+    mirror
+      ? `simulate: ${records.length} distinct games, A = B = ${opts.a} (${seedsPerPairing} seeds x 9 deck pairings; A sits in seat 0, so A's results are seat 0's)`
+      : `simulate: ${records.length} games, A = ${opts.a}, B = ${opts.b} (${seedsPerPairing} seeds x 9 deck pairings x 2 seatings)`,
+  );
   console.log(`  A wins ${pct(winRate)} (${count((r) => r.outcome === 'a')}); B wins ${count((r) => r.outcome === 'b')}; draws ${count((r) => r.outcome === 'draw')}; stopped at the action cap ${count((r) => r.outcome === 'cap')}`);
   console.log(`  A wins ${pct(firstRate)} going first (${firstGames} games), ${pct(secondRate)} going second (${records.length - firstGames} games)`);
+  const firstWins = count((r) => (r.aStarted && r.outcome === 'a') || (!r.aStarted && r.outcome === 'b'));
+  console.log(`  the player going first wins ${pct(rate(firstWins, records.length))} of games`);
   console.log(`  average game: ${avgTurns.toFixed(1)} turns, ${(records.reduce((n, r) => n + r.actions, 0) / records.length).toFixed(0)} actions`);
   let p95A = 0;
   for (const [name, list] of times) {

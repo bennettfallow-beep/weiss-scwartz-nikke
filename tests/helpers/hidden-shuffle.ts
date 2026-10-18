@@ -1,9 +1,11 @@
 // The no-peeking check for views and computer players: swap around the card
 // definitions of every card one player cannot see (the opponent's hand, both
 // decks and both stocks, apart from deck cards that player is looking at). What
-// that player is shown must not change.
+// that player is shown must not change. Swapping definitions cannot catch a
+// hidden card's id being shown (an id gives away its decklist slot), so
+// hiddenIdsShown checks for that separately.
 import { canSee, locate, nextInt, seedRng } from '../../src/engine';
-import type { CardId, GameState, PlayerId } from '../../src/engine';
+import type { Action, CardId, GameState, GameView, PlayerId } from '../../src/engine';
 
 /** Cards `viewer` cannot see in `state`. */
 export function hiddenFrom(state: GameState, viewer: PlayerId): CardId[] {
@@ -40,4 +42,16 @@ export function shuffleHidden(state: GameState, viewer: PlayerId, seed: string):
     cards[id] = { ...card, def: defs[k] as string };
   });
   return { state: { ...state, cards }, changed };
+}
+
+/**
+ * Ids of cards `viewer` cannot see that still appear in what that player is
+ * shown now: the zones, the look, their own decision, and their legal actions.
+ * The log, effects and the current attack are left out: they name cards the
+ * player saw at the time, which may have moved out of sight since.
+ */
+export function hiddenIdsShown(state: GameState, viewer: PlayerId, view: GameView, legal: readonly Action[] = []): CardId[] {
+  const hidden = new Set(hiddenFrom(state, viewer));
+  const text = JSON.stringify({ players: view.players, look: view.look, pending: view.pending, legal });
+  return [...text.matchAll(/"(p[01]-\d+)"/g)].map((m) => m[1] as CardId).filter((id) => hidden.has(id));
 }

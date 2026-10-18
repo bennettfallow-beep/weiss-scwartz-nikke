@@ -33,7 +33,7 @@ import {
 import type { Action, GameEvent, GameState, RngState } from '../../src/engine';
 import { randomChoice } from '../../src/ai';
 import { fuzzCatalog as catalog, fuzzDecks } from '../helpers/fuzz-decks';
-import { shuffleHidden } from '../helpers/hidden-shuffle';
+import { hiddenIdsShown, shuffleHidden } from '../helpers/hidden-shuffle';
 
 const GAMES = Number(process.env.FUZZ_GAMES ?? 2000);
 const MAX_ACTIONS = 5000;
@@ -86,6 +86,8 @@ function hiddenInfoProblems(state: GameState, events: readonly GameEvent[]): str
 function peekProblems(state: GameState, seed: string, coverage: Coverage): string[] {
   const out: string[] = [];
   for (const viewer of [0, 1] as const) {
+    const shown = hiddenIdsShown(state, viewer, projectView(state, viewer, { catalog }), viewer === actor(state) ? legalActions(state, catalog) : []);
+    if (shown.length > 0) out.push(`viewer ${viewer} is shown hidden card ids ${shown.join(', ')}`);
     const { state: swapped, changed } = shuffleHidden(state, viewer, seed);
     if (changed === 0) continue;
     bump(coverage, 'view:hiddenSwapped');
