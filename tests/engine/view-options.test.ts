@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { applyAction, createGame, currentPower, currentSoul, legalActions, projectEvents, projectView, seedRng } from '../../src/engine';
-import type { CardCatalog, CardDef, GameState } from '../../src/engine';
+import type { CardCatalog, CardDef, GameState, GameView } from '../../src/engine';
 import { act, cardIn, makeState, ops } from '../../src/engine/testkit';
 import { randomChoice } from '../../src/ai';
 import { catalog } from '../helpers/catalog';
@@ -139,7 +139,7 @@ describe('view options', () => {
     expect(hiddenIdsShown(s, 0, view, legalActions(s, c2))).toEqual([]);
     // A real leak, the opponent's hand card named in a zone, is caught.
     const theirs = s.players[1].hand[0] as string;
-    const leaky = { ...view, players: [{ ...view.players[0], waiting: [...view.players[0].waiting, { id: theirs, def: '?' }] }, view.players[1]] } as typeof view;
+    const leaky: GameView = { ...view, players: [{ ...view.players[0], waiting: [...view.players[0].waiting, { id: theirs, def: '?' }] }, view.players[1]] };
     expect(hiddenIdsShown(s, 0, leaky)).toEqual([theirs]);
   });
 });
