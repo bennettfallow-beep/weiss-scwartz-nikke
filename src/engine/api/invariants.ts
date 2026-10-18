@@ -28,6 +28,14 @@ export function checkInvariants(s: GameState, catalog: CardCatalog): string[] {
   if (s.result === null && (s.step !== null) !== (s.phase === 'attack')) v.push(`step ${String(s.step)} does not match phase ${s.phase}`);
   if (s.result === null && s.attack !== null && s.phase !== 'attack') v.push('an attack exists outside the Attack Phase');
 
+  // The hand-limit discard picks distinct hand cards and is still short of its count.
+  if (s.pending?.kind === 'discard') {
+    const { picked, count, player } = s.pending;
+    const hand = s.players[player].hand;
+    if (new Set(picked).size !== picked.length || !picked.every((c) => hand.includes(c))) v.push('hand-limit discard picked a card twice or a card not in hand');
+    if (picked.length >= count) v.push(`hand-limit discard already has its ${count} cards`);
+  }
+
   // At ordinary decision points the rule actions and standby abilities have already run.
   const settled = s.pending !== null && (s.pending.kind === 'play' || s.pending.kind === 'clock' || s.pending.kind === 'discard' || s.pending.kind === 'attack');
   if (settled) {

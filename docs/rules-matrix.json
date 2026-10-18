@@ -913,6 +913,7 @@
       "impl": [
         "src/engine/rules/flow.ts#execTask",
         "src/engine/rules/flow.ts#enterPhase",
+        "src/engine/rules/flow.ts#chooseDiscard",
         "src/engine/rules/ruleActions.ts#HAND_LIMIT",
         "src/engine/api/game.ts#legalActions"
       ],
@@ -2671,10 +2672,11 @@
       "milestone": "M1",
       "impl": [
         "src/engine/rules/flow.ts#execTask",
+        "src/engine/rules/flow.ts#chooseDiscard",
         "src/engine/rules/ruleActions.ts#HAND_LIMIT",
         "src/engine/api/game.ts#legalActions"
       ],
-      "notes": "Only the turn player's hand is checked; the player chooses which cards to discard."
+      "notes": "Only the turn player's hand is checked; the player chooses which cards to discard, one card at a time, and the chosen cards go to the waiting room together once the excess is chosen."
     },
     {
       "id": "END-03",

@@ -236,7 +236,7 @@ describe('GEN: player count and golden rules', () => {
 
     // Contrast: 8 cards means one discard is required.
     const over = end([...FILL, 'Y1', 'Y1']);
-    expect(over.pending).toEqual({ kind: 'discard', player: 0, count: 1 });
+    expect(over.pending).toEqual({ kind: 'discard', player: 0, count: 1, picked: [] });
   });
 
   it('[GEN-08] when both players must level up at once, the turn player decides first and the other decides after seeing that choice', () => {

@@ -18,6 +18,9 @@ knows nothing about screens.
 - **`pending`** is the one decision the game is waiting for:
   - M1: `mulligan`, `clock`, `play` (main, climax or counter window), `levelUp`,
     `interruptOrder`, `discard`.
+  - `discard` is the end-of-turn hand limit (CR 6.8.1.2). The player answers with one
+    `CHOOSE_CARD` per card; `picked` holds the cards chosen so far. When the excess is
+    chosen, the cards go to the waiting room together, in the order chosen.
   - Combat: `attack` (declare or end the Attack Phase), `iconOrder`, `choose` (a card, for
     a trigger icon or the Encore Step), `chooseSlot`, `chooseDest`, `confirm` (an optional
     yes/no icon action), `encore` (pay or not) and `autoOrder`.

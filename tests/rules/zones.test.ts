@@ -279,11 +279,16 @@ describe('3.1 zones in general', () => {
       players: [{ deck: deck(), hand: ['CA', 'CB', 'CC', 'CD', 'CE', 'CF', 'CG', 'CH', 'CI'] }, { deck: deck() }],
       start: 'end',
     });
-    expect(s.pending).toEqual({ kind: 'discard', player: 0, count: 2 });
+    expect(s.pending).toEqual({ kind: 'discard', player: 0, count: 2, picked: [] });
+    const choose = (card: string): Action => ({ type: 'CHOOSE_CARD', player: 0, card });
     const b = cardIn(s, 0, 'hand', 'CB');
     const h = cardIn(s, 0, 'hand', 'CH');
-    expect(defsIn(act(s, cat, { type: 'DISCARD', player: 0, cards: [h, b] }), 0, 'waiting')).toEqual(['CH', 'CB']);
-    expect(defsIn(act(s, cat, { type: 'DISCARD', player: 0, cards: [b, h] }), 0, 'waiting')).toEqual(['CB', 'CH']);
+    // Chosen one at a time; nothing moves until both are chosen, then they go together in that order.
+    const first = act(s, cat, choose(h));
+    expect(defsIn(first, 0, 'waiting')).toEqual([]);
+    expect(first.pending).toEqual({ kind: 'discard', player: 0, count: 2, picked: [h] });
+    expect(defsIn(act(first, cat, choose(b)), 0, 'waiting')).toEqual(['CH', 'CB']);
+    expect(defsIn(act(s, cat, choose(b), choose(h)), 0, 'waiting')).toEqual(['CB', 'CH']);
   });
 
   it('[ZONE-04] after a level up sends six clock cards to the waiting room together, their owner can put them in any order', () => {
@@ -553,15 +558,20 @@ describe('3.3 hand', () => {
     const hand = ['CA', 'CB', 'CC', 'CD', 'CE', 'CF', 'CG', 'CH', 'CI'];
     const s = makeState(cat, { players: [{ deck: deck(), hand, climax: ['YX'] }, { deck: deck() }], start: 'end' });
     expect(s.phase).toBe('end');
-    expect(s.pending).toEqual({ kind: 'discard', player: 0, count: 2 });
+    expect(s.pending).toEqual({ kind: 'discard', player: 0, count: 2, picked: [] });
+    // The excess is chosen one card at a time: each hand card is an option until it is chosen.
     const legal = legalActions(s, cat);
-    expect(legal).toHaveLength(36); // every way to choose 2 of 9
-    expect(legal.every((a) => a.type === 'DISCARD' && a.cards.length === 2)).toBe(true);
-    expect(validate(s, cat, { type: 'DISCARD', player: 0, cards: [cardIn(s, 0, 'hand', 'CA')] }).ok).toBe(false);
+    expect(legal).toHaveLength(9);
+    expect(legal.every((a) => a.type === 'CHOOSE_CARD')).toBe(true);
+    const ca = cardIn(s, 0, 'hand', 'CA');
+    const once = act(s, cat, { type: 'CHOOSE_CARD', player: 0, card: ca });
+    expect(legalActions(once, cat)).toHaveLength(8);
+    expect(validate(once, cat, { type: 'CHOOSE_CARD', player: 0, card: ca }).ok).toBe(false);
+    expect(validate(s, cat, { type: 'PASS', player: 0 }).ok).toBe(false);
     // The hand limit comes before the climax cleanup (6.8.1.2 then 6.8.1.3).
     expect(s.players[0].climax).toHaveLength(1);
 
-    const after = act(s, cat, { type: 'DISCARD', player: 0, cards: [cardIn(s, 0, 'hand', 'CB'), cardIn(s, 0, 'hand', 'CE')] });
+    const after = act(s, cat, { type: 'CHOOSE_CARD', player: 0, card: cardIn(s, 0, 'hand', 'CB') }, { type: 'CHOOSE_CARD', player: 0, card: cardIn(s, 0, 'hand', 'CE') });
     expect(defsIn(after, 0, 'hand')).toEqual(['CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI']);
     expect(defsIn(after, 0, 'waiting')).toEqual(['CB', 'CE', 'YX']);
     expect(after.active).toBe(1);
@@ -569,7 +579,7 @@ describe('3.3 hand', () => {
 
   it('[ZONE-15] contrast: eight cards means one discard, and exactly seven means none', () => {
     const eight = makeState(cat, { players: [{ deck: deck(), hand: ['CA', 'CB', 'CC', 'CD', 'CE', 'CF', 'CG', 'CH'] }, { deck: deck() }], start: 'end' });
-    expect(eight.pending).toEqual({ kind: 'discard', player: 0, count: 1 });
+    expect(eight.pending).toEqual({ kind: 'discard', player: 0, count: 1, picked: [] });
     const seven = makeState(cat, { players: [{ deck: deck(), hand: ['CA', 'CB', 'CC', 'CD', 'CE', 'CF', 'CG'] }, { deck: deck() }], start: 'end' });
     expect(seven.pending?.kind).not.toBe('discard');
     expect(seven.active).toBe(1);
@@ -598,7 +608,7 @@ describe('3.3 hand', () => {
     expect(climax.pending).toEqual({ kind: 'play', player: 0, window: 'climax' });
     const end = act(climax, cat, { type: 'PASS', player: 0 });
     expect(end.phase).toBe('end');
-    expect(end.pending).toEqual({ kind: 'discard', player: 0, count: 2 });
+    expect(end.pending).toEqual({ kind: 'discard', player: 0, count: 2, picked: [] });
   });
 });
 
@@ -945,7 +955,7 @@ describe('3.11 climax area', () => {
     const cx = cardIn(s, 0, 'hand', 'YX');
     // Eight cards left in hand after the climax, so the End Phase stops at the discard with the climax still out.
     const after = act(s, cat, { type: 'PLAY_CLIMAX', player: 0, card: cx });
-    expect(after.pending).toEqual({ kind: 'discard', player: 0, count: 1 });
+    expect(after.pending).toEqual({ kind: 'discard', player: 0, count: 1, picked: [] });
     expect(after.players[0].climax.map((c) => c.id)).toEqual([cx]);
     const opp = projectView(after, 1);
     expect(opp.players[0].climax).toEqual([{ id: cx, def: 'YX' }]);

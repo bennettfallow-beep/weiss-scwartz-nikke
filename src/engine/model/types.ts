@@ -362,7 +362,11 @@ export type Pending =
   | { kind: 'play'; player: PlayerId; window: PlayWindow }
   | { kind: 'levelUp'; player: PlayerId; options: CardId[] }
   | { kind: 'interruptOrder'; player: PlayerId; options: InterruptKind[] }
-  | { kind: 'discard'; player: PlayerId; count: number }
+  /**
+   * End-of-turn hand limit (CR 6.8.1.2): choose `count` cards one CHOOSE_CARD at a time; once all
+   * are chosen they go to the waiting room together, in the order chosen.
+   */
+  | { kind: 'discard'; player: PlayerId; count: number; picked: CardId[] }
   /** Attack Declaration Step: attack with a character, or PASS to end the Attack Phase (CR 7.2.1.3). */
   | { kind: 'attack'; player: PlayerId }
   /** The trigger card has several different icons left; pick which to carry out next (CR 7.3.1.2.1). */
@@ -397,7 +401,6 @@ export type Action =
   | { type: 'PASS'; player: PlayerId }
   | { type: 'LEVEL_UP'; player: PlayerId; card: CardId }
   | { type: 'CHOOSE_INTERRUPT'; player: PlayerId; interrupt: InterruptKind }
-  | { type: 'DISCARD'; player: PlayerId; cards: CardId[] }
   | { type: 'ATTACK'; player: PlayerId; slot: Slot; attack: AttackType }
   | { type: 'BACKUP'; player: PlayerId; card: CardId }
   | { type: 'ORDER_ICON'; player: PlayerId; icon: TriggerIcon }

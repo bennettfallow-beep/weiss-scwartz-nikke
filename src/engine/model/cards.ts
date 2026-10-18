@@ -1,5 +1,6 @@
 // Card information accessors and catalog validation.
 
+import { shown } from '../core/fault';
 import { checkCardAbilities } from './abilityCheck';
 import { CARD_KINDS, COLORS, TRIGGER_ICONS } from './types';
 import type { CardCatalog, CardDef, EngineError } from './types';
@@ -41,10 +42,10 @@ export function validateCatalog(catalog: CardCatalog): EngineError[] {
   for (const [key, def] of Object.entries(catalog)) {
     const at = `card ${key}`;
     const err = (code: string, path: string, message: string) => errors.push({ code, path, message: `${at}: ${message}` });
-    if (def.id !== key) err('CATALOG_ID', 'id', `id "${def.id}" does not match its key`);
+    if (def.id !== key) err('CATALOG_ID', 'id', `id "${shown(def.id)}" does not match its key`);
     if (typeof def.name !== 'string' || def.name.trim() === '') err('CATALOG_NAME', 'name', 'missing name');
     if (!CARD_KINDS.includes(def.kind)) err('CATALOG_KIND', 'kind', 'kind must be character, event or climax');
-    if (!COLORS.includes(def.color)) err('CATALOG_COLOR', 'color', `unknown color "${String(def.color)}"`);
+    if (!COLORS.includes(def.color)) err('CATALOG_COLOR', 'color', `unknown color "${shown(def.color)}"`);
 
     const has = (field: 'level' | 'cost' | 'power' | 'soul') => def[field] !== undefined;
     const needs = (field: 'level' | 'cost' | 'power' | 'soul') => {

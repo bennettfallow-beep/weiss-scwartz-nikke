@@ -149,7 +149,7 @@ export function execTask(s: GameState, catalog: CardCatalog, task: Task): void {
     }
     case 'handLimit': {
       const excess = s.players[s.active].hand.length - HAND_LIMIT;
-      if (excess > 0) s.pending = { kind: 'discard', player: s.active, count: excess };
+      if (excess > 0) s.pending = { kind: 'discard', player: s.active, count: excess, picked: [] };
       return;
     }
     case 'climaxCleanup':
@@ -362,9 +362,6 @@ export function perform(s: GameState, catalog: CardCatalog, action: Action): voi
     case 'CHOOSE_INTERRUPT':
       performInterrupt(s, p, action.interrupt);
       return;
-    case 'DISCARD':
-      for (const card of action.cards) moveCard(s, card, ownersZone(s, card, 'waiting'), 'handLimit');
-      return;
     case 'ATTACK':
       declareAttack(s, catalog, action.slot, action.attack);
       return;
@@ -377,6 +374,7 @@ export function perform(s: GameState, catalog: CardCatalog, action: Action): voi
       return;
     case 'CHOOSE_CARD':
       if (pending?.kind === 'pick') answerPick(s, catalog, pending, action.card);
+      else if (pending?.kind === 'discard') chooseDiscard(s, pending, action.card);
       else chooseCard(s, pending, action.card);
       return;
     case 'CHOOSE_SLOT':
@@ -411,6 +409,19 @@ export function perform(s: GameState, catalog: CardCatalog, action: Action): voi
 }
 
 /** CHOOSE_CARD answers a `choose` prompt; what happens depends on why it was asked. */
+/**
+ * CR 6.8.1.2: the hand-limit cards are chosen first, then put into the waiting
+ * room together, in the order chosen. Nothing happens between choices.
+ */
+function chooseDiscard(s: GameState, pending: Extract<NonNullable<GameState['pending']>, { kind: 'discard' }>, card: CardId): void {
+  const picked = [...pending.picked, card];
+  if (picked.length < pending.count) {
+    s.pending = { ...pending, picked };
+    return;
+  }
+  for (const c of picked) moveCard(s, c, ownersZone(s, c, 'waiting'), 'handLimit');
+}
+
 function chooseCard(s: GameState, pending: GameState['pending'], card: CardId): void {
   if (pending?.kind !== 'choose') throw new EngineFault('CHOOSE_CARD without a choose prompt');
   const p = pending.player;

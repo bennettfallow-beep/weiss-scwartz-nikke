@@ -17,6 +17,7 @@ import type {
   Task,
 } from '../model/types';
 import { canonicalJson, deepClone } from '../core/clone';
+import { shown } from '../core/fault';
 import { hashSeed, nextInt, seedRng, shuffle } from '../core/rng';
 import { log, stageSlot } from '../core/zones';
 import { validateDeck } from '../rules/deck';
@@ -137,10 +138,9 @@ export function actor(state: GameState): PlayerId | null {
   return state.pending?.player ?? null;
 }
 
-/** Canonical key for an action. MULLIGAN and DISCARD card lists are sets, so their order does not matter. */
+/** Canonical key for an action. A MULLIGAN card list is a set, so its order does not matter. */
 export function actionKey(action: Action): string {
   if (action.type === 'MULLIGAN') return canonicalJson({ ...action, discard: [...action.discard].sort() });
-  if (action.type === 'DISCARD') return canonicalJson({ ...action, cards: [...action.cards].sort() });
   return canonicalJson(action);
 }
 
@@ -151,13 +151,6 @@ function subsets<T>(items: readonly T[]): T[][] {
     for (let i = 0; i < n; i++) out.push([...(out[i] as T[]), item]);
   }
   return out;
-}
-
-function combinations<T>(items: readonly T[], k: number): T[][] {
-  if (k === 0) return [[]];
-  if (k > items.length) return [];
-  const [head, ...rest] = items as [T, ...T[]];
-  return [...combinations(rest, k - 1).map((c) => [head, ...c]), ...combinations(rest, k)];
 }
 
 /**
@@ -210,7 +203,8 @@ export function legalActions(state: GameState, catalog: CardCatalog, player?: Pl
       for (const interrupt of pending.options) actions.push({ type: 'CHOOSE_INTERRUPT', player: p, interrupt });
       break;
     case 'discard':
-      for (const cards of combinations(ps.hand, pending.count)) actions.push({ type: 'DISCARD', player: p, cards });
+      // One card at a time, so the list never grows with the number of combinations.
+      for (const card of ps.hand) if (!pending.picked.includes(card)) actions.push({ type: 'CHOOSE_CARD', player: p, card });
       break;
     case 'attack':
       actions.push({ type: 'PASS', player: p });
@@ -267,7 +261,7 @@ export function normalizeAction(raw: unknown): Checked {
   const r = raw as Record<string, unknown>;
   const player = r.player;
   if (!isPlayer(player)) return bad('BAD_PLAYER', 'player must be 0 or 1');
-  const card = (): Checked | string => (isString(r.card) ? r.card : bad('BAD_ACTION', `${String(r.type)} needs a card id`));
+  const card = (): Checked | string => (isString(r.card) ? r.card : bad('BAD_ACTION', `${shown(r.type)} needs a card id`));
   switch (r.type) {
     case 'PASS':
     case 'CONCEDE':
@@ -275,8 +269,6 @@ export function normalizeAction(raw: unknown): Checked {
       return { ok: true, action: { type: r.type, player } };
     case 'MULLIGAN':
       return isStringArray(r.discard) ? { ok: true, action: { type: 'MULLIGAN', player, discard: [...r.discard] } } : bad('BAD_ACTION', 'discard must be a list of card ids');
-    case 'DISCARD':
-      return isStringArray(r.cards) ? { ok: true, action: { type: 'DISCARD', player, cards: [...r.cards] } } : bad('BAD_ACTION', 'cards must be a list of card ids');
     case 'CLOCK':
       return r.card === null || isString(r.card) ? { ok: true, action: { type: 'CLOCK', player, card: r.card } } : bad('BAD_ACTION', 'card must be a card id or null');
     case 'PLAY_CHARACTER': {
@@ -321,10 +313,10 @@ export function normalizeAction(raw: unknown): Checked {
         ? { ok: true, action: { type: 'CHOOSE_INTERRUPT', player, interrupt: r.interrupt } }
         : bad('BAD_ACTION', 'interrupt must be refresh or levelUp');
     case 'REORDER':
-      if (r.zone !== 'hand' && r.zone !== 'waiting') return bad('NOT_REORDERABLE', `players may not reorder the ${String(r.zone)}`);
+      if (r.zone !== 'hand' && r.zone !== 'waiting') return bad('NOT_REORDERABLE', `players may not reorder that zone (${shown(r.zone)})`);
       return isStringArray(r.order) ? { ok: true, action: { type: 'REORDER', player, zone: r.zone, order: [...r.order] } } : bad('BAD_REORDER', 'order must be a list of card ids');
     default:
-      return bad('BAD_ACTION', `unknown action type ${String(r.type)}`);
+      return bad('BAD_ACTION', `unknown action type ${shown(r.type)}`);
   }
 }
 
@@ -349,14 +341,9 @@ function check(state: GameState, catalog: CardCatalog, raw: unknown): Checked {
   const pending = state.pending;
   if (!pending || pending.player !== action.player) return bad('NOT_YOUR_DECISION', `player ${action.player} has no decision to make`);
   const hand = state.players[action.player].hand;
-  // Set-valued choices are checked by structure, not by listing every subset.
+  // A mulligan is a set of cards, checked by structure rather than by listing every subset.
   if (action.type === 'MULLIGAN') {
     return pending.kind === 'mulligan' && distinctFrom(action.discard, hand) ? n : bad('ILLEGAL_ACTION', 'a mulligan discards distinct cards from your hand');
-  }
-  if (action.type === 'DISCARD') {
-    return pending.kind === 'discard' && action.cards.length === pending.count && distinctFrom(action.cards, hand)
-      ? n
-      : bad('ILLEGAL_ACTION', `discard exactly ${pending.kind === 'discard' ? pending.count : 0} distinct cards from your hand`);
   }
   const key = actionKey(action);
   if (!legalActions(state, catalog).some((a) => actionKey(a) === key)) {

@@ -349,7 +349,7 @@ describe("ENC-02: the non-turn player's reversed characters", () => {
       'check',
       'phase:end',
     ]);
-    expect(c.state.pending).toEqual({ kind: 'discard', player: 0, count: 1 });
+    expect(c.state.pending).toEqual({ kind: 'discard', player: 0, count: 1, picked: [] });
     expect(where(c.state, r0)).toBe('stage:1:1:rest');
     expect(where(c.state, y0)).toBe('waiting:0');
     expect(where(c.state, r1)).toBe('waiting:1');
@@ -441,7 +441,7 @@ describe('ENC-03: the closing check timing and the way out of the Encore Step', 
       'phase:end',
     ]);
     expect(b.state.phase).toBe('end');
-    expect(b.state.pending).toEqual({ kind: 'discard', player: 0, count: 1 });
+    expect(b.state.pending).toEqual({ kind: 'discard', player: 0, count: 1, picked: [] });
     expect(where(b.state, r1)).toBe('stage:1:2:rest');
     const reversedLeft = b.state.players.flatMap((p) => p.stage.flat()).filter((c) => c.orientation === 'reverse');
     expect(reversedLeft).toEqual([]);
@@ -554,7 +554,7 @@ describe('KW-02: Encore [cost]', () => {
     expect(defsIn(b.state, 1, 'waiting')).toEqual(THREE);
     expect(defsIn(b.state, 0, 'stock')).toEqual(['G0', 'G0', 'G0']);
     expect(movesOf(b.events).find((m) => m.reason === 'encore')?.to).toEqual({ player: 1, zone: 'stage', slot: 2 });
-    expect(b.state.pending).toEqual({ kind: 'discard', player: 0, count: 1 });
+    expect(b.state.pending).toEqual({ kind: 'discard', player: 0, count: 1, picked: [] });
     expect(where(b.state, r1)).toBe('stage:1:2:rest');
   });
 
@@ -704,7 +704,7 @@ describe('KW-03: the default Encore [3]', () => {
     expect(where(e.state, y3)).toBe('stage:0:2:rest');
     expect(where(e.state, r0)).toBe('waiting:1');
     expect(where(e.state, b1)).toBe('stage:1:3:rest');
-    expect(e.state.pending).toEqual({ kind: 'discard', player: 0, count: 1 });
+    expect(e.state.pending).toEqual({ kind: 'discard', player: 0, count: 1, picked: [] });
   });
 
   it('[KW-03] three stock is the line: with two it cannot be paid and the card stays in the waiting room; with three it is offered', () => {
@@ -755,16 +755,16 @@ describe('END-04: end of turn effects', () => {
     expect(ta).toContain('step:encore');
     expect(ta).toContain('phase:end');
     expect(ta).not.toContain('effectsExpired');
-    expect(a.state.pending).toEqual({ kind: 'discard', player: 0, count: 1 });
+    expect(a.state.pending).toEqual({ kind: 'discard', player: 0, count: 1, picked: [] });
     expect(currentSoul(a.state, cat, y1)).toBe(3);
     expect(a.state.effects.map((e) => [e.card.card, e.stat, e.amount])).toEqual([
       [y1, 'soul', 1],
       [y1, 'soul', 1],
     ]);
 
-    const b = go(a.state, { type: 'DISCARD', player: 0, cards: [cardIn(a.state, 0, 'hand', 'B0')] });
+    const b = go(a.state, { type: 'CHOOSE_CARD', player: 0, card: cardIn(a.state, 0, 'hand', 'B0') });
     expect(upTo(trace(b.state, b.events), 'turnStart:1')).toEqual([
-      'action:DISCARD:0',
+      'action:CHOOSE_CARD:0',
       'move:handLimit:B0:hand->waiting',
       'move:climaxCleanup:BX:climax->waiting',
       'check',
@@ -780,14 +780,14 @@ describe('END-04: end of turn effects', () => {
     const s0 = attackPhase({ deck: [...PLAIN, 'YX'], stage: { 2: 'Y1', 4: 'Y0' }, hand: OVER_LIMIT, climax: ['BX'], stock: ['B1', 'B1'] });
     const [y1, y0] = [idAt(s0, 0, 2), idAt(s0, 0, 4)];
     const a = go(s0, { type: 'ATTACK', player: 0, slot: 2, attack: 'direct' });
-    expect(a.state.pending).toEqual({ kind: 'discard', player: 0, count: 1 });
+    expect(a.state.pending).toEqual({ kind: 'discard', player: 0, count: 1, picked: [] });
 
     // An effect (simulated) puts another character on position 4, so the next check timing has work to do.
     const s1 = ops.deepClone(a.state);
     ops.moveCard(s1, cardIn(s1, 0, 'hand', 'G0'), { player: 0, zone: 'stage', slot: 4 }, 'effect');
-    const b = go(s1, { type: 'DISCARD', player: 0, cards: [cardIn(s1, 0, 'hand', 'B0')] });
+    const b = go(s1, { type: 'CHOOSE_CARD', player: 0, card: cardIn(s1, 0, 'hand', 'B0') });
     expect(trace(b.state, b.events)).toEqual([
-      'action:DISCARD:0',
+      'action:CHOOSE_CARD:0',
       'move:handLimit:B0:hand->waiting',
       'move:climaxCleanup:BX:climax->waiting',
       'check',
@@ -826,12 +826,12 @@ describe('END-04: end of turn effects', () => {
     const tb = trace(b.state, b.events);
     expect(tb).toContain('move:encoreStep:Y1:stage->waiting');
     expect(tb).not.toContain('effectsExpired');
-    expect(b.state.pending).toEqual({ kind: 'discard', player: 0, count: 1 });
+    expect(b.state.pending).toEqual({ kind: 'discard', player: 0, count: 1, picked: [] });
     expect(where(b.state, r1)).toBe('stage:1:2:stand');
     expect(currentPower(b.state, cat, r1)).toBe(6500);
 
-    const c = go(b.state, { type: 'DISCARD', player: 0, cards: [cardIn(b.state, 0, 'hand', 'B0')] });
-    expect(upTo(trace(c.state, c.events), 'turnStart:1')).toEqual(['action:DISCARD:0', 'move:handLimit:B0:hand->waiting', 'check', 'effectsExpired', 'turnStart:1']);
+    const c = go(b.state, { type: 'CHOOSE_CARD', player: 0, card: cardIn(b.state, 0, 'hand', 'B0') });
+    expect(upTo(trace(c.state, c.events), 'turnStart:1')).toEqual(['action:CHOOSE_CARD:0', 'move:handLimit:B0:hand->waiting', 'check', 'effectsExpired', 'turnStart:1']);
     expect(c.state.effects).toEqual([]);
     expect(currentPower(c.state, cat, r1)).toBe(4500);
   });
@@ -842,13 +842,13 @@ describe('END-04: end of turn effects', () => {
     const y1 = idAt(s0, 0, 2);
     const a = go(s0, { type: 'ATTACK', player: 0, slot: 2, attack: 'side' });
     expect(a.events.filter((e) => e.kind === 'damage')).toEqual([]);
-    expect(a.state.pending).toEqual({ kind: 'discard', player: 0, count: 1 });
+    expect(a.state.pending).toEqual({ kind: 'discard', player: 0, count: 1, picked: [] });
     expect(a.state.watchers).toEqual([{ player: 0, source: { card: y1, epoch: a.state.cards[y1]?.epoch } }]);
     expect(currentSoul(a.state, cat, y1)).toBe(0);
 
-    const b = go(a.state, { type: 'DISCARD', player: 0, cards: [cardIn(a.state, 0, 'hand', 'B0')] });
+    const b = go(a.state, { type: 'CHOOSE_CARD', player: 0, card: cardIn(a.state, 0, 'hand', 'B0') });
     expect(upTo(trace(b.state, b.events), 'turnStart:1')).toEqual([
-      'action:DISCARD:0',
+      'action:CHOOSE_CARD:0',
       'move:handLimit:B0:hand->waiting',
       'check',
       'effectsExpired',

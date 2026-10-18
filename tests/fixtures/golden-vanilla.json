@@ -5,11 +5,11 @@
    0,
    0
   ],
-  "actions": 213,
+  "actions": 203,
   "turns": 30,
   "result": "p0:level4",
-  "logHash": "1834684bc61d5c57dfd3e8f9b5c8f8b5",
-  "discardPrompts": 7
+  "logHash": "d8edcbd3fca3259792d23e2b8bee90f6",
+  "discardPrompts": 11
  },
  {
   "seed": "golden-00-1",
@@ -17,11 +17,11 @@
    0,
    0
   ],
-  "actions": 241,
-  "turns": 35,
-  "result": "p0:level4",
-  "logHash": "f5a2fdec74a89be8c991df76f3fc9774",
-  "discardPrompts": 17
+  "actions": 257,
+  "turns": 37,
+  "result": "p1:level4",
+  "logHash": "5250b274b07a2d1fd759ed54b034c72b",
+  "discardPrompts": 15
  },
  {
   "seed": "golden-00-2",
@@ -29,11 +29,11 @@
    0,
    0
   ],
-  "actions": 236,
-  "turns": 31,
-  "result": "p0:level4",
-  "logHash": "fa33f9c4e92e36c3c888b0a4afdf6c95",
-  "discardPrompts": 15
+  "actions": 205,
+  "turns": 30,
+  "result": "p1:level4",
+  "logHash": "92a62c7a9a70d4a5929fa79e175caae7",
+  "discardPrompts": 22
  },
  {
   "seed": "golden-00-3",
@@ -41,11 +41,11 @@
    0,
    0
   ],
-  "actions": 213,
-  "turns": 28,
-  "result": "p0:level4",
-  "logHash": "d6caa6acca7e319ce9f069835547b282",
-  "discardPrompts": 12
+  "actions": 226,
+  "turns": 31,
+  "result": "p1:level4",
+  "logHash": "26037f637ee9a3f054798842f3792f5c",
+  "discardPrompts": 17
  },
  {
   "seed": "golden-00-4",
@@ -53,11 +53,11 @@
    0,
    0
   ],
-  "actions": 187,
-  "turns": 32,
-  "result": "p1:level4",
-  "logHash": "3e3f62974c5377b7c027e0fd4439d80b",
-  "discardPrompts": 14
+  "actions": 217,
+  "turns": 33,
+  "result": "p0:level4",
+  "logHash": "d753184cd69120d5982fed0ff144358c",
+  "discardPrompts": 25
  },
  {
   "seed": "golden-00-5",
@@ -65,10 +65,10 @@
    0,
    0
   ],
-  "actions": 234,
-  "turns": 34,
-  "result": "p1:level4",
-  "logHash": "6621d87c4e1d63c0bcbb58caa1388031",
+  "actions": 147,
+  "turns": 21,
+  "result": "p0:level4",
+  "logHash": "94bc7bb44bf15b01eb8664c85a8bbec5",
   "discardPrompts": 13
  },
  {
@@ -77,11 +77,11 @@
    0,
    0
   ],
-  "actions": 210,
-  "turns": 29,
+  "actions": 217,
+  "turns": 30,
   "result": "p0:level4",
-  "logHash": "fd235143acc791a32475fd2e12e5369e",
-  "discardPrompts": 12
+  "logHash": "bcf7e5423ddb4966f6b504586d287f5f",
+  "discardPrompts": 11
  },
  {
   "seed": "golden-00-7",
@@ -89,11 +89,11 @@
    0,
    0
   ],
-  "actions": 207,
-  "turns": 33,
+  "actions": 224,
+  "turns": 35,
   "result": "p1:level4",
-  "logHash": "c01b6e471b29ea9038d433ca541c0727",
-  "discardPrompts": 16
+  "logHash": "71f63d5029378fc9d01acd0af7a1c7be",
+  "discardPrompts": 22
  },
  {
   "seed": "golden-00-8",
@@ -101,11 +101,11 @@
    0,
    0
   ],
-  "actions": 203,
-  "turns": 28,
-  "result": "p1:level4",
-  "logHash": "fb688df3547cd7df10ad4104ba8cbc83",
-  "discardPrompts": 7
+  "actions": 214,
+  "turns": 29,
+  "result": "p0:level4",
+  "logHash": "f8a1eeef88ccc6ed27a1ed3dc9848a50",
+  "discardPrompts": 25
  },
  {
   "seed": "golden-00-9",
@@ -113,11 +113,11 @@
    0,
    0
   ],
-  "actions": 260,
-  "turns": 36,
-  "result": "p1:level4",
-  "logHash": "8576223e75572f46882482d51c331846",
-  "discardPrompts": 11
+  "actions": 237,
+  "turns": 34,
+  "result": "p0:level4",
+  "logHash": "f81f7d33700c61b91a0758509b19ac88",
+  "discardPrompts": 22
  },
  {
   "seed": "golden-01-0",
@@ -128,8 +128,8 @@
   "actions": 254,
   "turns": 34,
   "result": "p0:level4",
-  "logHash": "de023e3e29dc845db8d752cc31b15a3a",
-  "discardPrompts": 8
+  "logHash": "5d8445f49fb7548f9a66a6beff6f1c58",
+  "discardPrompts": 9
  },
  {
   "seed": "golden-01-1",
@@ -137,11 +137,11 @@
    0,
    1
   ],
-  "actions": 207,
-  "turns": 32,
-  "result": "p1:level4",
-  "logHash": "c1ded1bf5a5598f3ceb0800c78b55c60",
-  "discardPrompts": 14
+  "actions": 237,
+  "turns": 35,
+  "result": "p0:level4",
+  "logHash": "3256d76ba3cff9aae0d2286014f7a822",
+  "discardPrompts": 29
  },
  {
   "seed": "golden-01-2",
@@ -149,11 +149,11 @@
    0,
    1
   ],
-  "actions": 212,
-  "turns": 29,
+  "actions": 202,
+  "turns": 28,
   "result": "p0:level4",
-  "logHash": "61aeb24400f3b27b6bbfbce7fa80bcbd",
-  "discardPrompts": 3
+  "logHash": "5180fd198b1c8cef4ade3bbea8d324bc",
+  "discardPrompts": 12
  },
  {
   "seed": "golden-01-3",
@@ -161,11 +161,11 @@
    0,
    1
   ],
-  "actions": 271,
-  "turns": 39,
-  "result": "p0:level4",
-  "logHash": "ee7758be78a05e530d20080f9e311cec",
-  "discardPrompts": 12
+  "actions": 260,
+  "turns": 35,
+  "result": "p1:level4",
+  "logHash": "25be2fbe80c7219df90999fe6e168316",
+  "discardPrompts": 16
  },
  {
   "seed": "golden-01-4",
@@ -173,11 +173,11 @@
    0,
    1
   ],
-  "actions": 211,
+  "actions": 217,
   "turns": 30,
   "result": "p0:level4",
-  "logHash": "ce04828ab87483c9feb012e69fd780fe",
-  "discardPrompts": 9
+  "logHash": "70f4cf88a7dbc23a5d18481ddb7b7a6c",
+  "discardPrompts": 17
  },
  {
   "seed": "golden-01-5",
@@ -185,11 +185,11 @@
    0,
    1
   ],
-  "actions": 275,
-  "turns": 39,
+  "actions": 271,
+  "turns": 36,
   "result": "p0:level4",
-  "logHash": "3d4e748f631c1df70c51c99cb2e68fc2",
-  "discardPrompts": 18
+  "logHash": "7fb622d21e58fe6f3c40a6498cbc4623",
+  "discardPrompts": 21
  },
  {
   "seed": "golden-01-6",
@@ -197,11 +197,11 @@
    0,
    1
   ],
-  "actions": 286,
-  "turns": 38,
+  "actions": 189,
+  "turns": 28,
   "result": "p0:level4",
-  "logHash": "a88a01f2dfe5e39574e4fd5b39b18cd3",
-  "discardPrompts": 12
+  "logHash": "1b28a26ccb92f5de5480c39a08a0f6a9",
+  "discardPrompts": 23
  },
  {
   "seed": "golden-01-7",
@@ -209,11 +209,11 @@
    0,
    1
   ],
-  "actions": 267,
-  "turns": 36,
+  "actions": 293,
+  "turns": 42,
   "result": "p1:level4",
-  "logHash": "1ed536f0cafb2c9b5f854117b0d35d17",
-  "discardPrompts": 18
+  "logHash": "3dd21364d7230cf896d3367609406213",
+  "discardPrompts": 34
  },
  {
   "seed": "golden-01-8",
@@ -221,11 +221,11 @@
    0,
    1
   ],
-  "actions": 174,
-  "turns": 27,
+  "actions": 216,
+  "turns": 30,
   "result": "p1:level4",
-  "logHash": "3b34cd225a85c74ae731d52cffc8d8ff",
-  "discardPrompts": 16
+  "logHash": "0c3ec31273c698757f19b3160a9b3d1e",
+  "discardPrompts": 19
  },
  {
   "seed": "golden-01-9",
@@ -234,10 +234,10 @@
    1
   ],
   "actions": 243,
-  "turns": 36,
+  "turns": 34,
   "result": "p1:level4",
-  "logHash": "5c88e3f26a93e41492cee0d51210bed7",
-  "discardPrompts": 13
+  "logHash": "53d46b3af65f120d699e4070b22d371f",
+  "discardPrompts": 29
  },
  {
   "seed": "golden-02-0",
@@ -246,10 +246,10 @@
    2
   ],
   "actions": 193,
-  "turns": 30,
+  "turns": 27,
   "result": "p1:level4",
-  "logHash": "1c2a8df55b112e3106195fe592ebc080",
-  "discardPrompts": 12
+  "logHash": "d9805161c790fe8dab1036552b119a7f",
+  "discardPrompts": 16
  },
  {
   "seed": "golden-02-1",
@@ -257,11 +257,11 @@
    0,
    2
   ],
-  "actions": 261,
-  "turns": 37,
+  "actions": 227,
+  "turns": 29,
   "result": "p0:level4",
-  "logHash": "013e68551e04afb00ca34728bfed4a3e",
-  "discardPrompts": 11
+  "logHash": "cc90f7c80d102ea598deced4e6a95ce2",
+  "discardPrompts": 22
  },
  {
   "seed": "golden-02-2",
@@ -269,11 +269,11 @@
    0,
    2
   ],
-  "actions": 200,
-  "turns": 27,
+  "actions": 260,
+  "turns": 33,
   "result": "p1:level4",
-  "logHash": "559263c7d8a1e19b6e7d5abe63ec675c",
-  "discardPrompts": 6
+  "logHash": "d9431ce12ade479c103c77edd572a627",
+  "discardPrompts": 17
  },
  {
   "seed": "golden-02-3",
@@ -281,11 +281,11 @@
    0,
    2
   ],
-  "actions": 200,
-  "turns": 30,
+  "actions": 223,
+  "turns": 31,
   "result": "p0:level4",
-  "logHash": "af6ead29482952fd66f5b2d0f94d53ed",
-  "discardPrompts": 12
+  "logHash": "286d546b00a43933e14890fd2a64ca25",
+  "discardPrompts": 20
  },
  {
   "seed": "golden-02-4",
@@ -293,11 +293,11 @@
    0,
    2
   ],
-  "actions": 165,
-  "turns": 23,
+  "actions": 179,
+  "turns": 25,
   "result": "p0:level4",
-  "logHash": "af43b0c8bab15f441d0f4e2acb746b9f",
-  "discardPrompts": 6
+  "logHash": "56e4b3663dc1e36f05f09357d0ddc34d",
+  "discardPrompts": 13
  },
  {
   "seed": "golden-02-5",
@@ -305,11 +305,11 @@
    0,
    2
   ],
-  "actions": 303,
-  "turns": 43,
+  "actions": 209,
+  "turns": 30,
   "result": "p1:level4",
-  "logHash": "1431620bbcea1387b362b1efad1087a0",
-  "discardPrompts": 11
+  "logHash": "2483221438d6a1b521be2f07ec06db79",
+  "discardPrompts": 25
  },
  {
   "seed": "golden-02-6",
@@ -317,11 +317,11 @@
    0,
    2
   ],
-  "actions": 256,
-  "turns": 35,
-  "result": "p1:level4",
-  "logHash": "1f2712cf5133b6937dbb0593821a475e",
-  "discardPrompts": 11
+  "actions": 268,
+  "turns": 34,
+  "result": "p0:level4",
+  "logHash": "3a989825697662249b6029182dbb2df8",
+  "discardPrompts": 15
  },
  {
   "seed": "golden-02-7",
@@ -329,11 +329,11 @@
    0,
    2
   ],
-  "actions": 231,
-  "turns": 32,
+  "actions": 202,
+  "turns": 30,
   "result": "p0:level4",
-  "logHash": "0eb5656dec0c7e4d54f2eb5ff0e35bf1",
-  "discardPrompts": 13
+  "logHash": "c24ad7d299d3ab35cdcc9ca2b0abbe73",
+  "discardPrompts": 22
  },
  {
   "seed": "golden-02-8",
@@ -341,11 +341,11 @@
    0,
    2
   ],
-  "actions": 219,
-  "turns": 31,
-  "result": "p1:level4",
-  "logHash": "fcdb77f6ae17dcafb5d5a56efd550489",
-  "discardPrompts": 8
+  "actions": 215,
+  "turns": 27,
+  "result": "p0:level4",
+  "logHash": "470cfc578e3ab6334b53f68b582c42fe",
+  "discardPrompts": 11
  },
  {
   "seed": "golden-02-9",
@@ -353,11 +353,11 @@
    0,
    2
   ],
-  "actions": 221,
-  "turns": 32,
+  "actions": 204,
+  "turns": 30,
   "result": "p1:level4",
-  "logHash": "b566eebda0eeb53cd168a4e7ca671b5b",
-  "discardPrompts": 11
+  "logHash": "5076d725b1c7deef102279ebe0057289",
+  "discardPrompts": 18
  },
  {
   "seed": "golden-10-0",
@@ -365,11 +365,11 @@
    1,
    0
   ],
-  "actions": 266,
-  "turns": 38,
-  "result": "p0:level4",
-  "logHash": "af3be8656d63dd9efd98f2010f02ee26",
-  "discardPrompts": 15
+  "actions": 298,
+  "turns": 42,
+  "result": "p1:level4",
+  "logHash": "4923732bec8eaf5086a395ce183c2b58",
+  "discardPrompts": 22
  },
  {
   "seed": "golden-10-1",
@@ -377,11 +377,11 @@
    1,
    0
   ],
-  "actions": 260,
-  "turns": 43,
-  "result": "p1:level4",
-  "logHash": "ea55dae8d6d681ea5c0d0dc5996dadf1",
-  "discardPrompts": 18
+  "actions": 272,
+  "turns": 36,
+  "result": "p0:level4",
+  "logHash": "3f9236bc8f1ea9744512c17282de5136",
+  "discardPrompts": 27
  },
  {
   "seed": "golden-10-2",
@@ -389,11 +389,11 @@
    1,
    0
   ],
-  "actions": 180,
-  "turns": 28,
+  "actions": 234,
+  "turns": 34,
   "result": "p0:level4",
-  "logHash": "730e7564b7abf9e64a3122acf9641370",
-  "discardPrompts": 5
+  "logHash": "9117d93102ebcc2aa9568a6073ea38f2",
+  "discardPrompts": 25
  },
  {
   "seed": "golden-10-3",
@@ -401,11 +401,11 @@
    1,
    0
   ],
-  "actions": 183,
-  "turns": 27,
-  "result": "p0:level4",
-  "logHash": "c11199f8f3cf3714c7c5e8ed1fc45c7c",
-  "discardPrompts": 18
+  "actions": 204,
+  "turns": 28,
+  "result": "p1:level4",
+  "logHash": "a9bf56cddae09838ad35ad2f94d2828b",
+  "discardPrompts": 24
  },
  {
   "seed": "golden-10-4",
@@ -413,11 +413,11 @@
    1,
    0
   ],
-  "actions": 231,
-  "turns": 35,
+  "actions": 217,
+  "turns": 32,
   "result": "p1:level4",
-  "logHash": "1a49118166473ce9257eaa38ec1429f3",
-  "discardPrompts": 11
+  "logHash": "3a684f02e3dc6bf0f211e152332cce77",
+  "discardPrompts": 15
  },
  {
   "seed": "golden-10-5",
@@ -425,11 +425,11 @@
    1,
    0
   ],
-  "actions": 270,
-  "turns": 37,
+  "actions": 207,
+  "turns": 33,
   "result": "p0:level4",
-  "logHash": "c68ed978305a6a2e7e2bc277ee4c16c6",
-  "discardPrompts": 17
+  "logHash": "ee4b00564fd714c515b739e2289864bd",
+  "discardPrompts": 26
  },
  {
   "seed": "golden-10-6",
@@ -440,7 +440,7 @@
   "actions": 147,
   "turns": 19,
   "result": "p0:level4",
-  "logHash": "3180a0db841809881d1421ebf463b397",
+  "logHash": "e401cb3ffd362e497402fc82dbdc3dff",
   "discardPrompts": 5
  },
  {
@@ -449,11 +449,11 @@
    1,
    0
   ],
-  "actions": 265,
-  "turns": 33,
-  "result": "p0:level4",
-  "logHash": "8d094eb33eb6563d60248457db62b370",
-  "discardPrompts": 14
+  "actions": 295,
+  "turns": 40,
+  "result": "p1:level4",
+  "logHash": "c99c2f4a909fbd890d6e0330b79844b9",
+  "discardPrompts": 23
  },
  {
   "seed": "golden-10-8",
@@ -461,11 +461,11 @@
    1,
    0
   ],
-  "actions": 211,
-  "turns": 25,
+  "actions": 234,
+  "turns": 30,
   "result": "p1:level4",
-  "logHash": "14673ea373c4ea55f84250a8086990ee",
-  "discardPrompts": 6
+  "logHash": "06e7aec3de5c8f26677381462397f426",
+  "discardPrompts": 12
  },
  {
   "seed": "golden-10-9",
@@ -473,11 +473,11 @@
    1,
    0
   ],
-  "actions": 223,
-  "turns": 30,
+  "actions": 219,
+  "turns": 26,
   "result": "p0:level4",
-  "logHash": "5bc9ea41be88e3e0558b19ed16e090ab",
-  "discardPrompts": 12
+  "logHash": "417216081833b74a8f02a92b2cc5601a",
+  "discardPrompts": 15
  },
  {
   "seed": "golden-11-0",
@@ -485,11 +485,11 @@
    1,
    1
   ],
-  "actions": 269,
-  "turns": 37,
-  "result": "p0:level4",
-  "logHash": "8ceb1b91ef135812379e5b4e3a675faa",
-  "discardPrompts": 14
+  "actions": 179,
+  "turns": 29,
+  "result": "p1:level4",
+  "logHash": "a9a7d7ed8215a2de35c0a935084a17af",
+  "discardPrompts": 32
  },
  {
   "seed": "golden-11-1",
@@ -498,10 +498,10 @@
    1
   ],
   "actions": 201,
-  "turns": 28,
-  "result": "p0:level4",
-  "logHash": "f79be92c83b59688236f9612dcc5aa38",
-  "discardPrompts": 11
+  "turns": 30,
+  "result": "p1:level4",
+  "logHash": "f34f088b6a56c6734db93e3ac637dd37",
+  "discardPrompts": 13
  },
  {
   "seed": "golden-11-2",
@@ -509,11 +509,11 @@
    1,
    1
   ],
-  "actions": 241,
-  "turns": 33,
-  "result": "p0:level4",
-  "logHash": "fa667ef7b5e582656f337130bbc75301",
-  "discardPrompts": 12
+  "actions": 184,
+  "turns": 22,
+  "result": "p1:level4",
+  "logHash": "4f5f59a23ed02584bed6f7d410897c1f",
+  "discardPrompts": 10
  },
  {
   "seed": "golden-11-3",
@@ -521,11 +521,11 @@
    1,
    1
   ],
-  "actions": 196,
-  "turns": 28,
-  "result": "p0:level4",
-  "logHash": "546196ce86a681ef44edf2b30d43f067",
-  "discardPrompts": 12
+  "actions": 224,
+  "turns": 33,
+  "result": "p1:level4",
+  "logHash": "bf7ea3f81b6c550fe859cff18c27b6ea",
+  "discardPrompts": 10
  },
  {
   "seed": "golden-11-4",
@@ -533,11 +533,11 @@
    1,
    1
   ],
-  "actions": 225,
-  "turns": 33,
+  "actions": 251,
+  "turns": 34,
   "result": "p0:level4",
-  "logHash": "710c54518d4437779495829f65e75ea4",
-  "discardPrompts": 12
+  "logHash": "3093b9f0771c3911d3aa7d59984ddf6d",
+  "discardPrompts": 18
  },
  {
   "seed": "golden-11-5",
@@ -545,11 +545,11 @@
    1,
    1
   ],
-  "actions": 199,
-  "turns": 27,
+  "actions": 228,
+  "turns": 31,
   "result": "p1:level4",
-  "logHash": "b2ac8aebbdbd9619eb144e8a9a1b6116",
-  "discardPrompts": 6
+  "logHash": "71dcdb87b9a4a0f5f3010323bb95b6a9",
+  "discardPrompts": 14
  },
  {
   "seed": "golden-11-6",
@@ -557,11 +557,11 @@
    1,
    1
   ],
-  "actions": 231,
-  "turns": 28,
+  "actions": 219,
+  "turns": 24,
   "result": "p0:level4",
-  "logHash": "fb29787fd7bdf199bfee7abb9f7f1097",
-  "discardPrompts": 4
+  "logHash": "80a080d9b95ced51785a38de28d1e651",
+  "discardPrompts": 8
  },
  {
   "seed": "golden-11-7",
@@ -569,11 +569,11 @@
    1,
    1
   ],
-  "actions": 262,
-  "turns": 34,
-  "result": "p1:level4",
-  "logHash": "948c3ab931252bf2d621d74fb469c1be",
-  "discardPrompts": 12
+  "actions": 224,
+  "turns": 31,
+  "result": "p0:level4",
+  "logHash": "80c0dd3cf8a45ab071a015fe0f6031fa",
+  "discardPrompts": 15
  },
  {
   "seed": "golden-11-8",
@@ -581,11 +581,11 @@
    1,
    1
   ],
-  "actions": 209,
-  "turns": 30,
+  "actions": 142,
+  "turns": 19,
   "result": "p1:level4",
-  "logHash": "9f2df6848cf8ac5e6aaf28906adc9174",
-  "discardPrompts": 13
+  "logHash": "71e6a517f25fa7de19f20c0195877454",
+  "discardPrompts": 9
  },
  {
   "seed": "golden-11-9",
@@ -593,11 +593,11 @@
    1,
    1
   ],
-  "actions": 238,
-  "turns": 32,
+  "actions": 252,
+  "turns": 31,
   "result": "p0:level4",
-  "logHash": "1b0a02ae8bf9498be98f11508f9ce7be",
-  "discardPrompts": 10
+  "logHash": "adb002d089f6fb6870a110fbc8bdb601",
+  "discardPrompts": 9
  },
  {
   "seed": "golden-12-0",
@@ -605,11 +605,11 @@
    1,
    2
   ],
-  "actions": 292,
-  "turns": 40,
+  "actions": 239,
+  "turns": 33,
   "result": "p1:level4",
-  "logHash": "93e66a59695ddff4fb58e84f4a7f8f39",
-  "discardPrompts": 13
+  "logHash": "baae9dbece83ba8efea02737196092d0",
+  "discardPrompts": 16
  },
  {
   "seed": "golden-12-1",
@@ -620,7 +620,7 @@
   "actions": 144,
   "turns": 20,
   "result": "p0:level4",
-  "logHash": "d8b7442222222af32df67a0a4625f2a2",
+  "logHash": "ad3de9e90695bd7883fc4aa45cb633b9",
   "discardPrompts": 4
  },
  {
@@ -629,11 +629,11 @@
    1,
    2
   ],
-  "actions": 218,
+  "actions": 251,
   "turns": 33,
-  "result": "p1:level4",
-  "logHash": "a939f1f56e6b56284573f1991c534b80",
-  "discardPrompts": 17
+  "result": "p0:level4",
+  "logHash": "aa68b339ee96ba932db6490e99de249e",
+  "discardPrompts": 9
  },
  {
   "seed": "golden-12-3",
@@ -641,11 +641,11 @@
    1,
    2
   ],
-  "actions": 210,
+  "actions": 220,
   "turns": 29,
   "result": "p0:level4",
-  "logHash": "51c7bcba3b5f8c438a380711b4a7d67d",
-  "discardPrompts": 4
+  "logHash": "b3d6ae94a98221204606a64690ec11ae",
+  "discardPrompts": 5
  },
  {
   "seed": "golden-12-4",
@@ -653,11 +653,11 @@
    1,
    2
   ],
-  "actions": 270,
-  "turns": 37,
-  "result": "p0:level4",
-  "logHash": "9608fe579e18c3f1a984b68d416e9ae6",
-  "discardPrompts": 13
+  "actions": 214,
+  "turns": 29,
+  "result": "p1:level4",
+  "logHash": "40b571e23d8ddbf5821b6e412c212e29",
+  "discardPrompts": 8
  },
  {
   "seed": "golden-12-5",
@@ -665,11 +665,11 @@
    1,
    2
   ],
-  "actions": 181,
-  "turns": 26,
+  "actions": 166,
+  "turns": 24,
   "result": "p0:level4",
-  "logHash": "a33d1b6a3334e50bd715d58bf250c23b",
-  "discardPrompts": 9
+  "logHash": "046826739aa4b06de0fe322664cbeb46",
+  "discardPrompts": 17
  },
  {
   "seed": "golden-12-6",
@@ -677,10 +677,10 @@
    1,
    2
   ],
-  "actions": 242,
-  "turns": 33,
-  "result": "p0:level4",
-  "logHash": "74a4aad86fa2c2a14c585730e3d32171",
+  "actions": 174,
+  "turns": 25,
+  "result": "p1:level4",
+  "logHash": "e008ce2e7a9fadc4263896593cc04c59",
   "discardPrompts": 16
  },
  {
@@ -689,10 +689,10 @@
    1,
    2
   ],
-  "actions": 232,
-  "turns": 30,
-  "result": "p0:level4",
-  "logHash": "b3ce1efb2991528fed97b537606eac28",
+  "actions": 274,
+  "turns": 35,
+  "result": "p1:level4",
+  "logHash": "14030085ad3e4638dd9bb205b217d5ed",
   "discardPrompts": 15
  },
  {
@@ -701,11 +701,11 @@
    1,
    2
   ],
-  "actions": 244,
-  "turns": 33,
+  "actions": 240,
+  "turns": 31,
   "result": "p0:level4",
-  "logHash": "55c677030d148ea8b14edc559037e375",
-  "discardPrompts": 11
+  "logHash": "55c23198ac800e3d2bb5744b933b1d9a",
+  "discardPrompts": 13
  },
  {
   "seed": "golden-12-9",
@@ -713,11 +713,11 @@
    1,
    2
   ],
-  "actions": 222,
-  "turns": 35,
-  "result": "p1:level4",
-  "logHash": "920c41d2e2665bb446fa896507897122",
-  "discardPrompts": 20
+  "actions": 294,
+  "turns": 39,
+  "result": "p0:level4",
+  "logHash": "0c1724b37405970d1d31b9428f1a3423",
+  "discardPrompts": 15
  },
  {
   "seed": "golden-20-0",
@@ -725,11 +725,11 @@
    2,
    0
   ],
-  "actions": 211,
-  "turns": 31,
+  "actions": 198,
+  "turns": 28,
   "result": "p0:level4",
-  "logHash": "581bc3557f999de7159b6c35d247a886",
-  "discardPrompts": 11
+  "logHash": "bcc5add20ad365083b25650ca9f89c38",
+  "discardPrompts": 26
  },
  {
   "seed": "golden-20-1",
@@ -737,11 +737,11 @@
    2,
    0
   ],
-  "actions": 225,
-  "turns": 32,
+  "actions": 241,
+  "turns": 36,
   "result": "p1:level4",
-  "logHash": "dad8188c7096008ea4145def2c964896",
-  "discardPrompts": 10
+  "logHash": "6c8b4316e3e0c5a62940c9d2aece386a",
+  "discardPrompts": 18
  },
  {
   "seed": "golden-20-2",
@@ -749,11 +749,11 @@
    2,
    0
   ],
-  "actions": 269,
-  "turns": 41,
+  "actions": 266,
+  "turns": 40,
   "result": "p1:level4",
-  "logHash": "57f9c7559bff181366c92af8ef563442",
-  "discardPrompts": 17
+  "logHash": "1eac050d6302a8b7a0f3beb1d76fdc9c",
+  "discardPrompts": 22
  },
  {
   "seed": "golden-20-3",
@@ -761,11 +761,11 @@
    2,
    0
   ],
-  "actions": 260,
-  "turns": 34,
+  "actions": 235,
+  "turns": 29,
   "result": "p1:level4",
-  "logHash": "7fdb32742ef83fae23caf9a9cd2e8da2",
-  "discardPrompts": 16
+  "logHash": "cba684643ae3795f34ad44ba93888302",
+  "discardPrompts": 19
  },
  {
   "seed": "golden-20-4",
@@ -773,11 +773,11 @@
    2,
    0
   ],
-  "actions": 235,
+  "actions": 244,
   "turns": 34,
   "result": "p0:level4",
-  "logHash": "d8a882c0df0f60acff8eba4ac836f061",
-  "discardPrompts": 14
+  "logHash": "51b62e7bb99892f63d937ddcced7948f",
+  "discardPrompts": 11
  },
  {
   "seed": "golden-20-5",
@@ -785,11 +785,11 @@
    2,
    0
   ],
-  "actions": 259,
-  "turns": 37,
-  "result": "p1:level4",
-  "logHash": "f5c1f319054b0beb52785f97c2b01faf",
-  "discardPrompts": 13
+  "actions": 300,
+  "turns": 40,
+  "result": "p0:level4",
+  "logHash": "850c9c516c5c6d5578da991686f6bc70",
+  "discardPrompts": 15
  },
  {
   "seed": "golden-20-6",
@@ -797,11 +797,11 @@
    2,
    0
   ],
-  "actions": 211,
-  "turns": 32,
-  "result": "p0:level4",
-  "logHash": "985bdc68404ace2a0460e901ae50d977",
-  "discardPrompts": 14
+  "actions": 247,
+  "turns": 35,
+  "result": "p1:level4",
+  "logHash": "e084853dd4f0a300492b37629fa3e799",
+  "discardPrompts": 31
  },
  {
   "seed": "golden-20-7",
@@ -809,11 +809,11 @@
    2,
    0
   ],
-  "actions": 241,
+  "actions": 256,
   "turns": 31,
   "result": "p1:level4",
-  "logHash": "67ef69320e60eb3d3655206fb9167484",
-  "discardPrompts": 12
+  "logHash": "2ffc064662e8c4c95e71dba5713633c3",
+  "discardPrompts": 11
  },
  {
   "seed": "golden-20-8",
@@ -821,11 +821,11 @@
    2,
    0
   ],
-  "actions": 181,
-  "turns": 22,
+  "actions": 179,
+  "turns": 21,
   "result": "p1:level4",
-  "logHash": "76581d0b02f05c1de152ec8bda360536",
-  "discardPrompts": 4
+  "logHash": "7152c91bb8f8b6cdee4c61a089155367",
+  "discardPrompts": 8
  },
  {
   "seed": "golden-20-9",
@@ -833,11 +833,11 @@
    2,
    0
   ],
-  "actions": 226,
+  "actions": 229,
   "turns": 33,
   "result": "p0:level4",
-  "logHash": "98f1a8f85cfabfc937bb99e408dd797c",
-  "discardPrompts": 14
+  "logHash": "3d4ac1fbb8677a7f842076f420a0019e",
+  "discardPrompts": 21
  },
  {
   "seed": "golden-21-0",
@@ -845,11 +845,11 @@
    2,
    1
   ],
-  "actions": 270,
-  "turns": 35,
-  "result": "p0:level4",
-  "logHash": "5b437a11d5fd2685a3a92056d2989cb4",
-  "discardPrompts": 6
+  "actions": 223,
+  "turns": 28,
+  "result": "p1:level4",
+  "logHash": "39c2d0303fd9557af07cac60f9ca2e5d",
+  "discardPrompts": 13
  },
  {
   "seed": "golden-21-1",
@@ -857,11 +857,11 @@
    2,
    1
   ],
-  "actions": 230,
-  "turns": 38,
+  "actions": 252,
+  "turns": 36,
   "result": "p1:level4",
-  "logHash": "5ea19bd7e5125386c52bff67cc130020",
-  "discardPrompts": 17
+  "logHash": "d60363fa104e048daffd8926f1b446f4",
+  "discardPrompts": 20
  },
  {
   "seed": "golden-21-2",
@@ -869,11 +869,11 @@
    2,
    1
   ],
-  "actions": 216,
-  "turns": 30,
+  "actions": 225,
+  "turns": 31,
   "result": "p1:level4",
-  "logHash": "05b2cd6a419fa9b1c47bb3c7cac4b9a1",
-  "discardPrompts": 13
+  "logHash": "12530c01891ea262cb8d460483ebe478",
+  "discardPrompts": 21
  },
  {
   "seed": "golden-21-3",
@@ -881,11 +881,11 @@
    2,
    1
   ],
-  "actions": 218,
-  "turns": 32,
+  "actions": 249,
+  "turns": 36,
   "result": "p0:level4",
-  "logHash": "95a342d6836263b59251ba6da3fc024a",
-  "discardPrompts": 14
+  "logHash": "29cbc19a9f139eaad1ef541db098a446",
+  "discardPrompts": 16
  },
  {
   "seed": "golden-21-4",
@@ -893,11 +893,11 @@
    2,
    1
   ],
-  "actions": 200,
-  "turns": 26,
-  "result": "p0:level4",
-  "logHash": "550ca0878b29a3f7b9b7b568693eded2",
-  "discardPrompts": 9
+  "actions": 226,
+  "turns": 30,
+  "result": "p1:level4",
+  "logHash": "ebe9d4b5719724ff684ba2646d00db26",
+  "discardPrompts": 19
  },
  {
   "seed": "golden-21-5",
@@ -905,11 +905,11 @@
    2,
    1
   ],
-  "actions": 259,
-  "turns": 37,
+  "actions": 199,
+  "turns": 29,
   "result": "p0:level4",
-  "logHash": "079a6a9e82560103c45c72da05845551",
-  "discardPrompts": 18
+  "logHash": "37f702141559fc4098d5afb093ff8991",
+  "discardPrompts": 17
  },
  {
   "seed": "golden-21-6",
@@ -917,11 +917,11 @@
    2,
    1
   ],
-  "actions": 201,
-  "turns": 32,
+  "actions": 253,
+  "turns": 33,
   "result": "p0:level4",
-  "logHash": "692a4294e46bb9e60ca85ee1cbf2ea1e",
-  "discardPrompts": 17
+  "logHash": "bb40b7a0176eb90a716fce126bf8a594",
+  "discardPrompts": 21
  },
  {
   "seed": "golden-21-7",
@@ -929,11 +929,11 @@
    2,
    1
   ],
-  "actions": 234,
-  "turns": 34,
+  "actions": 190,
+  "turns": 26,
   "result": "p1:level4",
-  "logHash": "24703e054a7cfce450558f05f68feeec",
-  "discardPrompts": 14
+  "logHash": "aa6e23600c153d2d875509ced4ed5672",
+  "discardPrompts": 15
  },
  {
   "seed": "golden-21-8",
@@ -941,11 +941,11 @@
    2,
    1
   ],
-  "actions": 230,
-  "turns": 33,
-  "result": "p1:level4",
-  "logHash": "11db59bd1113f64e21e1f1379370c56f",
-  "discardPrompts": 11
+  "actions": 199,
+  "turns": 27,
+  "result": "p0:level4",
+  "logHash": "aca0e134b46a2ca363f63cc78dd659a1",
+  "discardPrompts": 12
  },
  {
   "seed": "golden-21-9",
@@ -953,11 +953,11 @@
    2,
    1
   ],
-  "actions": 255,
+  "actions": 237,
   "turns": 35,
   "result": "p1:level4",
-  "logHash": "96cdfca946069ebed31904e1bbeaf16b",
-  "discardPrompts": 9
+  "logHash": "4f7eb6a0cc8458dbb5931ed1086f02b1",
+  "discardPrompts": 19
  },
  {
   "seed": "golden-22-0",
@@ -965,11 +965,11 @@
    2,
    2
   ],
-  "actions": 222,
-  "turns": 32,
+  "actions": 199,
+  "turns": 30,
   "result": "p1:level4",
-  "logHash": "ea23f7384fe4b60931956d81d471d9ad",
-  "discardPrompts": 11
+  "logHash": "ad6befd0752dbc23a4d3b378f01840f7",
+  "discardPrompts": 12
  },
  {
   "seed": "golden-22-1",
@@ -977,11 +977,11 @@
    2,
    2
   ],
-  "actions": 245,
+  "actions": 239,
   "turns": 36,
   "result": "p0:level4",
-  "logHash": "10fd6b5a74ac376c6b89f7756fe3466d",
-  "discardPrompts": 9
+  "logHash": "118e83a73991abbe084175085e2eabd6",
+  "discardPrompts": 12
  },
  {
   "seed": "golden-22-2",
@@ -989,11 +989,11 @@
    2,
    2
   ],
-  "actions": 233,
-  "turns": 32,
-  "result": "p1:level4",
-  "logHash": "d399ab3ad3cc157f66326e5f89101244",
-  "discardPrompts": 14
+  "actions": 217,
+  "turns": 31,
+  "result": "p0:level4",
+  "logHash": "56a2498c9ffbcf60386aa5687203e116",
+  "discardPrompts": 22
  },
  {
   "seed": "golden-22-3",
@@ -1001,11 +1001,11 @@
    2,
    2
   ],
-  "actions": 242,
-  "turns": 37,
+  "actions": 255,
+  "turns": 36,
   "result": "p0:level4",
-  "logHash": "352e8a5f836c96ad44228cc2470c1b97",
-  "discardPrompts": 21
+  "logHash": "3d3cb9f5c93f43be94421af677713c88",
+  "discardPrompts": 23
  },
  {
   "seed": "golden-22-4",
@@ -1013,11 +1013,11 @@
    2,
    2
   ],
-  "actions": 221,
-  "turns": 31,
+  "actions": 252,
+  "turns": 34,
   "result": "p1:level4",
-  "logHash": "5df452f2838a96e14385e13f2220dffe",
-  "discardPrompts": 11
+  "logHash": "fb4fa377a3c1bd022ad8a9422e8dfaab",
+  "discardPrompts": 9
  },
  {
   "seed": "golden-22-5",
@@ -1025,11 +1025,11 @@
    2,
    2
   ],
-  "actions": 199,
-  "turns": 30,
-  "result": "p1:level4",
-  "logHash": "f1a9342c0c568aea54daa73eda306fa4",
-  "discardPrompts": 15
+  "actions": 209,
+  "turns": 33,
+  "result": "p0:level4",
+  "logHash": "26c2f069695fe08e236d9ea475de2a26",
+  "discardPrompts": 26
  },
  {
   "seed": "golden-22-6",
@@ -1037,11 +1037,11 @@
    2,
    2
   ],
-  "actions": 200,
-  "turns": 29,
-  "result": "p1:level4",
-  "logHash": "330ea4f56a05dc9903c0a81103542885",
-  "discardPrompts": 13
+  "actions": 219,
+  "turns": 34,
+  "result": "p0:level4",
+  "logHash": "f4f5cadbced3c365501aacdef3ce427c",
+  "discardPrompts": 28
  },
  {
   "seed": "golden-22-7",
@@ -1049,11 +1049,11 @@
    2,
    2
   ],
-  "actions": 243,
-  "turns": 32,
+  "actions": 214,
+  "turns": 29,
   "result": "p1:level4",
-  "logHash": "537c7e024126055b2ae70ba76a8c0b48",
-  "discardPrompts": 15
+  "logHash": "60f8c9855be7f43aa7f0b687087b1204",
+  "discardPrompts": 12
  },
  {
   "seed": "golden-22-8",
@@ -1061,11 +1061,11 @@
    2,
    2
   ],
-  "actions": 211,
-  "turns": 32,
+  "actions": 308,
+  "turns": 39,
   "result": "p1:level4",
-  "logHash": "ab5708b9fe054cb98828463ee21e61e6",
-  "discardPrompts": 9
+  "logHash": "e5de314886695490016df0826e4d495c",
+  "discardPrompts": 17
  },
  {
   "seed": "golden-22-9",
@@ -1073,10 +1073,10 @@
    2,
    2
   ],
-  "actions": 207,
-  "turns": 29,
-  "result": "p0:level4",
-  "logHash": "798d85901b4dee94a5bd415d16644fb6",
-  "discardPrompts": 10
+  "actions": 244,
+  "turns": 35,
+  "result": "p1:level4",
+  "logHash": "68c305688b2d99ed4e291516b1155952",
+  "discardPrompts": 15
  }
 ]

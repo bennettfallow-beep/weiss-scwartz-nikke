@@ -121,6 +121,22 @@ function attempt(s: GameState, action: Action): string {
 
 const mainPlay = (player: PlayerId) => ({ kind: 'play', player, window: 'main' }) as const;
 
+/** The hand-limit discard answered one card at a time (CR 6.8.1.2). */
+const chooseEach = (player: PlayerId, cards: readonly CardId[]): Action[] => cards.map((card) => ({ type: 'CHOOSE_CARD', player, card }));
+
+/** Applies actions in turn; the result of the last one, whose events show what happened once the choice was complete. */
+function applyAll(s: GameState, actions: readonly Action[]): Extract<ReturnType<typeof applyAction>, { ok: true }> {
+  let state = s;
+  let last: ReturnType<typeof applyAction> | null = null;
+  for (const a of actions) {
+    last = applyAction(state, cat, a);
+    if (!last.ok) throw new Error(last.error.message);
+    state = last.state;
+  }
+  if (!last?.ok) throw new Error('no actions');
+  return last;
+}
+
 /** Answers every decision in the simplest way: keep the hand, never clock, pass every play timing. */
 function passiveAction(s: GameState): Action {
   const pending = s.pending;
@@ -744,7 +760,7 @@ describe('6.8 End Phase', () => {
   it('[END-01] the End Phase starts with the end-of-turn trigger, then a check timing, before the hand-limit step', () => {
     const s = makeState(cat, { players: [{ deck: deck(), hand: many('G0', 9), stage: { 1: 'Z0' } }, { deck: deck() }], start: 'end' });
     expect(flow(s.log)).toEqual(['phase:end', 'trigger:turnEnd', 'check', 'ruleAction:insufficientPower', 'move:ruleAction']);
-    expect(s.pending).toEqual({ kind: 'discard', player: 0, count: 2 });
+    expect(s.pending).toEqual({ kind: 'discard', player: 0, count: 2, picked: [] });
   });
 
   it('[END-02] with more than 7 cards the turn player chooses exactly the excess and puts those into the waiting room', () => {
@@ -752,27 +768,26 @@ describe('6.8 End Phase', () => {
       players: [{ deck: deck(), hand: ['Y0', 'Y0b', 'R0', 'B0', 'G0', 'YE0', 'RC0', 'YX', 'BX'] }, { deck: deck(), hand: many('G0', 10) }],
       start: 'end',
     });
-    expect(s.pending).toEqual({ kind: 'discard', player: 0, count: 2 });
+    expect(s.pending).toEqual({ kind: 'discard', player: 0, count: 2, picked: [] });
     const hand = s.players[0].hand;
+    // The excess is chosen one hand card at a time: every hand card, and only those, can be chosen.
     const legal = legalActions(s, cat);
-    expect(legal).toHaveLength(36); // every way to choose 2 of 9
-    for (const a of legal) {
-      expect(a.type).toBe('DISCARD');
-      if (a.type === 'DISCARD') {
-        expect(a.cards).toHaveLength(2);
-        for (const c of a.cards) expect(hand).toContain(c);
-      }
-    }
+    expect(legal.map((a) => (a.type === 'CHOOSE_CARD' ? a.card : a.type)).sort()).toEqual([...hand].sort());
     const [h0, h1, h2] = hand as [CardId, CardId, CardId];
-    expect(attempt(s, { type: 'DISCARD', player: 0, cards: [h0] })).toBe('ILLEGAL_ACTION');
-    expect(attempt(s, { type: 'DISCARD', player: 0, cards: [h0, h1, h2] })).toBe('ILLEGAL_ACTION');
-    expect(attempt(s, { type: 'DISCARD', player: 0, cards: [h0, cardIn(s, 0, 'deck', 'G0')] })).toBe('ILLEGAL_ACTION');
-    expect(attempt(s, { type: 'DISCARD', player: 1, cards: s.players[1].hand.slice(0, 2) })).toBe('NOT_YOUR_DECISION');
+    expect(attempt(s, { type: 'CHOOSE_CARD', player: 0, card: cardIn(s, 0, 'deck', 'G0') })).toBe('ILLEGAL_ACTION');
+    expect(attempt(s, { type: 'PASS', player: 0 })).toBe('ILLEGAL_ACTION');
+    expect(attempt(s, { type: 'CHOOSE_CARD', player: 1, card: s.players[1].hand[0] as CardId })).toBe('NOT_YOUR_DECISION');
+    // Exactly the excess: after two choices the cards go and the turn moves on; a card cannot be chosen twice.
+    const once = act(s, cat, ...chooseEach(0, [h0]));
+    expect(attempt(once, { type: 'CHOOSE_CARD', player: 0, card: h0 })).toBe('ILLEGAL_ACTION');
+    const twice = act(once, cat, ...chooseEach(0, [h1]));
+    expect(twice.players[0].hand).toHaveLength(7);
+    expect(twice.players[0].hand).toContain(h2);
+    expect(twice.players[0].waiting).toEqual([h0, h1]);
 
     const r0 = cardIn(s, 0, 'hand', 'R0');
     const yx = cardIn(s, 0, 'hand', 'YX');
-    const r = applyAction(s, cat, { type: 'DISCARD', player: 0, cards: [r0, yx] });
-    if (!r.ok) throw new Error(r.error.message);
+    const r = applyAll(s, chooseEach(0, [r0, yx]));
     expect(r.state.players[0].hand).toHaveLength(7);
     expect([...r.state.players[0].waiting].sort()).toEqual([r0, yx].sort());
     // The non-turn player's oversized hand is never checked: no discard for them, and the turn passed.
@@ -789,7 +804,7 @@ describe('6.8 End Phase', () => {
     expect(seven.active).toBe(1);
 
     const eight = makeState(cat, { players: [{ deck: deck(), hand: many('G0', 8) }, { deck: deck() }], start: 'end' });
-    expect(eight.pending).toEqual({ kind: 'discard', player: 0, count: 1 });
+    expect(eight.pending).toEqual({ kind: 'discard', player: 0, count: 1, picked: [] });
   });
 
   it("[END-03] after the hand-limit step, the card in the turn player's climax area goes to the waiting room; the opponent's climax stays", () => {
@@ -802,11 +817,11 @@ describe('6.8 End Phase', () => {
     });
     const yx = cardIn(s, 0, 'climax', 'YX');
     // Still in place while the hand-limit discard is being decided.
-    expect(s.pending).toEqual({ kind: 'discard', player: 0, count: 1 });
+    expect(s.pending).toEqual({ kind: 'discard', player: 0, count: 1, picked: [] });
     expect(s.players[0].climax.map((c) => c.id)).toEqual([yx]);
 
     const discard = cardIn(s, 0, 'hand', 'G0');
-    const r = applyAction(s, cat, { type: 'DISCARD', player: 0, cards: [discard] });
+    const r = applyAction(s, cat, { type: 'CHOOSE_CARD', player: 0, card: discard });
     if (!r.ok) throw new Error(r.error.message);
     const ms = moves(r.events);
     const discardAt = ms.findIndex((m) => m.card === discard && m.reason === 'handLimit');
@@ -864,15 +879,14 @@ describe('6.8 End Phase', () => {
 
   it('[END-05] a rule action in the closing (6.8.1.4) check timing sends play back to the start of the End Phase before the turn ends', () => {
     const s0 = makeState(cat, { players: [{ deck: [...deck(), 'Z0'], hand: many('G0', 9) }, { deck: deck() }], start: 'end' });
-    expect(s0.pending).toEqual({ kind: 'discard', player: 0, count: 2 });
+    expect(s0.pending).toEqual({ kind: 'discard', player: 0, count: 2, picked: [] });
     // Stand-in for an effect (M3) that puts a power-0 character on stage after the first check timing.
     const s = ops.deepClone(s0);
     ops.moveCard(s, cardIn(s, 0, 'deck', 'Z0'), { player: 0, zone: 'stage', slot: 1 }, 'effect');
-    const r = applyAction(s, cat, { type: 'DISCARD', player: 0, cards: s.players[0].hand.slice(0, 2) });
-    if (!r.ok) throw new Error(r.error.message);
+    const r = applyAll(s, chooseEach(0, s.players[0].hand.slice(0, 2)));
     const t = flow(r.events);
     expect(t.slice(0, t.indexOf('phase:stand') + 1)).toEqual([
-      'action:DISCARD',
+      'action:CHOOSE_CARD',
       'move:handLimit',
       'move:handLimit',
       'check',
@@ -895,14 +909,14 @@ describe('6.8 End Phase', () => {
     const s = ops.deepClone(s0);
     for (let i = 0; i < 3; i++) ops.moveCard(s, s.players[0].deck[s.players[0].deck.length - 1] as CardId, { player: 0, zone: 'hand' }, 'effect');
     expect(s.players[0].hand).toHaveLength(12);
-    const again = act(s, cat, { type: 'DISCARD', player: 0, cards: s.players[0].hand.slice(0, 2) });
+    const again = act(s, cat, ...chooseEach(0, s.players[0].hand.slice(0, 2)));
     expect(again.active).toBe(0);
     expect(again.turn).toBe(2);
-    expect(again.pending).toEqual({ kind: 'discard', player: 0, count: 3 });
+    expect(again.pending).toEqual({ kind: 'discard', player: 0, count: 3, picked: [] });
     expect(again.log.filter((e) => e.kind === 'phase' && e.phase === 'end')).toHaveLength(2);
     expect(again.log.filter((e) => e.kind === 'trigger' && e.condition === 'turnEnd')).toHaveLength(2);
 
-    const done = act(again, cat, { type: 'DISCARD', player: 0, cards: again.players[0].hand.slice(0, 3) });
+    const done = act(again, cat, ...chooseEach(0, again.players[0].hand.slice(0, 3)));
     expect(done.players[0].hand).toHaveLength(7);
     expect(done.active).toBe(1);
   });

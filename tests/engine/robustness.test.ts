@@ -82,7 +82,6 @@ const anyAction = fc.oneof(
       'PASS',
       'LEVEL_UP',
       'CHOOSE_INTERRUPT',
-      'DISCARD',
       'REORDER',
       'CONCEDE',
       'ATTACK',
@@ -172,11 +171,25 @@ describe('untrusted input', () => {
       { type: 'MULLIGAN', player: p },
       { type: 'MULLIGAN', player: p, discard: 5 },
       { type: 'MULLIGAN', player: p, discard: null },
-      { type: 'DISCARD', player: p, cards: {} },
-      { type: 'DISCARD', player: p },
+      // DISCARD no longer exists: the hand limit is answered one CHOOSE_CARD at a time.
+      { type: 'DISCARD', player: p, cards: [] },
     ]) {
       const v = validate(s, catalog, raw as unknown as Action);
       expect(v.ok, JSON.stringify(raw)).toBe(false);
+    }
+  });
+
+  it('rejects values that cannot be turned into text without throwing (found by the property test)', () => {
+    const s = newGame();
+    const p = s.pending?.player ?? 0;
+    const odd = [{ toString: '' }, Object.create(null) as object, Symbol('x')];
+    for (const value of odd) {
+      for (const raw of [{ type: 'REORDER', player: p, zone: value, order: [] }, { type: value, player: p }]) {
+        expect(validate(s, catalog, raw as unknown as Action).ok).toBe(false);
+        expect(applyAction(s, catalog, raw as unknown as Action).ok).toBe(false);
+      }
+      const errors = validateCatalog({ X: { ...catalog.Y0, id: value, color: value } as unknown as CardDef });
+      expect(errors.map((e) => e.code)).toEqual(expect.arrayContaining(['CATALOG_ID', 'CATALOG_COLOR']));
     }
   });
 
@@ -241,7 +254,7 @@ describe('card data the engine cannot run is rejected up front', () => {
 });
 
 describe('validation agrees with the legal action list', () => {
-  it('MULLIGAN and DISCARD: validate accepts exactly the listed sets, in any order', () => {
+  it('MULLIGAN and the hand-limit discard: validate accepts exactly what legalActions lists, in any order', () => {
     const states = [newGame('oracle-1'), makeState(catalog, { start: 'end', players: [{ hand: ['Y0', 'Y1', 'Y2', 'Y3', 'R0', 'R1', 'B0', 'B1', 'G0'], deck: ['Y0'] }, { deck: ['R0'] }] })];
     for (const s of states) {
       const p = s.pending?.player ?? 0;
@@ -250,9 +263,10 @@ describe('validation agrees with the legal action list', () => {
       fc.assert(
         fc.property(fc.subarray([...hand, 'p9-99']), fc.boolean(), (pick, dup) => {
           const cards = dup && pick.length > 0 ? [...pick, pick[0] as string] : pick;
-          const action: Action = s.pending?.kind === 'mulligan' ? { type: 'MULLIGAN', player: p, discard: cards } : { type: 'DISCARD', player: p, cards };
+          const action: Action =
+            s.pending?.kind === 'mulligan' ? { type: 'MULLIGAN', player: p, discard: cards } : { type: 'CHOOSE_CARD', player: p, card: cards[0] ?? 'p9-99' };
           expect(validate(s, catalog, action).ok).toBe(legalKeys.has(actionKey(action)));
-          const reversed: Action = action.type === 'MULLIGAN' ? { ...action, discard: [...action.discard].reverse() } : action.type === 'DISCARD' ? { ...action, cards: [...action.cards].reverse() } : action;
+          const reversed: Action = action.type === 'MULLIGAN' ? { ...action, discard: [...action.discard].reverse() } : action;
           expect(validate(s, catalog, reversed).ok).toBe(validate(s, catalog, action).ok);
         }),
         { numRuns: 400 },
