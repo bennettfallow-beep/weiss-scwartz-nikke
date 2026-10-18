@@ -2,7 +2,8 @@
 // pairing of the fuzz decks. After every action it checks the invariants,
 // that legal actions validate and illegal ones do not, that the events hide
 // what each player may not see, and every so often that a JSON copy of the
-// state plays on identically. After every game it checks that replaying the
+// state plays on identically and that each player's view stays the same when
+// the cards they cannot see are swapped around. After every game it checks that replaying the
 // actions gives the same state. A game that does not finish within the action
 // cap is a failure. Coverage counts show the rare branches really ran.
 //
@@ -32,6 +33,7 @@ import {
 import type { Action, GameEvent, GameState, RngState } from '../../src/engine';
 import { randomChoice } from '../../src/ai';
 import { fuzzCatalog as catalog, fuzzDecks } from '../helpers/fuzz-decks';
+import { shuffleHidden } from '../helpers/hidden-shuffle';
 
 const GAMES = Number(process.env.FUZZ_GAMES ?? 2000);
 const MAX_ACTIONS = 5000;
@@ -76,6 +78,18 @@ function hiddenInfoProblems(state: GameState, events: readonly GameEvent[]): str
     if (view.look && view.look.player !== viewer && view.look.cards !== null) out.push(`viewer ${viewer} sees the opponent's looked-at cards`);
     if (view.players[other(viewer)].hand !== null) out.push(`viewer ${viewer} sees the opponent's hand`);
     if (view.pending && view.pending.player !== viewer && !('redacted' in view.pending)) out.push(`viewer ${viewer} sees the opponent's decision`);
+  }
+  return out;
+}
+
+/** Swapping the definitions of cards a player cannot see must not change that player's view. */
+function peekProblems(state: GameState, seed: string, coverage: Coverage): string[] {
+  const out: string[] = [];
+  for (const viewer of [0, 1] as const) {
+    const { state: swapped, changed } = shuffleHidden(state, viewer, seed);
+    if (changed === 0) continue;
+    bump(coverage, 'view:hiddenSwapped');
+    if (JSON.stringify(projectView(swapped, viewer, { catalog })) !== JSON.stringify(projectView(state, viewer, { catalog }))) out.push(`viewer ${viewer}'s view depends on cards they cannot see`);
   }
   return out;
 }
@@ -142,6 +156,7 @@ export function playGame(seed: string, pairing: [number, number], coverage: Cove
         if (!a.ok || !b.ok || stateHash(a.state) !== stateHash(b.state)) violations.push(`action ${i}: JSON copy of the state diverged`);
       }
     }
+    if (i % ROUND_TRIP_EVERY === 0) violations.push(...peekProblems(result.state, `${seed}-${i}`, coverage).map((p) => `action ${i}: ${p}`));
     tally(coverage, result.events, state);
     violations.push(...hiddenInfoProblems(result.state, result.events).map((p) => `action ${i}: ${p}`));
     violations.push(...checkInvariants(result.state, catalog).map((v) => `action ${i}: ${v}`));
@@ -180,7 +195,7 @@ export function fuzzFile(first: number): void {
 
   it('reached every combat branch', () => {
     // Common branches must show up in any run; the rest need enough games to be reached reliably.
-    const always = ['attack:direct', 'attack:frontal', 'attack:side', 'event:damageCanceled', 'event:damageTaken', 'event:battle', 'auto:encore', 'playTiming:counter', 'event:effectsExpired', 'result:level4'];
+    const always = ['attack:direct', 'attack:frontal', 'attack:side', 'event:damageCanceled', 'event:damageTaken', 'event:battle', 'auto:encore', 'playTiming:counter', 'event:effectsExpired', 'result:level4', 'view:hiddenSwapped'];
     const withVolume = [
       ...['soul', 'return', 'pool', 'comeback', 'draw', 'shot', 'treasure', 'gate', 'standby', 'choice'].map((i) => `icon:${i}`),
       'battle:tie',

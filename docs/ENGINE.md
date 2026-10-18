@@ -164,7 +164,7 @@ read printed values.
 | `validate(state, catalog, action)` | `{ ok }` or `{ ok: false, error: { code, message } }` |
 | `applyAction(state, catalog, action)` | Validates, applies, runs to the next decision. Returns `{ ok, state, events }`. Never mutates its input. Accepts untrusted input: anything malformed is an error value |
 | `normalizeAction(raw)` | Rebuilds an action from untrusted input, keeping only the fields its type defines |
-| `projectView(state, viewer)` | What one player may see: hidden zones as counts only, redacted log, fresh objects |
+| `projectView(state, viewer, options?)` | What one player may see: hidden zones as counts only, redacted log, fresh objects. `options.catalog` adds each stage card's current `power` and `soul`; `options.logSinceTurn` keeps only the log from that turn on |
 | `projectEvents(events, viewer)` | Redacts events for one player. **The `events` from `applyAction` are unredacted (they include the opponent's draws); always pass them through this before showing them** |
 | `checkInvariants(state, catalog)` | List of broken invariants (empty is good) |
 | `cardText(def)` / `validateCatalog(catalog)` | Card text from the ability language / catalog problems with codes and paths |
@@ -173,6 +173,12 @@ read printed values.
 
 `CONCEDE` is accepted for either player at any time. `REORDER` lets an owner reorder
 their own hand or waiting room at any time. No other zone can be reordered.
+
+The view never depends on cards the viewer cannot see. A test and the fuzz run check this
+by dealing out the hidden cards' definitions again at random (the opponent's hand, both decks
+and stocks, apart from deck cards the viewer is looking at) and comparing the views. Current
+power and soul are safe to show because conditions may count a hand or stock but never filter
+it.
 
 Logged events are frozen. Shuffles start from a canonical order, so neither the decklist
 order nor a waiting-room reorder can steer them (CR 3.2.4). The seed and generator state

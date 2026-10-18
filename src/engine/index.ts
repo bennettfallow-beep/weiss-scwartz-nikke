@@ -38,7 +38,7 @@ export {
 } from './api/game';
 export type { ApplyResult, CreateResult, ReplayResult, ValidateResult } from './api/game';
 export { canSee, HIDDEN, projectEvents, projectView } from './api/view';
-export type { GameView, PendingView, PlayerView, VisibleCard, VisibleStageCard } from './api/view';
+export type { GameView, PendingView, PlayerView, ViewOptions, VisibleCard, VisibleStageCard } from './api/view';
 export { checkInvariants } from './api/invariants';
 
 /** The rules document this engine implements. See docs/RULES_SOURCE.md. */

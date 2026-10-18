@@ -6,6 +6,7 @@
 import type {
   AttackState,
   AttackStep,
+  CardCatalog,
   CardId,
   GameEvent,
   GameResult,
@@ -20,6 +21,7 @@ import type {
 } from '../model/types';
 import { deepClone } from '../core/clone';
 import { isPublicZone } from '../core/zones';
+import { currentPower, currentSoul } from '../rules/effects';
 import { lookedInDeck } from '../rules/frame';
 
 export const HIDDEN = '?';
@@ -30,6 +32,9 @@ export interface VisibleCard {
 }
 export interface VisibleStageCard extends VisibleCard {
   orientation: Orientation;
+  /** Current power and soul (public), when the view was made with a catalog. */
+  power?: number;
+  soul?: number;
 }
 export interface PlayerView {
   player: PlayerId;
@@ -69,12 +74,19 @@ export interface GameView {
   log: GameEvent[];
 }
 
+export interface ViewOptions {
+  /** Adds each stage card's current power and soul, with every effect applied (CR 2.9, 2.10). */
+  catalog?: CardCatalog;
+  /** Keeps only the log events from this turn on. A computer player needs only recent events. */
+  logSinceTurn?: number;
+}
+
 export function canSee(viewer: PlayerId, ref: ZoneRef): boolean {
   if (isPublicZone(ref.zone)) return true;
   return ref.zone === 'hand' && ref.player === viewer;
 }
 
-function playerView(s: GameState, owner: PlayerId, viewer: PlayerId): PlayerView {
+function playerView(s: GameState, owner: PlayerId, viewer: PlayerId, catalog: CardCatalog | undefined): PlayerView {
   const p = s.players[owner];
   const show = (ids: readonly CardId[]): VisibleCard[] => ids.map((id) => ({ id, def: s.cards[id]?.def ?? HIDDEN }));
   return {
@@ -98,7 +110,14 @@ function playerView(s: GameState, owner: PlayerId, viewer: PlayerId): PlayerView
     memory: show(p.memory),
     resolution: show(p.resolution),
     climax: show(p.climax.map((c) => c.id)),
-    stage: p.stage.map((cards) => cards.map((c) => ({ id: c.id, def: s.cards[c.id]?.def ?? HIDDEN, orientation: c.orientation }))),
+    stage: p.stage.map((cards) =>
+      cards.map((c) => ({
+        id: c.id,
+        def: s.cards[c.id]?.def ?? HIDDEN,
+        orientation: c.orientation,
+        ...(catalog ? { power: currentPower(s, catalog, c.id), soul: currentSoul(s, catalog, c.id) } : {}),
+      })),
+    ),
   };
 }
 
@@ -141,8 +160,16 @@ function lookView(state: GameState, viewer: PlayerId): GameView['look'] {
   return { player: f.look.player, count: cards.length, cards: viewer === f.look.player ? cards.map((id) => ({ id, def: state.cards[id]?.def ?? HIDDEN })) : null };
 }
 
+/** Log events from `turn` on. Turns in the log never decrease, so the search starts at the end. */
+function logSince(log: readonly GameEvent[], turn: number | undefined): readonly GameEvent[] {
+  if (turn === undefined) return log;
+  let i = log.length;
+  while (i > 0 && (log[i - 1] as GameEvent).turn >= turn) i--;
+  return log.slice(i);
+}
+
 /** The game as one player may see it. Returns fresh objects; changing them cannot affect the state. */
-export function projectView(state: GameState, viewer: PlayerId): GameView {
+export function projectView(state: GameState, viewer: PlayerId, options: ViewOptions = {}): GameView {
   const pending = state.pending === null ? null : deepClone(state.pending);
   return {
     viewer,
@@ -157,7 +184,7 @@ export function projectView(state: GameState, viewer: PlayerId): GameView {
     resolving: resolvingView(state),
     look: lookView(state, viewer),
     pending: pending === null ? null : pending.player === viewer ? pending : { kind: pending.kind, player: pending.player, redacted: true },
-    players: [playerView(state, 0, viewer), playerView(state, 1, viewer)],
-    log: projectEvents(state.log, viewer),
+    players: [playerView(state, 0, viewer, options.catalog), playerView(state, 1, viewer, options.catalog)],
+    log: projectEvents(logSince(state.log, options.logSinceTurn), viewer),
   };
 }
