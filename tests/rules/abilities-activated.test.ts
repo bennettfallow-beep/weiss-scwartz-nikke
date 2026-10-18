@@ -363,7 +363,7 @@ describe('CONC-08: the player who uses an activated ability is its master', () =
     const a = go(s0, activate(0, arb, 0));
     // Player 0 is the master: they choose among their own other characters (not ARB itself, nothing of player 1's).
     expect(a.state.resolving?.master).toBe(0);
-    expect(a.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: arb, options: [y0, y1], picked: [], min: 1, max: 1 });
+    expect(a.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 'ally', card: arb, options: [y0, y1], picked: [], min: 1, max: 1 });
     // The cost came out of player 0's stock only.
     expect(defsIn(a.state, 0, 'stock')).toEqual([]);
     expect(defsIn(a.state, 1, 'stock')).toEqual(['R0', 'R0']);
@@ -449,7 +449,7 @@ describe('CONC-08: the player who uses an activated ability is its master', () =
     // Player 1 is the master even though it is player 0's turn: the choice is theirs, among their own characters.
     expect(a.state.active).toBe(0);
     expect(a.state.resolving?.master).toBe(1);
-    expect(a.state.pending).toEqual({ kind: 'pick', player: 1, purpose: 'target', card: ral, options: [r0, ral], picked: [], min: 1, max: 1 });
+    expect(a.state.pending).toEqual({ kind: 'pick', player: 1, purpose: 'target', as: 'mate', card: ral, options: [r0, ral], picked: [], min: 1, max: 1 });
     expect(legalActions(a.state, cat, 0)).toEqual([]);
     expect(attempt(a.state, choose(0, idAt(s0, 0, 1)))).toBe('NOT_YOUR_DECISION');
 
@@ -470,7 +470,7 @@ describe('CONC-08: the player who uses an activated ability is its master', () =
 
     const a = go(s0, activate(0, arb, 0));
     expect(a.state.resolving?.master).toBe(0);
-    expect(a.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: arb, options: [y0, y1], picked: [], min: 1, max: 1 });
+    expect(a.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 'ally', card: arb, options: [y0, y1], picked: [], min: 1, max: 1 });
     expect(defsIn(a.state, 0, 'stock')).toEqual([]);
     expect(defsIn(a.state, 1, 'stock')).toEqual(['R0', 'R0']);
 

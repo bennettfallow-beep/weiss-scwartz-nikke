@@ -86,7 +86,9 @@ export function frameTask(s: GameState, catalog: CardCatalog): void {
 // --- Prompts ---------------------------------------------------------------------
 
 function ask(s: GameState, f: AbilityFrame, player: PlayerId, purpose: PickPurpose, options: CardId[], min: number, max: number): void {
-  s.pending = { kind: 'pick', player, purpose, card: f.source.card, options, picked: [], min, max };
+  // A target pick names the choice it makes, so a player can read what the ability does to it.
+  const as = f.wait?.for === 'target' ? { as: f.wait.as } : {};
+  s.pending = { kind: 'pick', player, purpose, card: f.source.card, options, picked: [], min, max, ...as };
 }
 
 /**

@@ -385,9 +385,10 @@ export type Pending =
   | { kind: 'autoOrder'; player: PlayerId; options: StandbyAuto[] }
   /**
    * An ability asks for cards, one CHOOSE_CARD at a time. PASS ends the choice
-   * once at least `min` are picked. `card` is the card whose ability asks.
+   * once at least `min` are picked. `card` is the card whose ability asks. A `target` pick
+   * also gives `as`, the name later steps of the ability use for the chosen cards.
    */
-  | { kind: 'pick'; player: PlayerId; purpose: PickPurpose; card: CardId; options: CardId[]; picked: CardId[]; min: number; max: number }
+  | { kind: 'pick'; player: PlayerId; purpose: PickPurpose; card: CardId; options: CardId[]; picked: CardId[]; min: number; max: number; as?: string }
   /** An ability asks a yes/no question: ACCEPT or PASS. */
   | { kind: 'optional'; player: PlayerId; purpose: OptionalPurpose; card: CardId };
 

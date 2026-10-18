@@ -302,7 +302,7 @@ describe('PLAY-09: targets are chosen while the effect resolves, from what exist
     const r = go(s0, activate(0, snp, 0));
     // Cost, then "played", then the effect reaches the choose instruction and only now asks.
     expect(trace(r.state, r.events)).toEqual(['action:ACTIVATE:0', 'move:cost:G0:0.stock->0.waiting', 'rest:SNP', 'ability:0:SNP#0:activated', 'effect:0:choose']);
-    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: snp, options: [y0, b1], picked: [], min: 1, max: 1 });
+    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 'mark', card: snp, options: [y0, b1], picked: [], min: 1, max: 1 });
     expect(r.state.resolving?.source.card).toBe(snp);
 
     const done = go(r.state, choose(0, b1));
@@ -328,7 +328,7 @@ describe('PLAY-09: targets are chosen while the effect resolves, from what exist
       'effect:0:choose',
     ]);
     // Y0 was on the stage when the event was played but is gone when the choice is reached.
-    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: prg, options: [b1, r1], picked: [], min: 1, max: 1 });
+    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 'mark', card: prg, options: [b1, r1], picked: [], min: 1, max: 1 });
     expect(attempt(r.state, choose(0, y0))).toBe('ILLEGAL_ACTION');
     expect(locate(r.state, prg)?.zone).toBe('resolution');
 
@@ -375,7 +375,7 @@ describe('PLAY-09: targets are chosen while the effect resolves, from what exist
     const r = go(s0, activate(0, sac, 0));
     expect(only(trace(r.state, r.events), 'move', 'ability', 'effect')).toEqual(['move:cost:SAC:0.stage->0.waiting', 'ability:0:SAC#0:activated', 'effect:0:choose']);
     // SAC was one of "your characters" when the ability was activated, but not when the choice is reached.
-    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: sac, options: [y0, b1], picked: [], min: 1, max: 1 });
+    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 'ally', card: sac, options: [y0, b1], picked: [], min: 1, max: 1 });
     expect(attempt(r.state, choose(0, sac))).toBe('ILLEGAL_ACTION');
 
     const done = go(r.state, choose(0, b1));
@@ -398,12 +398,12 @@ describe('PLAY-10: a fixed number of targets must be chosen as far as possible',
     const r1 = idAt(s0, 1, 3);
 
     const r = go(s0, playEvent(0, pin));
-    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: pin, options: [y0, b1, r1], picked: [], min: 2, max: 2 });
+    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 'pair', card: pin, options: [y0, b1, r1], picked: [], min: 2, max: 2 });
     expect(offers(r.state)).toEqual(['CHOOSE_CARD:B1', 'CHOOSE_CARD:R1', 'CHOOSE_CARD:Y0']);
     expect(attempt(r.state, pass(0))).toBe('ILLEGAL_ACTION');
 
     const one = go(r.state, choose(0, y0));
-    expect(one.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: pin, options: [b1, r1], picked: [y0], min: 2, max: 2 });
+    expect(one.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 'pair', card: pin, options: [b1, r1], picked: [y0], min: 2, max: 2 });
     expect(offers(one.state)).toEqual(['CHOOSE_CARD:B1', 'CHOOSE_CARD:R1']);
     expect(attempt(one.state, pass(0))).toBe('ILLEGAL_ACTION');
     // The same character cannot fill both picks.
@@ -509,7 +509,7 @@ describe('PLAY-10: a fixed number of targets must be chosen as far as possible',
     const [y0, b0, b1] = [idAt(s0, 1, 1), idAt(s0, 1, 2), idAt(s0, 1, 3)];
 
     const r = go(s0, playEvent(0, blu));
-    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: blu, options: [b0, b1], picked: [], min: 1, max: 1 });
+    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 'blue', card: blu, options: [b0, b1], picked: [], min: 1, max: 1 });
     expect(offers(r.state)).toEqual(['CHOOSE_CARD:B0', 'CHOOSE_CARD:B1']);
     expect(attempt(r.state, pass(0))).toBe('ILLEGAL_ACTION');
     expect(attempt(r.state, choose(0, y0))).toBe('ILLEGAL_ACTION');
@@ -531,7 +531,7 @@ describe('PLAY-11: "up to N" allows any number of targets from zero to N', () =>
     const [y0, b1, r1] = [idAt(s0, 1, 1), idAt(s0, 1, 2), idAt(s0, 1, 3)];
 
     const r = go(s0, playEvent(0, upt));
-    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: upt, options: [y0, b1, r1], picked: [], min: 0, max: 2 });
+    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 'net', card: upt, options: [y0, b1, r1], picked: [], min: 0, max: 2 });
     expect(offers(r.state)).toEqual(['CHOOSE_CARD:B1', 'CHOOSE_CARD:R1', 'CHOOSE_CARD:Y0', 'PASS']);
 
     const none = go(r.state, pass(0));
@@ -570,7 +570,7 @@ describe('PLAY-11: "up to N" allows any number of targets from zero to N', () =>
     const upt = cardIn(lone, 0, 'hand', 'UPT');
     const y0 = idAt(lone, 1, 1);
     const r = go(lone, playEvent(0, upt));
-    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: upt, options: [y0], picked: [], min: 0, max: 1 });
+    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 'net', card: upt, options: [y0], picked: [], min: 0, max: 1 });
     const skipped = go(r.state, pass(0));
     expect(currentPower(skipped.state, cat, y0)).toBe(2000);
     expect(skipped.events.some((e) => e.kind === 'chosen' || e.kind === 'modifier')).toBe(false);
@@ -939,7 +939,7 @@ describe('PLAY-14: the master of the card or ability carries out what the text d
     ]);
     // The choice belongs to P1, the master, though it is P0's turn.
     expect(battle.state.active).toBe(0);
-    expect(battle.state.pending).toEqual({ kind: 'pick', player: 1, purpose: 'target', card: wrd, options: [b0, wrd], picked: [], min: 1, max: 1 });
+    expect(battle.state.pending).toEqual({ kind: 'pick', player: 1, purpose: 'target', as: 'ally', card: wrd, options: [b0, wrd], picked: [], min: 1, max: 1 });
     expect(attempt(battle.state, choose(0, b0))).toBe('NOT_YOUR_DECISION');
 
     const chosen = go(battle.state, choose(1, b0));
@@ -983,7 +983,7 @@ describe('PLAY-14: the master of the card or ability carries out what the text d
     expect(counter.state.pending).toEqual({ kind: 'play', player: 1, window: 'counter' });
 
     const r = go(counter.state, playEvent(1, rce));
-    expect(r.state.pending).toEqual({ kind: 'pick', player: 1, purpose: 'target', card: rce, options: [b0, g0], picked: [], min: 1, max: 1 });
+    expect(r.state.pending).toEqual({ kind: 'pick', player: 1, purpose: 'target', as: 'ally', card: rce, options: [b0, g0], picked: [], min: 1, max: 1 });
     expect(attempt(r.state, choose(0, g0))).toBe('NOT_YOUR_DECISION');
 
     const done = go(r.state, choose(1, g0));

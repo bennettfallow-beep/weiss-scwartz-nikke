@@ -427,7 +427,7 @@ describe('ABL-01: activated abilities are used in a play timing by paying their 
     expect(activations(s0)).toEqual(['ACTIVATE:ACT:0', 'ACTIVATE:PICK:0']);
 
     const mid = go(s0, activate(0, pick)).state;
-    expect(mid.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: pick, options: [pick, y0, act], picked: [], min: 1, max: 1 });
+    expect(mid.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 't', card: pick, options: [pick, y0, act], picked: [], min: 1, max: 1 });
     expect(attempt(mid, activate(0, act))).toBe('ILLEGAL_ACTION');
     expect(offers(mid)).toEqual(['CHOOSE_CARD:ACT', 'CHOOSE_CARD:PICK', 'CHOOSE_CARD:Y0']);
 
@@ -698,7 +698,7 @@ describe('CARD-03: quoted names refer to cards with exactly that name', () => {
 
     const r = go(s0, { type: 'PLAY_EVENT', player: 0, card: ev });
     // "Yellow Scout Elite", "Yellow Ranger" and "yellow scout" are not "Yellow Scout".
-    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: ev, options: [y0, y0b], picked: [], min: 1, max: 1 });
+    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 'x', card: ev, options: [y0, y0b], picked: [], min: 1, max: 1 });
     const done = go(r.state, choose(0, y0b));
     expect(abilityTrace(done.state, done.events)).toEqual(['chosen:Y0b', 'effect:EVNAME:power', 'modifier:Y0b:power:1000']);
     expect(currentPower(done.state, cat, y0b)).toBe(3500);
@@ -736,7 +736,7 @@ describe("CARD-07: 'character' alone means a character on the stage", () => {
     const ev = cardIn(s0, 0, 'hand', 'EVPICK');
     const [y0, b0] = [cardIn(s0, 0, 'stage', 'Y0'), cardIn(s0, 0, 'stage', 'B0')];
     const r = go(s0, { type: 'PLAY_EVENT', player: 0, card: ev });
-    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: ev, options: [y0, b0], picked: [], min: 1, max: 1 });
+    expect(r.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 'x', card: ev, options: [y0, b0], picked: [], min: 1, max: 1 });
 
     const none = mainPhase({ ...elsewhere, hand: ['EVPICK', 'Y1'] });
     const rn = go(none, { type: 'PLAY_EVENT', player: 0, card: cardIn(none, 0, 'hand', 'EVPICK') });

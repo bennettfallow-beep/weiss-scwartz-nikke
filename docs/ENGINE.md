@@ -122,6 +122,8 @@ How they run:
   ones included (CR 2.8.2.1). The opponent's Counter Step allows only counter-icon ones.
 - **Choices.**
   - A `pick` prompt asks for cards one CHOOSE_CARD at a time. PASS ends it once the minimum is met.
+    A `target` pick also gives `as`, the name the ability's later steps use for the chosen cards,
+    so a player (or the computer) can read what the ability will do to them.
   - A fixed number must be picked as far as possible (CR 8.6.3.1). "Up to" allows none.
   - A filtered pick from a hidden zone (hand, deck) may find nothing (CR 8.6.3.1.4, owner decision
     2026-10-16).

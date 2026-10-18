@@ -409,7 +409,7 @@ describe('ABL-06: an effect that is active only under a condition is inactive wh
     const spt = idAt(a.state, 0, 3);
     expect(from(trace(a.state, a.events), 'ability:0:SPT#0:automatic')).toEqual(['ability:0:SPT#0:automatic', 'effect:0:draw', 'move:draw:B1:0.deck->0.hand', 'effect:0:if', 'effect:0:choose']);
     // "Other" characters: SPT itself is not an option.
-    expect(a.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', card: spt, options: [y0, y1], picked: [], min: 1, max: 1 });
+    expect(a.state.pending).toEqual({ kind: 'pick', player: 0, purpose: 'target', as: 'ally', card: spt, options: [y0, y1], picked: [], min: 1, max: 1 });
 
     const b = go(a.state, choose(0, y1));
     expect(trace(b.state, b.events)).toEqual(['action:CHOOSE_CARD:0', 'chosen:0:Y1', 'effect:0:power', 'mod:Y1:power+2000', 'playTiming:0:main']);
@@ -766,7 +766,7 @@ describe('CONC-07: an effect belongs to the master of the ability that generated
     expect(from(trace(a.state, a.events), 'battle:MRR')).toEqual(['battle:MRR', 'check', 'ability:1:MRR#0:automatic', 'effect:1:choose']);
     expect(a.state.resolving?.master).toBe(1);
     // "Your other characters" are player 1's, not MRR itself and nothing of the turn player's.
-    expect(a.state.pending).toEqual({ kind: 'pick', player: 1, purpose: 'target', card: mrr, options: [r0, r1], picked: [], min: 1, max: 1 });
+    expect(a.state.pending).toEqual({ kind: 'pick', player: 1, purpose: 'target', as: 'ally', card: mrr, options: [r0, r1], picked: [], min: 1, max: 1 });
 
     const b = go(a.state, choose(1, r1));
     expect(upTo(trace(b.state, b.events), 'taken:0:from:MRR')).toEqual([
