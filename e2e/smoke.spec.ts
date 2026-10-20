@@ -112,3 +112,34 @@ test('card detail opens from a long press', async ({ page }, info) => {
   await expect(page.getByTestId('card-detail')).toHaveCount(0);
   expect(problems).toEqual([]);
 });
+
+test('a climax on the board is a full-size card a player can tap and a screen reader can reach', async ({ page }, info) => {
+  test.setTimeout(120_000);
+  const problems = watchProblems(page);
+  await fixedEntropy(page, 5);
+  await startGame(page, 'computer', '?fast=1');
+  let played = false;
+  for (let i = 0; i < 300 && !played; i++) {
+    await expect(page.getByTestId('choice-0').or(page.getByTestId('gameover-screen')).first()).toBeVisible();
+    if (await page.getByTestId('gameover-screen').isVisible()) break;
+    const title = (await page.getByTestId('prompt-title').textContent()) ?? '';
+    if (title === 'Climax phase' && (await page.getByTestId('group-0').count()) > 0) {
+      await page.getByTestId('group-0').click();
+      await page.getByText('Play as your climax', { exact: true }).click();
+      played = true;
+      break;
+    }
+    await page.getByTestId('choice-0').click();
+  }
+  expect(played, 'a climax was played').toBe(true);
+  const tile = page.getByTestId('you-climax');
+  await tile.scrollIntoViewIfNeeded();
+  await expect(tile).toBeVisible();
+  await expect(tile).toHaveAttribute('role', 'button');
+  const box = await tile.boundingBox();
+  expect(box && box.height >= 44 && box.width >= 44, `climax tile ${JSON.stringify(box)}`).toBe(true);
+  await shot(page, info, 'board-climax');
+  await tile.click();
+  await expect(page.getByTestId('card-detail')).toBeVisible();
+  expect(problems).toEqual([]);
+});

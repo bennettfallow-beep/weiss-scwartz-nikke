@@ -20,7 +20,7 @@ interface Props {
   active?: boolean;
   /** Selected: its choices are in the tray. */
   selected?: boolean;
-  /** Mulligan: marked to put back. */
+  /** Mulligan: marked to go to the waiting room. */
   marked?: boolean;
   width?: number;
   testID?: string;
@@ -37,8 +37,8 @@ export function CardTile({ tile, onPress, onLongPress, active = false, selected 
   // Changes are written out, not only colored.
   const powerDiff = stage ? stage.powerNow - (tile.power ?? 0) : 0;
   const soulDiff = stage ? stage.soulNow - (tile.soul ?? 0) : 0;
-  const flags = [selected ? 'Selected' : '', marked ? 'Put back' : '', active && !selected ? 'Can act' : ''].filter((x) => x !== '');
-  const label = [tile.name, tile.color, tile.kind, stats.join(', '), power !== undefined ? `power ${power}` : '', soul !== undefined ? `soul ${soul}` : '', stage ? stage.orientation : '', ...flags]
+  const flags = [selected ? 'Selected' : '', marked ? 'Discard' : '', active && !selected ? 'Can act' : ''].filter((x) => x !== '');
+  const label = [tile.name, tile.color, tile.kind, stats.join(', '), power !== undefined ? `power ${power}${powerDiff !== 0 ? ` (${powerDiff > 0 ? 'plus' : 'minus'} ${Math.abs(powerDiff)})` : ''}` : '', soul !== undefined ? `soul ${soul}${soulDiff !== 0 ? ` (${soulDiff > 0 ? 'plus' : 'minus'} ${Math.abs(soulDiff)})` : ''}` : '', stage ? stage.orientation : '', ...flags]
     .filter((x) => x !== '')
     .join(', ');
   return (

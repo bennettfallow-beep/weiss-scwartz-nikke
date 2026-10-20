@@ -179,7 +179,8 @@ export function normalizeSave(
     if (typeof next !== 'number' || next <= version) return fail('SAVE_VERSION_UNKNOWN', 'a save upgrade did not advance the version', 'version');
     version = next;
   }
-  if (r.rules !== RULES_SOURCE.version) return fail('SAVE_RULES', `the save was made with rules version ${String(r.rules)}`, 'rules');
+  // Never turn an untrusted value into text with String(): deeply nested data would overflow the stack.
+  if (r.rules !== RULES_SOURCE.version) return fail('SAVE_RULES', `the save was made with rules version ${typeof r.rules === 'string' ? r.rules.slice(0, 40) : 'unknown'}`, 'rules');
   if (typeof r.catalog !== 'string' || !HEX32.test(r.catalog)) return fail('SAVE_FIELD', 'the card set fingerprint is missing', 'catalog');
   if (r.mode !== 'hotseat' && r.mode !== 'computer') return fail('SAVE_FIELD', 'unknown game mode', 'mode');
   const mode: Mode = r.mode;

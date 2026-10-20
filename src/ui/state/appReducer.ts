@@ -24,7 +24,7 @@ export interface AppState {
   readonly overlay: Overlay;
   /** The card whose choices the tray shows, as "zone:index" from the prompt. */
   readonly selected: string | null;
-  /** Mulligan: card ids marked to put back. */
+  /** Mulligan: card ids marked to go to the waiting room. */
   readonly mulligan: readonly string[];
   /** A short message, e.g. when a choice is no longer available. */
   readonly notice: string | null;

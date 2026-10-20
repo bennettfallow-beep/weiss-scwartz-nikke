@@ -37,7 +37,7 @@ export interface Prompt {
   /** Buttons not tied to a card (list: all of them). */
   readonly choices: readonly Choice[];
   readonly groups: readonly ChoiceGroup[];
-  /** Mulligan: the hand cards that can be put back. */
+  /** Mulligan: the hand cards that can go to the waiting room. */
   readonly subset: readonly CardTile[] | null;
   /** Cards already chosen in a multi-card pick, by name. */
   readonly picked: readonly string[];

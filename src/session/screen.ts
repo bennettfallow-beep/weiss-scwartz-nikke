@@ -216,7 +216,7 @@ export function logFor(s: Session, limit = 400): LogLine[] {
   return logLines(s.game.state.log, names).slice(-limit);
 }
 
-/** The mulligan button for putting back exactly `discard` (card ids from the prompt), or null if that is not a legal choice. */
+/** The mulligan button for discarding exactly `discard` (card ids from the prompt) to the waiting room, or null if that is not a legal choice. */
 export function mulliganChoice(s: Session, discard: readonly CardId[]): Choice | null {
   const p = viewer(s);
   if (p === null || toAct(s) !== p || s.game.state.pending?.kind !== 'mulligan') return null;

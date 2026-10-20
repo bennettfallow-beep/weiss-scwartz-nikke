@@ -75,7 +75,7 @@ export function ActionTray({ prompt, waiting, canUndo, selected, mulligan, mulli
                     <CardTile key={t.id} tile={t} marked={mulligan.includes(t.id)} onPress={() => onToggleMulligan(t.id)} onLongPress={() => onCard(t.defId)} testID={`mulligan-card-${i}`} />
                   ))}
                 </ScrollView>
-                <Text style={styles.hint}>Tap cards to mark them to put back.</Text>
+                <Text style={styles.hint}>Tap cards to mark them for the waiting room.</Text>
                 <Button label={mulliganChoice?.label ?? 'Choose cards'} tone="primary" disabled={!mulliganChoice} onPress={() => mulliganChoice && onChoose(mulliganChoice.key)} testID="choice-0" />
               </>
             ) : null}

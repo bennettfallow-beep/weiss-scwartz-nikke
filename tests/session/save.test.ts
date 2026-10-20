@@ -128,6 +128,13 @@ describe('saves', () => {
     expect(r.ok && r.save).toEqual(save);
   });
 
+  it('a deeply nested value in a checked field gives its code, not a crash', () => {
+    let deep: unknown = [];
+    for (let i = 0; i < 200_000; i++) deep = [deep];
+    const r = normalizeSave({ ...save, rules: deep });
+    expect(r.ok ? 'ok' : r.error.code).toBe('SAVE_RULES');
+  });
+
   it('a long name is cut and trimmed the same way every time', () => {
     const name = `${'a'.repeat(39)} b`;
     const once = normalizeSave({ ...save, seats: [{ ...save.seats[0], name }, save.seats[1]] });

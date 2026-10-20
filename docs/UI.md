@@ -39,7 +39,7 @@ Your own card file, card pictures, saving a game and the import screen come in M
 The panel at the bottom always says what you are deciding, in words. Every button stands for
 one move the rules allow at that moment, and every allowed move has a button.
 
-- **Mulligan:** tap cards to mark them, then press **Put back N cards and draw N**, or
+- **Mulligan:** tap cards to mark them for the waiting room, then press **Discard N cards and draw N**, or
   **Keep this hand**.
 - **Main phase:** tap a highlighted card, in your hand or on the stage, or pick it from the
   list. Its choices appear, such as "Play to Center" or "Use ability". **End main phase**
@@ -92,8 +92,8 @@ asks before you leave a game in progress.
 
 ## The private web link
 
-The web version is a set of static files built from this repository (`npm run build:web`).
-Only the original starter cards are in it. To try it on your phone:
+The web version is a set of static files that Vercel builds from this repository
+(`npm run build:web`). Only the original starter cards are in it. To try it on your phone:
 
 1. Sign in to Vercel in your phone's browser.
 2. Open the link you were sent.
@@ -143,5 +143,7 @@ A visitor who is not signed in gets a login page, not the app.
     and are never shown on screen. Someone with browser developer tools could still read
     them; nothing pretends otherwise.
   - Replays can be exported only once a game is over.
-- **Deploy:** `public/vercel.json` is copied into `dist/`. It routes every path to the app,
-  caches the hashed bundles, and asks search engines not to index the site.
+- **Deploy:** the root `vercel.json` tells Vercel how to build the app from GitHub. It routes
+  every path to the app, caches the hashed bundles, and asks search engines not to index the
+  site. It also stops `main` from deploying, so nothing reaches the unprotected production
+  address. See docs/TOOLCHAIN.md.

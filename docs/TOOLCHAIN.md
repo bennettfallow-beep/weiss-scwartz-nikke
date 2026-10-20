@@ -43,9 +43,15 @@ not taken from memory. `package-lock.json` is the exact record.
 
 ## Deploying the web build (M5)
 
-`public/vercel.json` is copied into `dist/` by `expo export`. It routes every path to
-`index.html`, caches the hashed bundles under `_expo/static/`, and sets `noindex`,
-`no-referrer` and `nosniff` headers. The tested `dist/` itself is uploaded as a Vercel preview
-deployment, with no build step on Vercel. Production is never used, because Standard
-Deployment Protection does not cover the production domain. A request that is not signed in
-must be refused before a link is shared.
+Vercel builds the app from this GitHub repository. The root `vercel.json` sets the install
+(`npm ci`), build (`npm run build:web`) and output (`dist`) steps. It also:
+
+- routes every path to `index.html`;
+- caches the hashed bundles under `_expo/static/`;
+- sets the `noindex`, `no-referrer` and `nosniff` headers;
+- turns off automatic deployments for `main` (`git.deploymentEnabled`).
+
+Only preview deployments from other branches are used, behind Vercel Authentication (Standard
+Protection). Production is never used, because Standard Protection does not cover the
+production domain. Before any link is shared, a request that is not signed in must be refused.
+The Vercel project is named `frontline-duel`, so the address stays neutral.

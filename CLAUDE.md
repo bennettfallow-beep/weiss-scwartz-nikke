@@ -42,6 +42,8 @@ instead of Expo's API, which this cloud container cannot reach.
   never `game`, `seed`, `rng` or `botRng`); `tests/architecture/ui-boundary.test.ts` checks this.
 - Randomness in the app comes only from `src/ui/platform/entropy.ts` (expo-crypto): separate fresh
   seeds for the game and for the computer player. `?fast=1` (web) is for tests only.
+- Vercel builds preview links from this repo using the root `vercel.json`. `main` never deploys,
+  and links are shared only after an unauthenticated request is refused (docs/TOOLCHAIN.md).
 
 ## Rules traceability
 
