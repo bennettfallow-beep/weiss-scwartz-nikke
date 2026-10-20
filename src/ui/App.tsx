@@ -36,7 +36,9 @@ function Root() {
   const over = useMemo(() => (inGame && session ? gameOverScreen(session) : null), [inGame, session]);
   const screen = useMemo(() => (inGame && session && !handoff && !over ? screenFor(session) : null), [inGame, session, handoff, over]);
   const mulligan = useMemo(() => (session && screen?.prompt?.layout === 'subset' ? mulliganChoice(session, state.mulligan) : null), [session, screen, state.mulligan]);
-  useWebGuards(inGame && over === null);
+  // Leaving the page loses a game in progress, also while How to play is open over it.
+  const gameOn = useMemo(() => session !== null && gameOverScreen(session) === null, [session]);
+  useWebGuards(gameOn);
 
   const start = (mode: Mode, decks: readonly [string, string]) => {
     let seeds: { gameSeed: string; botSeed: string };
@@ -102,7 +104,7 @@ function Root() {
 
   return (
     <SafeAreaView style={styles.fill} edges={['top', 'bottom', 'left', 'right']}>
-      {state.notice && route.name !== 'game' ? (
+      {state.notice && !screen ? (
         <Text style={styles.notice} testID="notice" onPress={() => dispatch({ type: 'dismissNotice' })}>
           {state.notice}
         </Text>

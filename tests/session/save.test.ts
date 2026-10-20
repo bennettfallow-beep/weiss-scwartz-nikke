@@ -119,6 +119,23 @@ describe('saves', () => {
     for (const code of [...seen, 'SAVE_NOT_JSON', 'SAVE_TOO_LARGE', 'SAVE_CATALOG', 'SAVE_REPLAY', 'SAVE_SEED']) expect(SAVE_ERROR_CODES).toContain(code);
   });
 
+  it('deeply nested junk in a file is dropped without crashing', () => {
+    let deep: unknown = 1;
+    for (let i = 0; i < 20_000; i++) deep = { a: deep };
+    const withJunk = { ...save, note: deep, seats: [{ ...save.seats[0], extra: deep }, save.seats[1]] };
+    const r = normalizeSave(withJunk);
+    expect(r.ok && r.changed).toBe(true);
+    expect(r.ok && r.save).toEqual(save);
+  });
+
+  it('a long name is cut and trimmed the same way every time', () => {
+    const name = `${'a'.repeat(39)} b`;
+    const once = normalizeSave({ ...save, seats: [{ ...save.seats[0], name }, save.seats[1]] });
+    expect(once.ok && once.save.seats[0].name).toBe('a'.repeat(39));
+    const twice = once.ok ? normalizeSave(once.save) : null;
+    expect(twice?.ok && twice.changed).toBe(false);
+  });
+
   it('a migration chain upgrades older saves', () => {
     const old = { ...save, version: 0, seats: undefined, players: save.seats };
     const migrations = { 0: (r: Record<string, unknown>) => ({ ...r, version: 1, seats: r.players }) };
@@ -150,7 +167,13 @@ describe('replays', () => {
     expect(r.replay.result).toEqual(end.game.state.result);
     expect(checkReplay(r.replay, [cards])).toEqual({ ok: true });
     const norm = normalizeSave(JSON.parse(JSON.stringify(r.replay)), { kind: 'replay' });
+    expect(norm.ok).toBe(true);
     expect(norm.ok && norm.changed).toBe(false);
+    // A replay must end with the result it records, and must be a finished game.
+    const flipped = { ...r.replay, result: r.replay.result.kind === 'win' ? { ...r.replay.result, winner: r.replay.result.loser, loser: r.replay.result.winner } : r.replay.result };
+    if (r.replay.result.kind === 'win') expect((checkReplay(flipped, [cards]) as { error: { code: string; path: string } }).error).toMatchObject({ code: 'SAVE_REPLAY', path: 'result' });
+    const unfinished = { ...toSave(s), format: 'frontline-duel/replay' as const, result: { kind: 'win' as const, winner: 0 as const, loser: 1 as const, reason: 'level4' as const } };
+    expect((checkReplay(unfinished, [cards]) as { error: { code: string; path: string } }).error).toMatchObject({ code: 'SAVE_REPLAY', path: 'result' });
     expect((normalizeSave(r.replay) as { error: { code: string } }).error.code).toBe('SAVE_FORMAT');
     const tampered = { ...r.replay, actions: r.replay.actions.slice(0, -1) };
     expect((checkReplay(tampered, [cards]) as { error: { code: string } }).error.code).toBe('SAVE_REPLAY');

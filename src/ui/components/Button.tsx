@@ -11,16 +11,18 @@ interface Props {
   disabled?: boolean;
   /** Shown on the right, e.g. "✓ Selected" (never color alone). */
   badge?: string | undefined;
+  /** What a screen reader says, when the visible label needs context (e.g. which seat a deck is for). */
+  accessibilityLabel?: string | undefined;
 }
 
 /** A labelled button, at least 44 points tall. */
-export function Button({ label, detail, onPress, tone = 'neutral', testID, disabled = false, badge }: Props) {
+export function Button({ label, detail, onPress, tone = 'neutral', testID, disabled = false, badge, accessibilityLabel }: Props) {
   const style = tone === 'primary' ? styles.primary : tone === 'danger' ? styles.danger : tone === 'quiet' ? styles.quiet : styles.neutral;
   const ink = tone === 'primary' ? styles.primaryInk : tone === 'danger' ? styles.dangerInk : styles.ink;
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={detail ? `${label}. ${detail}` : label}
+      accessibilityLabel={accessibilityLabel ?? (detail ? `${label}. ${detail}` : label)}
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}

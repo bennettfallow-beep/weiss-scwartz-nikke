@@ -8,7 +8,8 @@ function isStage(t: Tile | StageTile): t is StageTile {
 }
 
 function n(x: number): string {
-  return String(x).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const sign = x < 0 ? '-' : '';
+  return sign + String(Math.abs(x)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 interface Props {
@@ -33,6 +34,9 @@ export function CardTile({ tile, onPress, onLongPress, active = false, selected 
   if (tile.cost !== undefined) stats.push(`Cost ${tile.cost}`);
   const power = stage ? stage.powerNow : tile.power;
   const soul = stage ? stage.soulNow : tile.soul;
+  // Changes are written out, not only colored.
+  const powerDiff = stage ? stage.powerNow - (tile.power ?? 0) : 0;
+  const soulDiff = stage ? stage.soulNow - (tile.soul ?? 0) : 0;
   const flags = [selected ? 'Selected' : '', marked ? 'Put back' : '', active && !selected ? 'Can act' : ''].filter((x) => x !== '');
   const label = [tile.name, tile.color, tile.kind, stats.join(', '), power !== undefined ? `power ${power}` : '', soul !== undefined ? `soul ${soul}` : '', stage ? stage.orientation : '', ...flags]
     .filter((x) => x !== '')
@@ -65,7 +69,9 @@ export function CardTile({ tile, onPress, onLongPress, active = false, selected 
       {power !== undefined ? (
         <Text style={[styles.power, stage?.changed && styles.changed]}>
           {n(power)}
+          {powerDiff !== 0 ? ` (${powerDiff > 0 ? '+' : ''}${n(powerDiff)})` : ''}
           {soul !== undefined ? ` · Soul ${soul}` : ''}
+          {soulDiff !== 0 ? ` (${soulDiff > 0 ? '+' : ''}${soulDiff})` : ''}
         </Text>
       ) : null}
       {tile.triggers.length > 0 ? <Text style={styles.meta}>{tile.triggers.join(', ')}</Text> : null}

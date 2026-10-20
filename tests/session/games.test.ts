@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { checkInvariants, replay, stateHash } from '../../src/engine';
-import { gameOverScreen, handoffScreen, screenFor } from '../../src/session';
+import { gameOverScreen, handoffScreen, logFor, screenFor } from '../../src/session';
 import { cards, DECKS, playOut, start } from './helpers';
 
 describe('session games', () => {
@@ -53,4 +53,46 @@ describe('session games', () => {
     for (const d of Object.values(cards.decks)) expect(d).toHaveLength(50);
     expect(cards.fingerprint).toMatch(/^[0-9a-f]{32}$/);
   });
+});
+
+describe('what the player is told', () => {
+  it('"What just happened" includes the results of your own step, such as your trigger check', () => {
+    let found = 0;
+    for (let g = 0; g < 6 && found < 3; g++) {
+      playOut(start({ mode: 'computer', decks: ['yellow', 'red'], seed: `recent-${g}`, botSeed: `recent-bot-${g}` }), `recent-${g}`, ({ kind, before, after }) => {
+        if (kind !== 'human') return;
+        const a = after.game.actions.at(-1);
+        const screen = screenFor(after);
+        const checked = after.game.state.log.slice(before.game.state.log.length).some((e) => e.kind === 'triggerCheck');
+        if (a?.type !== 'ATTACK' || !checked || !screen?.prompt) return;
+        expect(screen.recent.some((l) => l.text.startsWith('Trigger check:'))).toBe(true);
+        found++;
+      });
+    }
+    expect(found).toBeGreaterThan(0);
+  }, 60_000);
+
+  it('log lines start with a capital, and a clock or mulligan is not counted as extra draws', () => {
+    playOut(start({ mode: 'hotseat', decks: ['blue', 'red'], seed: 'log-words' }), 'log-words', ({ kind, after }) => {
+      if (kind !== 'human') return;
+      for (const line of logFor(after, 30)) {
+        expect(line.text.charAt(0), line.text).toBe(line.text.charAt(0).toUpperCase());
+        expect(line.text).not.toMatch(/and drew \d/);
+      }
+    });
+  }, 60_000);
+
+  it('the player looking at deck cards is shown every one of them', () => {
+    let seen = 0;
+    for (let g = 0; g < 8 && seen < 10; g++) {
+      playOut(start({ mode: 'hotseat', decks: [DECKS[g % 3] as string, DECKS[(g + 1) % 3] as string], seed: `look-${g}` }), `look-${g}`, ({ after }) => {
+        const screen = screenFor(after);
+        const look = screen?.look;
+        if (!screen || !look || look.count === 0 || after.game.state.resolving?.look?.player !== screen.viewer) return;
+        expect(look.cards?.length).toBe(look.count);
+        seen++;
+      });
+    }
+    expect(seen).toBeGreaterThan(0);
+  }, 60_000);
 });

@@ -15,7 +15,8 @@ export const SAVE_FORMAT = 'frontline-duel/save';
 export const REPLAY_FORMAT = 'frontline-duel/replay';
 export const SAVE_VERSION = 1;
 export const MAX_SAVE_CHARS = 2_000_000;
-const MAX_ACTIONS = 20_000;
+/** Real games stay far below this (the simulator stops a game at 5,000 actions). */
+const MAX_ACTIONS = 6_000;
 const MAX_DECK = 60;
 const MAX_NAME = 40;
 const MAX_KEY = 64;
@@ -122,7 +123,7 @@ function seatOf(raw: unknown, i: number): Seat | null {
   const deck = raw.deck;
   if (kind !== 'human' && kind !== 'computer') return null;
   if (typeof deck !== 'string' || deck.length === 0 || deck.length > MAX_KEY) return null;
-  const name = typeof raw.name === 'string' ? raw.name.trim().replace(/\s+/g, ' ').slice(0, MAX_NAME) : '';
+  const name = typeof raw.name === 'string' ? raw.name.trim().replace(/\s+/g, ' ').slice(0, MAX_NAME).trim() : '';
   return { name: name.length > 0 ? name : kind === 'computer' ? 'Computer' : `Player ${i + 1}`, kind, deck };
 }
 
@@ -220,7 +221,23 @@ export function normalizeSave(
     if (!result) return fail('SAVE_FIELD', 'the replay has no result', 'result');
     save = { format: REPLAY_FORMAT, ...body, result };
   }
-  return { ok: true, save, changed: canonicalJson(save) !== canonicalJson(raw) };
+  return { ok: true, save, changed: differs(save, raw) };
+}
+
+/**
+ * True when the cleaned save differs from what was read. Unknown fields are
+ * never walked into, so deeply nested junk in a file cannot overflow the stack;
+ * any unknown field already counts as a change.
+ */
+function differs(save: SaveV1 | ReplayV1, raw: Record<string, unknown>): boolean {
+  const known = new Set(Object.keys(save));
+  if (Object.keys(raw).some((k) => !known.has(k))) return true;
+  try {
+    const picked = Object.fromEntries(Object.keys(save).map((k) => [k, raw[k]]));
+    return canonicalJson(save) !== canonicalJson(picked);
+  } catch {
+    return true;
+  }
 }
 
 export interface LoadOptions {
@@ -289,6 +306,9 @@ export function checkReplay(replay: ReplayV1, sources: readonly CardSource[]): {
   if (!cards) return fail('SAVE_CATALOG', 'the cards this game was played with are not available', 'catalog');
   const built = rebuild(replay, cards);
   if (!built.ok) return built;
+  const result = built.record.state.result;
+  if (result === null) return fail('SAVE_REPLAY', 'the replayed game is not over', 'result');
+  if (canonicalJson(result) !== canonicalJson(replay.result)) return fail('SAVE_REPLAY', 'the replay does not end with the recorded result', 'result');
   if (stateHash(built.record.state) !== replay.hash) return fail('SAVE_REPLAY', 'the replay does not end in the recorded game', 'hash');
   return { ok: true };
 }

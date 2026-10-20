@@ -1,7 +1,7 @@
 // The game log in words, for one viewer. Built from events redacted for that
 // viewer; a card is named only if the viewer has seen it.
 
-import { lookupDef, projectEvents } from '../engine';
+import { HIDDEN, lookupDef, projectEvents } from '../engine';
 import type { Action, GameEvent, GameResult, LossReason, PlayerId } from '../engine';
 import { cardName, formatNumber, ICON_NAMES, listWords, plural, SLOT_NAMES, who, whose, ZONE_NAMES } from './words';
 import type { Names } from './words';
@@ -37,9 +37,9 @@ function actionText(n: Names, a: Action): string | null {
   const p = who(n, a.player);
   switch (a.type) {
     case 'MULLIGAN':
-      return a.discard.length === 0 ? `${p} kept the opening hand.` : `${p} put back ${plural(a.discard.length, 'card')} and drew ${a.discard.length}.`;
+      return a.discard.length === 0 ? `${p} kept the opening hand.` : `${p} put ${plural(a.discard.length, 'card')} into the waiting room (mulligan).`;
     case 'CLOCK':
-      return a.card === null ? `${p} did not clock.` : `${p} clocked ${cardName(n, a.card)} and drew 2.`;
+      return a.card === null ? `${p} did not clock.` : `${p} clocked ${cardName(n, a.card)}.`;
     case 'PLAY_CHARACTER':
       return `${p} played ${cardName(n, a.card)} to ${SLOT_NAMES[a.slot]}.`;
     case 'PLAY_EVENT':
@@ -95,9 +95,14 @@ function eventText(n: Names, e: GameEvent): { kind: LogLine['kind']; text: strin
           return { kind: 'info', text: `${cardName(n, e.card)} came back with Encore${e.to.slot ? ` to ${SLOT_NAMES[e.to.slot]}` : ''}, rested.` };
         case 'icon':
         case 'effect':
-          return { kind: 'info', text: `${cardName(n, e.card)} moved to ${whose(n, e.to.player)} ${ZONE_NAMES[e.to.zone]}.` };
+          // A card moving out of sight is not named, but where it came from is public.
+          return e.card === HIDDEN
+            ? { kind: 'info', text: `A card from ${whose(n, e.from.player)} ${ZONE_NAMES[e.from.zone]} went to ${whose(n, e.to.player)} ${ZONE_NAMES[e.to.zone]}.` }
+            : { kind: 'info', text: `${cardName(n, e.card)} went to ${whose(n, e.to.player)} ${ZONE_NAMES[e.to.zone]}.` };
         case 'cost':
-          return e.from.zone === 'stock' ? { kind: 'info', text: `${who(n, e.from.player)} paid 1 stock.` } : { kind: 'info', text: `${who(n, e.from.player)} discarded ${cardName(n, e.card)} to pay a cost.` };
+          if (e.from.zone === 'stock') return { kind: 'info', text: `${who(n, e.from.player)} paid 1 stock.` };
+          if (e.from.zone === 'hand') return { kind: 'info', text: `${who(n, e.from.player)} discarded ${cardName(n, e.card)} to pay a cost.` };
+          return { kind: 'info', text: `${who(n, e.from.player)} put ${cardName(n, e.card)} from ${whose(n, e.from.player)} ${ZONE_NAMES[e.from.zone]} into the ${ZONE_NAMES[e.to.zone]} to pay a cost.` };
         case 'mulligan':
         case 'clock':
         case 'play':
@@ -176,30 +181,42 @@ function eventText(n: Names, e: GameEvent): { kind: LogLine['kind']; text: strin
   }
 }
 
-/** Joins "You drew a card." lines that follow each other into one. */
-function mergeDraws(lines: LogLine[], line: LogLine, drawer: string | null): void {
-  const last = lines[lines.length - 1];
-  if (drawer !== null && last && last.kind === 'info' && last.turn === line.turn && last.text.startsWith(`${drawer} drew `)) {
-    const m = /^(.*) drew (\d+) cards?\.$/.exec(last.text);
-    const count = m ? Number(m[2]) + 1 : 2;
-    lines[lines.length - 1] = { ...last, text: `${drawer} drew ${count} cards.` };
-    return;
-  }
-  lines.push(line);
+/** A run of draws by one player, shown as one line: "You drew A and B." or "Player 2 drew 2 cards." */
+interface DrawRun {
+  readonly index: number;
+  readonly player: PlayerId;
+  readonly turn: number;
+  readonly names: string[];
+  hidden: number;
+}
+
+function drawText(n: Names, run: DrawRun): string {
+  const drawer = who(n, run.player);
+  if (run.names.length === 0) return `${drawer} drew ${run.hidden === 1 ? 'a card' : `${run.hidden} cards`}.`;
+  const hidden = run.hidden > 0 ? [run.hidden === 1 ? 'a card' : `${run.hidden} other cards`] : [];
+  return `${drawer} drew ${listWords([...run.names, ...hidden])}.`;
 }
 
 /** Log lines for `viewer` from raw (unredacted) events. */
 export function logLines(events: readonly GameEvent[], n: Names): LogLine[] {
   const out: LogLine[] = [];
+  let run: DrawRun | null = null;
   for (const e of projectEvents(events, n.viewer)) {
+    if (e.kind === 'move' && e.reason === 'draw') {
+      const name = e.card === HIDDEN ? null : cardName(n, e.card);
+      if (!run || run.player !== e.to.player || run.turn !== e.turn || run.index !== out.length - 1) {
+        run = { index: out.length, player: e.to.player, turn: e.turn, names: [], hidden: 0 };
+        out.push({ key: String(e.seq), turn: e.turn, kind: 'info', text: '' });
+      }
+      if (name === null || name === 'a card') run.hidden++;
+      else run.names.push(name);
+      const line = out[run.index];
+      if (line) out[run.index] = { ...line, text: drawText(n, run) };
+      continue;
+    }
     const t = eventText(n, e);
     if (t === null) continue;
-    const line: LogLine = { key: String(e.seq), turn: e.turn, kind: t.kind, text: t.text };
-    // A drawn card the viewer cannot see is "a card"; several in a row read "drew 2 cards".
-    if (e.kind === 'move' && e.reason === 'draw' && cardName(n, e.card) === 'a card') {
-      const drawer = who(n, e.to.player);
-      mergeDraws(out, { ...line, text: `${drawer} drew 1 card.` }, drawer);
-    } else out.push(line);
+    out.push({ key: String(e.seq), turn: e.turn, kind: t.kind, text: capital(t.text) });
   }
   return out;
 }

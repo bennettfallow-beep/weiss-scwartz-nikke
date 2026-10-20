@@ -97,8 +97,8 @@ describe('exact wording', () => {
 
   it('deck order: the first card chosen ends up on top; the last chosen at the very bottom', () => {
     const base = { kind: 'pick', player: p, card: 'p0-00', options: [], picked: [], min: 1, max: 1 } as const;
-    expect(describePending({ ...base, purpose: 'orderTop', options: [], picked: [] }, ctx).text).toBe('Put the cards back on top of your deck one at a time. The first one you choose ends up on top.');
-    expect(describePending({ ...base, purpose: 'orderBottom', options: [], picked: [] }, ctx).text).toBe('Put the cards at the bottom of your deck one at a time. The last one you choose ends up at the very bottom.');
+    expect(describePending({ ...base, purpose: 'orderTop', options: [], picked: [] }, ctx).text).toBe('Put the cards back on top of your deck one at a time. The first one you choose ends up on top; the card you don’t choose goes lowest.');
+    expect(describePending({ ...base, purpose: 'orderBottom', options: [], picked: [] }, ctx).text).toBe('Put the cards at the bottom of your deck one at a time. The first one you choose ends up highest; the card you don’t choose goes to the very bottom.');
   });
 
   it('counts, passes and yes/no questions', () => {
@@ -111,8 +111,24 @@ describe('exact wording', () => {
     expect(describeAction({ type: 'PASS', player: p }, { kind: 'optional', player: p, purpose: 'payCost', card: 'p0-00' }, ctx).label).toBe('Don’t pay');
     expect(describeAction({ type: 'ACCEPT', player: p }, { kind: 'confirm', player: p, reason: 'draw' }, ctx).label).toBe('Draw a card');
     expect(describeAction({ type: 'MULLIGAN', player: p, discard: [] }, null, ctx).label).toBe('Keep this hand');
-    expect(describeAction({ type: 'MULLIGAN', player: p, discard: ['a', 'b'] }, null, ctx).label).toBe('Put back 2 cards and draw 2');
+    expect(describeAction({ type: 'MULLIGAN', player: p, discard: ['a', 'b'] }, null, ctx).label).toBe('Discard 2 cards and draw 2');
     expect(describeAction({ type: 'CLOCK', player: p, card: null }, null, ctx).label).toBe('Don’t clock');
+  });
+
+  it('moving into an empty position says "Move"; only two characters "Swap"', () => {
+    const occupied = (slot: number) => ({ ...ctx, view: { ...ctx.view, players: ctx.view.players.map((pl, i) => (i === p ? { ...pl, stage: pl.stage.map((c, k) => (k + 1 === slot ? [{ id: 'x', def: 'y', orientation: 'stand' as const }] : [])) } : pl)) as typeof ctx.view.players } });
+    expect(describeAction({ type: 'SWAP', player: p, a: 1, b: 4 }, null, occupied(4)).label).toBe('Move Back left to Center left');
+    expect(describeAction({ type: 'SWAP', player: p, a: 1, b: 4 }, null, occupied(1)).label).toBe('Move Center left to Back left');
+    const both = { ...ctx, view: { ...ctx.view, players: ctx.view.players.map((pl, i) => (i === p ? { ...pl, stage: pl.stage.map((_, k) => (k === 0 || k === 3 ? [{ id: `x${k}`, def: 'y', orientation: 'stand' as const }] : [])) } : pl)) as typeof ctx.view.players } };
+    expect(describeAction({ type: 'SWAP', player: p, a: 1, b: 4 }, null, both).label).toBe('Swap Center left and Back left');
+  });
+
+  it('"up to" questions are worded for the first card too', () => {
+    expect(describePending({ kind: 'optional', player: p, purpose: 'drawMore', card: 'p0-00' }, ctx).text).toBe('You may draw cards one at a time and stop whenever you like. Draw a card?');
+    expect(describePending({ kind: 'optional', player: p, purpose: 'lookMore', card: 'p0-00' }, ctx).text).toBe('You may look at cards from the top of your deck one at a time. Look at a card?');
+    expect(describeAction({ type: 'ACCEPT', player: p }, { kind: 'optional', player: p, purpose: 'lookMore', card: 'p0-00' }, ctx).label).toBe('Look at a card');
+    const looking = { ...ctx, view: { ...ctx.view, look: { player: p, count: 1, cards: [] } } };
+    expect(describeAction({ type: 'ACCEPT', player: p }, { kind: 'optional', player: p, purpose: 'lookMore', card: 'p0-00' }, looking).label).toBe('Look at one more card');
   });
 
   it('a card the reader has never seen is "a card"', () => {

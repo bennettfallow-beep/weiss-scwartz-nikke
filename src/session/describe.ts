@@ -88,7 +88,8 @@ function acceptLabel(ctx: DescribeContext, p: Pending | null): Described {
     case 'encore':
       return { label: `Encore: pay ${p.cost} stock`, detail: `${cardName(ctx, p.card)} returns to ${SLOT_NAMES[p.slot]}, rested` };
     case 'optional':
-      return { label: p.purpose === 'payCost' ? 'Pay the cost' : p.purpose === 'may' ? 'Yes' : p.purpose === 'drawMore' ? 'Draw another card' : 'Look at another card' };
+      if (p.purpose === 'lookMore') return { label: (ctx.view.look?.count ?? 0) > 0 ? 'Look at one more card' : 'Look at a card' };
+      return { label: p.purpose === 'payCost' ? 'Pay the cost' : p.purpose === 'may' ? 'Yes' : 'Draw a card' };
     case 'mulligan':
     case 'clock':
     case 'play':
@@ -186,7 +187,7 @@ function attackLabel(ctx: DescribeContext, a: Extract<Action, { type: 'ATTACK' }
 export function describeAction(a: Action, p: Pending | null, ctx: DescribeContext): Described {
   switch (a.type) {
     case 'MULLIGAN':
-      return a.discard.length === 0 ? { label: 'Keep this hand' } : { label: `Put back ${plural(a.discard.length, 'card')} and draw ${a.discard.length}` };
+      return a.discard.length === 0 ? { label: 'Keep this hand' } : { label: `Discard ${plural(a.discard.length, 'card')} and draw ${a.discard.length}` };
     case 'CLOCK':
       return a.card === null ? { label: 'Don’t clock' } : { label: `Clock ${cardName(ctx, a.card)}`, detail: 'Then draw 2 cards' };
     case 'PLAY_CHARACTER': {
@@ -199,8 +200,10 @@ export function describeAction(a: Action, p: Pending | null, ctx: DescribeContex
     case 'PLAY_CLIMAX':
       return { label: 'Play as your climax' };
     case 'SWAP': {
-      const at = stageOccupant(ctx, a.player, a.b);
-      return at ? { label: `Swap ${SLOT_NAMES[a.a]} and ${SLOT_NAMES[a.b]}` } : { label: `Move ${SLOT_NAMES[a.a]} to ${SLOT_NAMES[a.b]}` };
+      const atA = stageOccupant(ctx, a.player, a.a);
+      const atB = stageOccupant(ctx, a.player, a.b);
+      if (atA && atB) return { label: `Swap ${SLOT_NAMES[a.a]} and ${SLOT_NAMES[a.b]}` };
+      return atA ? { label: `Move ${SLOT_NAMES[a.a]} to ${SLOT_NAMES[a.b]}` } : { label: `Move ${SLOT_NAMES[a.b]} to ${SLOT_NAMES[a.a]}` };
     }
     case 'PASS':
       return { label: passLabel(p) };
@@ -249,13 +252,13 @@ function countWords(p: Extract<Pending, { kind: 'pick' }>): string {
 export function describePending(p: Pending, ctx: DescribeContext): { title: string; text: string } {
   switch (p.kind) {
     case 'mulligan':
-      return { title: 'Mulligan', text: 'Choose any cards to put back, then draw that many. You can do this once.' };
+      return { title: 'Mulligan', text: 'Choose any cards to put into your waiting room, then draw that many. You can do this once.' };
     case 'clock':
       return { title: 'Clock phase', text: 'You may put 1 card from your hand into your clock. If you do, draw 2 cards.' };
     case 'play':
       if (p.window === 'main') return { title: 'Main phase', text: 'Tap a card to see what it can do, or end your main phase.' };
       if (p.window === 'climax') return { title: 'Climax phase', text: 'You may play 1 climax.' };
-      return { title: 'Counter step', text: 'Your character is under a front attack. You may play 1 counter card or Backup, or none.' };
+      return { title: 'Counter step', text: 'Your character is under a front attack. You may play 1 counter card, or use Backup or a counter ability, or do nothing.' };
     case 'levelUp':
       return { title: 'Level up', text: 'Your clock reached 7. Choose 1 of those cards for your level zone.' };
     case 'interruptOrder':
@@ -306,9 +309,9 @@ export function describePending(p: Pending, ctx: DescribeContext): { title: stri
         case 'lookTake':
           return { title: source, text: `Choose ${n} of the cards you are looking at.` };
         case 'orderTop':
-          return { title: source, text: 'Put the cards back on top of your deck one at a time. The first one you choose ends up on top.' };
+          return { title: source, text: 'Put the cards back on top of your deck one at a time. The first one you choose ends up on top; the card you don’t choose goes lowest.' };
         case 'orderBottom':
-          return { title: source, text: 'Put the cards at the bottom of your deck one at a time. The last one you choose ends up at the very bottom.' };
+          return { title: source, text: 'Put the cards at the bottom of your deck one at a time. The first one you choose ends up highest; the card you don’t choose goes to the very bottom.' };
       }
       return { title: source, text: `Choose ${n}.` };
     }
@@ -320,9 +323,9 @@ export function describePending(p: Pending, ctx: DescribeContext): { title: stri
         case 'may':
           return { title: source, text: 'Do you want to do this?' };
         case 'drawMore':
-          return { title: source, text: 'Draw another card?' };
+          return { title: source, text: 'You may draw cards one at a time and stop whenever you like. Draw a card?' };
         case 'lookMore':
-          return { title: source, text: 'Look at another card?' };
+          return { title: source, text: (ctx.view.look?.count ?? 0) > 0 ? 'Look at one more card from the top of your deck?' : 'You may look at cards from the top of your deck one at a time. Look at a card?' };
       }
       return { title: source, text: 'Do you want to do this?' };
     }

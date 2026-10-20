@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { replay, stateHash } from '../../src/engine';
-import { canUndo, choose, screenFor, stepBot, undo } from '../../src/session';
+import { acceptHandoff, canUndo, choose, concede, screenFor, stepBot, undo } from '../../src/session';
 import { hiddenFrom } from '../helpers/hidden-shuffle';
 import { cards, DECKS, playOut, start } from './helpers';
 
@@ -54,7 +54,6 @@ describe('undo', () => {
 
   it('never after a mulligan or concede, an attack once its trigger check ran, or a clock once its 2 cards are drawn', () => {
     let seen = 0;
-    let stoppedEarly = 0;
     for (let g = 0; g < 4; g++) {
       playOut(start({ mode: 'hotseat', decks: ['yellow', 'blue'], seed: `noundo-${g}` }), `noundo-${g}`, ({ kind, before, after }) => {
         if (kind !== 'human') return;
@@ -70,14 +69,21 @@ describe('undo', () => {
         const revealed = events.some((e) => e.kind === 'triggerCheck' || (e.kind === 'move' && e.from.zone === 'deck'));
         if (a.type === 'ATTACK' || (a.type === 'CLOCK' && a.card !== null)) {
           if (revealed) expect(after.game.prev, a.type).toBeNull();
-          else if (after.game.prev !== null) stoppedEarly++;
           seen++;
         }
       });
     }
     expect(seen).toBeGreaterThan(50);
-    expect(stoppedEarly).toBeGreaterThanOrEqual(0);
   }, 60_000);
+
+  it('conceding can never be undone', () => {
+    const s = acceptHandoff(start({ mode: 'hotseat', decks: ['red', 'blue'], seed: 'concede-undo' }));
+    const r = concede(s);
+    if (!r.ok) throw new Error(r.error.code);
+    expect(r.session.game.prev).toBeNull();
+    expect(canUndo(r.session)).toBe(false);
+    expect(r.session.game.state.result?.kind).toBe('win');
+  });
 
   it('against the computer: never for the computer’s steps, and not once the computer has acted', () => {
     let s = start({ mode: 'computer', decks: ['red', 'yellow'], seed: 'pc-undo', botSeed: 'pc-undo-bot' });

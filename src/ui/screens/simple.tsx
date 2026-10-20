@@ -54,6 +54,7 @@ export function NewGameScreen({ mode, onStart, onBack }: { mode: Mode; onStart: 
                 label={label}
                 tone={chosen ? 'primary' : 'neutral'}
                 badge={chosen ? '✓ Selected' : undefined}
+                accessibilityLabel={`${seats[seat] ?? ''}: ${label}${chosen ? ', selected' : ''}`}
                 onPress={() => setDecks((d) => (seat === 0 ? [key, d[1]] : [d[0], key]))}
                 testID={`deck-${seat}-${key}`}
               />
@@ -96,7 +97,7 @@ export function GameOverScreen({ model, onRematch, onNew, onHome }: { model: Gam
       <Text style={styles.body} testID="gameover-result">
         {model.text}
       </Text>
-      <Text style={styles.meta}>The game lasted {model.turns} turns.</Text>
+      <Text style={styles.meta}>{model.turns === 0 ? 'The game ended before the first turn.' : `The game lasted ${model.turns} turn${model.turns === 1 ? '' : 's'}.`}</Text>
       <View style={styles.stack}>
         <Button label="Rematch" detail="Same decks, new shuffle" tone="primary" onPress={onRematch} testID="gameover-rematch" />
         <Button label="New game" onPress={onNew} testID="gameover-new" />

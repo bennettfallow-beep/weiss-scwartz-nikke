@@ -88,9 +88,10 @@ export function BoardScreen({ screen, selected, mulligan, mulliganChoice, notice
   const card = (defId: string) => onOverlay({ kind: 'card', defId });
   const zone = (side: 'you' | 'opponent') => (z: ZoneKey) => onOverlay({ kind: 'zone', side, zone: z });
   const h = screen.header;
-  const banner = [screen.attack, screen.resolving ? `${screen.resolving.name}: ${screen.resolving.text}` : null, screen.look ? (screen.look.cards ? `You are looking at ${screen.look.count} card${screen.look.count === 1 ? '' : 's'}.` : `${screen.look.who} is looking at ${screen.look.count} card${screen.look.count === 1 ? '' : 's'}.`) : null].filter(
+  const banner = [screen.attack, screen.resolving ? `${screen.resolving.name}: ${screen.resolving.text}` : null, screen.look && screen.look.count > 0 ? (screen.look.cards ? `You are looking at ${screen.look.count} card${screen.look.count === 1 ? '' : 's'} from the top of your deck:` : `${screen.look.who} is looking at ${screen.look.count} card${screen.look.count === 1 ? '' : 's'} from the top of their deck.`) : null].filter(
     (x): x is string => x !== null,
   );
+  const looking = screen.look?.cards ?? [];
   const climaxes = [screen.opponent.climax ? { who: screen.opponent.name, tile: screen.opponent.climax } : null, screen.you.climax ? { who: 'Your', tile: screen.you.climax } : null].filter((x) => x !== null);
   return (
     <View style={styles.screen} testID="board-screen">
@@ -112,18 +113,30 @@ export function BoardScreen({ screen, selected, mulligan, mulliganChoice, notice
         <Counts side={screen.opponent} who="opponent" onZone={zone('opponent')} />
         <Row slots={screen.opponent.back} prefix="opp" width={slotWidth} groups={groups} selected={selected} onTap={tap} onLong={card} />
         <Row slots={screen.opponent.front} prefix="opp" width={slotWidth} groups={groups} selected={selected} onTap={tap} onLong={card} />
-        {banner.length > 0 || climaxes.length > 0 || screen.opponent.resolution.length + screen.you.resolution.length > 0 ? (
+        {banner.length > 0 || climaxes.length > 0 || looking.length > 0 || screen.opponent.resolution.length + screen.you.resolution.length > 0 ? (
           <View style={styles.banner} testID="banner">
             {banner.map((b) => (
               <Text key={b} style={styles.bannerText}>
                 {b}
               </Text>
             ))}
-            {climaxes.map((c) => (
-              <Text key={c.who} style={styles.bannerText} onPress={() => card(c.tile.defId)}>
-                {c.who === 'Your' ? 'Your' : `${c.who}’s`} climax: {c.tile.name}
-              </Text>
-            ))}
+            {looking.length > 0 ? (
+              <ScrollView horizontal contentContainerStyle={styles.bannerRow} testID="look-cards">
+                {looking.map((t) => (
+                  <CardTile key={t.id} tile={t} onPress={() => card(t.defId)} onLongPress={() => card(t.defId)} />
+                ))}
+              </ScrollView>
+            ) : null}
+            {climaxes.length > 0 ? (
+              <View style={styles.bannerRow}>
+                {climaxes.map((c) => (
+                  <View key={c.who} style={styles.climax}>
+                    <Text style={styles.bannerText}>{c.who === 'Your' ? 'Your' : `${c.who}’s`} climax</Text>
+                    <CardTile tile={c.tile} onPress={() => card(c.tile.defId)} onLongPress={() => card(c.tile.defId)} testID={c.who === 'Your' ? 'you-climax' : 'opp-climax'} />
+                  </View>
+                ))}
+              </View>
+            ) : null}
             {[...screen.opponent.resolution, ...screen.you.resolution].length > 0 ? (
               <Text style={styles.bannerText}>Revealed: {[...screen.opponent.resolution, ...screen.you.resolution].map((t) => t.name).join(', ')}</Text>
             ) : null}
@@ -152,7 +165,7 @@ export function BoardScreen({ screen, selected, mulligan, mulliganChoice, notice
         </ScrollView>
         {screen.recent.length > 0 ? (
           <View style={styles.recent} testID="recent">
-            <Text style={styles.recentTitle}>Since your last move</Text>
+            <Text style={styles.recentTitle}>What just happened</Text>
             {screen.recent.slice(-6).map((l) => (
               <Text key={l.key} style={[styles.recentLine, l.kind === 'turn' && styles.recentTurn]}>
                 {l.text}
@@ -198,6 +211,8 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'center', gap: space.s },
   banner: { backgroundColor: colors.panelHigh, borderRadius: 8, padding: space.s, gap: 2 },
   bannerText: { color: colors.text, fontSize: font.small },
+  bannerRow: { flexDirection: 'row', gap: space.s, paddingVertical: space.xs },
+  climax: { gap: 2 },
   divider: { height: 1, backgroundColor: colors.line, marginVertical: space.xs },
   handTitle: { color: colors.dim, fontSize: font.small, marginTop: space.xs },
   hand: { gap: space.s, paddingBottom: space.xs },

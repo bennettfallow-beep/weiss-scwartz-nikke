@@ -38,7 +38,7 @@ test('a game against the computer: every board screen and panel', async ({ page 
   await expect(page.getByTestId('board-screen')).toBeVisible();
   await expect(page.getByTestId('prompt-title')).toHaveText('Mulligan');
   await page.getByTestId('mulligan-card-0').click();
-  await expect(page.getByTestId('choice-0')).toContainText('Put back 1 card');
+  await expect(page.getByTestId('choice-0')).toContainText('Discard 1 card');
   await expectNoOverflow(page, 'mulligan');
   await shot(page, info, 'board-mulligan');
   await page.getByTestId('mulligan-card-0').click();

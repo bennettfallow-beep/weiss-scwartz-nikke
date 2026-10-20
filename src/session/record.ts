@@ -59,7 +59,8 @@ export function advance(record: GameRecord, catalog: CardCatalog, action: Action
   if (!r.ok) return { ok: false, error: { code: 'ENGINE', message: `${r.error.code}: ${r.error.message}` } };
   const memory = [learn(record.memory[0], r.state, r.events, 0), learn(record.memory[1], r.state, r.events, 1)] as const;
   const marks: [number, number] = [record.marks[0], record.marks[1]];
-  marks[action.player] = r.state.log.length;
+  // From just before this step: the player sees what their own step caused (a trigger check, damage, a look).
+  marks[action.player] = record.state.log.length;
   return {
     ok: true,
     record: {
