@@ -17,6 +17,8 @@ not taken from memory. `package-lock.json` is the exact record.
 | zod | 4.6.5 | Card schema and file validation (`src/cards`, scripts) |
 | ESLint / typescript-eslint | 10.12 / 8.71.1 | typescript-eslint supports TS < 6.1 |
 | Playwright | **exactly 1.56.1** | Must match the preinstalled Chromium build 1194 in the container |
+| expo-crypto | ~57.0.3 | Fresh random seeds (M5); from SDK 57's bundled module list |
+| react-native-safe-area-context | ~5.7.0 | Keeps the app clear of notches and system bars (M5) |
 | GitHub Actions | checkout v7, setup-node v7, upload-artifact v7 | Latest majors per each action's GitHub releases page, checked 2026-10-11 |
 
 ## Container constraints (cloud sessions)
@@ -38,3 +40,12 @@ not taken from memory. `package-lock.json` is the exact record.
   static `dist/` that Playwright serves with `serve -s`, so runs are deterministic.
 - **App icons:** temporary Expo template icons (MIT, see `assets/LICENSES.json`), to be
   replaced with original art.
+
+## Deploying the web build (M5)
+
+`public/vercel.json` is copied into `dist/` by `expo export`. It routes every path to
+`index.html`, caches the hashed bundles under `_expo/static/`, and sets `noindex`,
+`no-referrer` and `nosniff` headers. The tested `dist/` itself is uploaded as a Vercel preview
+deployment, with no build step on Vercel. Production is never used, because Standard
+Deployment Protection does not cover the production domain. A request that is not signed in
+must be refused before a link is shared.

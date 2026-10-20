@@ -37,7 +37,11 @@ instead of Expo's API, which this cloud container cannot reach.
 - Other layers enter a pure layer only through its `index.ts` barrel.
 - Three guards check this: `tsconfig.engine.json` (no DOM/node types), ESLint rules in
   `eslint.config.mjs`, and `tests/architecture/purity.test.ts`.
-- The UI holds no rule logic. It renders `legalActions` and dispatches actions.
+- The UI holds no rule logic. It renders the session's screen models and sends back their action
+  keys. It reaches the game only through `src/session` (no engine values but `RULES_SOURCE`,
+  never `game`, `seed`, `rng` or `botRng`); `tests/architecture/ui-boundary.test.ts` checks this.
+- Randomness in the app comes only from `src/ui/platform/entropy.ts` (expo-crypto): separate fresh
+  seeds for the game and for the computer player. `?fast=1` (web) is for tests only.
 
 ## Rules traceability
 

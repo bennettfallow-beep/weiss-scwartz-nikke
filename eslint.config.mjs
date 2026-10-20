@@ -91,6 +91,8 @@ export default defineConfig(
     plugins: { 'react-hooks': reactHooks },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      // Seeds come only from src/ui/platform/entropy.ts (expo-crypto), never Math.random.
+      'no-restricted-properties': ['error', { object: 'Math', property: 'random', message: 'Use freshSeed() from src/ui/platform/entropy.ts.' }],
     },
   },
   {

@@ -71,7 +71,7 @@ src/engine/    PURE TS, zero deps: state, rules, phases, prompts, abilities, rng
 src/cards/     PURE: zod schema, validator, importer, decklist parser, sets/syn-001.json
 src/ai/        PURE: RandomBot, HeuristicBot (sees GameView only, never full state)
 src/session/   PURE: history/undo, save envelope, normalizeSave, replay export
-src/ui/        React Native screens/components; app/ = thin expo-router routes
+src/ui/        React Native screens/components; one screen reducer, no router (docs/TOOLCHAIN.md)
 tests/ e2e/ scripts/ docs/ schema/ .github/workflows/ci.yml CLAUDE.md
 ```
 Purity enforced three ways: `tsconfig.engine.json` (no DOM/RN/node types), ESLint `no-restricted-imports/properties` (no react, expo, Math.random, Date.now), and an architecture test that parses imports. No workspaces (Metro symlink risk). Tooling: Expo managed, TS strict, Vitest + fast-check for pure layers, Playwright (pinned to the installed Chromium's matching version) for web e2e. **Versions are taken from `npx expo install` at M0 and recorded in `docs/TOOLCHAIN.md`, not asserted from memory.**
@@ -144,15 +144,25 @@ Things a milestone found but left for a later one, so they are not lost.
   - Play requirements read printed level, cost and color; v1 has no effect that changes them.
 - **M4 (done):** the hand-limit discard is now answered one card at a time (CHOOSE_CARD), so
   its action list stays short. The computer player is described in `docs/AI.md`.
-- **M5:**
-  - Keep the seed and generator state out of anything a player can read in a save.
-  - Seed the computer player's random source from fresh entropy, never from the game seed.
-    In tests and `simulate` both come from known seed names, which is fine for repeatable
-    runs. In a real game, a bot that could work out the game seed could replay the shuffles.
-  - A save must record which card catalog it was made with (e.g. a hash): lenient imports
-    can leave abilities out, which shifts ability numbers in saved actions.
-  - Card pictures: download on the device from the card file's links; check the image host
-    allows it.
+- **M5 (built):** the session layer, the screens and the hot-seat handoff. See `docs/UI.md`.
+  - The seed is never shown. A save must hold it to continue a game, so saves stay on the
+    device. Replays can be exported only after game over.
+  - The computer player's random source comes from its own fresh entropy, never from the
+    game seed. In tests and `simulate` both come from known seed names, which is fine for
+    repeatable runs.
+  - Saves record the card catalog's fingerprint, so a game is only continued with the cards
+    it was played with. Lenient imports can leave abilities out, which shifts ability
+    numbers in saved actions.
+  - Undo is allowed only while the last step revealed nothing and the same player still
+    decides. It restores the earlier record exactly.
+  - Your web link is a preview deployment on your Vercel account, behind Vercel sign-in.
+- **M6:**
+  - Saving and resuming on the device. Incompatible saves get a prompt and are never dropped
+    silently.
+  - Loading your card file and decklists.
+  - Card pictures: download on the device from the card file's links, and check the image
+    host allows it. Drive links need the folder shared by link, or a signed-in phone.
+  - The replay share button, the accessibility pass and the device checklist.
 
 ## Out of scope for v1
 Online PvP, official data/art in the repository or the app download, full ability coverage, deckbuilder UI, memory-zone mechanics, Neo-Standard format rules, animations/sound, tutorial, replay viewer UI (export + CLI only), localization.
